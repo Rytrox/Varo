@@ -4,6 +4,11 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Entity for Teams
+ *
+ * @author Timeout
+ */
 @Entity
 @Table(name = "Teams")
 public class Team {

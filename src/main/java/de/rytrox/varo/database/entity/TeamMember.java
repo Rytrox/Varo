@@ -7,6 +7,12 @@ import org.jetbrains.annotations.Nullable;
 import javax.persistence.*;
 import java.util.UUID;
 
+/**
+ * Entity for Players that are involved in the Game. <br>
+ * This Entity also have the status included
+ *
+ * @author Timeout
+ */
 @Entity
 @Table(name = "Players")
 public class TeamMember {

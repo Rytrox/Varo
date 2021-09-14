@@ -13,6 +13,11 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 
+/**
+ * DDL Generator that uses an external Configuration to build and drop the current database
+ *
+ * @author Timeout
+ */
 public class SQLiteDDLGenerator extends DdlGenerator {
 
     private final Varo main;
@@ -42,5 +47,6 @@ public class SQLiteDDLGenerator extends DdlGenerator {
             main.getLogger().log(Level.SEVERE, "Unable to read createTables.sql", e);
         }
 
-        return null;    }
+        return null;
+    }
 }
