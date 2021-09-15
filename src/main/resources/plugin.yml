@@ -4,3 +4,26 @@ main: de.rytrox.varo.Varo
 load: STARTUP
 description: Ein Varo-Plugin
 database: true
+
+commands:
+  teams:
+    description: 'Manage, erstelle und bearbeite Teams'
+    usage: '/teams'
+
+permissions:
+  varo.*:
+    default: op
+    description: 'Super-Permission für Varo'
+    children:
+      - 'varo.teams.*'
+  varo.teams.*:
+    default: op
+    description: 'Super-Permission für das TeamManagement in Varo'
+    children:
+      - 'varo.teams.add'
+      - 'varo.teams.remove'
+      - 'varo.teams.modify.*'
+      - 'varo.teams.members.*'
+  varo.teams.members.*:
+    default: op
+    description: 'Füge neue Member zu einem Team hinzu und entferne Member von seinem Team'

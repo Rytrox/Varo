@@ -8,6 +8,8 @@ import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
 import de.rytrox.varo.database.entity.Team;
 import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.database.util.SQLiteDDLGenerator;
+import de.rytrox.varo.teams.TeamManager;
+import de.rytrox.varo.teams.TeamsCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -20,10 +22,18 @@ import java.util.logging.Level;
 
 public final class Varo extends JavaPlugin {
 
+    private TeamManager teamManager;
+
     @Override
     public void onEnable() {
         // Plugin startup logic
         setupDatabase();
+        saveDefaultConfig();
+
+        this.teamManager = new TeamManager(this);
+
+        // register commands
+        registerCommands();
     }
 
     @Override
@@ -31,13 +41,17 @@ public final class Varo extends JavaPlugin {
         // Plugin shutdown logic
     }
 
-    public void setupDatabase() {
+    private void setupDatabase() {
         try {
             getDatabase().find(Team.class).findRowCount();
         } catch(PersistenceException e) {
             installDDL();
             getLogger().log(Level.INFO, "Initialize first usage for Varo");
         }
+    }
+
+    private void registerCommands() {
+        this.getCommand("teams").setExecutor(new TeamsCommand(teamManager));
     }
 
     @Contract(pure = true)
