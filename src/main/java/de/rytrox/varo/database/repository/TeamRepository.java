@@ -27,7 +27,6 @@ public class TeamRepository {
     @Nullable
     public Team findByName(@NotNull String teamname) {
         return this.database.find(Team.class)
-                .select("name")
                 .where()
                 .eq("name", teamname)
                 .findUnique();

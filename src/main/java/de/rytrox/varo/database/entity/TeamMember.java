@@ -1,6 +1,7 @@
 package de.rytrox.varo.database.entity;
 
 import de.rytrox.varo.database.enums.PlayerStatus;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,6 +29,27 @@ public class TeamMember {
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "status")
     private PlayerStatus status = PlayerStatus.NOT_REGISTERED;
+
+
+    /**
+     * Internal Method for EBean to get the UUID of the player
+     *
+     * @return the UUID of the Player as a String
+     */
+    @ApiStatus.Internal
+    public String getUuid() {
+        return uuid;
+    }
+
+    /**
+     * Internal Method for EBean to set the UUID of the player
+     *
+     * @param uuid the UUID of the new player
+     */
+    @ApiStatus.Internal
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 
     /**
      * Returns the UUID of the Player

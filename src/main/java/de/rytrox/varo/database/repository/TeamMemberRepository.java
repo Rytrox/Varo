@@ -41,7 +41,6 @@ public class TeamMemberRepository {
     @Nullable
     public TeamMember getPlayerByUUID(@NotNull UUID uuid) {
         return this.database.find(TeamMember.class)
-                .select("uuid")
                 .where()
                 .eq("uuid", uuid.toString())
                 .findUnique();
