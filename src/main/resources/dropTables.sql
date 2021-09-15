@@ -1,0 +1,2 @@
+DROP TABLE Players;
+DROP TABLE Teams;
