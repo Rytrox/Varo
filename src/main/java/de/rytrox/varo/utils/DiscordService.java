@@ -63,30 +63,42 @@ public class DiscordService {
         Bukkit.getConsoleSender().sendMessage("Sending message to discord: " + modifiedMessage);
 
         Bukkit.getScheduler().runTaskAsynchronously(JavaPlugin.getPlugin(Varo.class), () -> {
+
+            HttpsURLConnection connection = null;
+            OutputStream stream = null;
+
             try {
                 URL url = new URL("https://discord.com/api/webhooks/889044086579937281/KEd3kFA50XFavQCY0-kIp2Welwvb92evBlo4Lh8_Byi0mS92rVLgqwSqfQWq1iC76698");
 
-                HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+                connection = (HttpsURLConnection) url.openConnection();
                 connection.addRequestProperty("Content-Type", "application/json");
                 connection.addRequestProperty("User-Agent", "MinecraftServer");
                 connection.setDoOutput(true);
                 connection.setRequestMethod("POST");
 
-                OutputStream stream = connection.getOutputStream();
+                stream = connection.getOutputStream();
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("content", modifiedMessage);
 
                 stream.write(jsonObject.toJSONString().getBytes());
-
                 stream.flush();
-                stream.close();
-
-                connection.getInputStream().close();
-                connection.disconnect();
 
             } catch (IOException ex) {
                 Bukkit.getConsoleSender().sendMessage("ERROR - Discord-Nachricht konnte nicht gesendet werden");
                 ex.printStackTrace();
+            } finally {
+                if(stream != null) {
+                    try {
+                        stream.close();
+                    } catch (IOException ignored) {}
+                }
+                if(connection != null) {
+                    try {
+                        connection.getInputStream().close();
+                    } catch (IOException ignored) {}
+
+                    connection.disconnect();
+                }
             }
         });
     }
