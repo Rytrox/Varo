@@ -27,7 +27,7 @@ public class TeamsCommand implements TabExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
+    public boolean onCommand(CommandSender commandSender, Command command, String s, @NotNull String[] args) {
         if(args.length > 1) {
             String teamname = args[1];
             switch(args[0].toLowerCase(Locale.ROOT)) {
@@ -38,8 +38,26 @@ public class TeamsCommand implements TabExecutor {
                     } else commandSender.sendMessage(ChatColor.RED + "Du hast nicht die nötige Berechtigung, diesen Befehl auszuführen");
                     return false;
                 case "modify":
+                    if(args.length > 4 && args[2].equalsIgnoreCase("displayname")) {
+                        if(commandSender.hasPermission("varo.teams.modify.displayname")) {
+                            // set displayname
+                            teamManager.setDisplayName(commandSender, teamname, args[3]);
+                        } else commandSender.sendMessage(ChatColor.RED + "Du hast nicht die nötige Berechtigung, diesen Befehl auszuführen");
+                    }
                     break;
                 case "members":
+                    if(args.length > 3) {
+                        if(args[2].equalsIgnoreCase("add")) {
+                            if(commandSender.hasPermission("varo.teams.members.add")) {
+                                // add member to team
+                                teamManager.addMember(commandSender, teamname, args[3]);
+                            } else commandSender.sendMessage(ChatColor.RED + "Du hast nicht die nötige Berechtigung, diesen Befehl auszuführen");
+                        } else if(args[2].equalsIgnoreCase("remove")) {
+                            if(commandSender.hasPermission("varo.teams.members.remove")) {
+                                teamManager.removeMember(commandSender, teamname, args[3]);
+                            }
+                        }
+                    }
                     break;
             }
         }

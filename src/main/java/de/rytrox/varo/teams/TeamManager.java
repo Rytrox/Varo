@@ -78,4 +78,91 @@ public class TeamManager implements Listener {
                     ChatColor.translateAlternateColorCodes('&', "&cDieses Team existiert bereits"));
         });
     }
+
+    /**
+     * Sets the displayname of a team and save it asynchronously
+     *
+     * @param commandSender the executor of the modification
+     * @param teamname the name of the team
+     * @param teamDisplayName the Displayname of the team (ColorCodes in '&')
+     */
+    public void setDisplayName(CommandSender commandSender, String teamname, String teamDisplayName) {
+        Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
+            // check if team does not exist...
+            Team team = teamRepository.findByName(teamname);
+            if(team != null) {
+                team.setDisplayName(ChatColor.translateAlternateColorCodes('&', teamDisplayName));
+
+                // save it in database
+                main.getDB().save(team);
+                main.getLogger().log(Level.INFO, String.format("%s modfied displayname of %s to %s",
+                        commandSender.getName(), team.getName(), team.getDisplayName()));
+                commandSender.sendMessage(
+                        ChatColor.translateAlternateColorCodes('&', String.format(
+                                "&7Der Displayname von &a%s &7wurde geändert zu %s", team.getName(), team.getDisplayName())
+                        )
+                );
+            } else commandSender.sendMessage(
+                    ChatColor.translateAlternateColorCodes('&', "&cDieses Team existiert nicht"));
+        });
+    }
+
+    /**
+     * Adds a member to a team
+     *
+     * @param commandSender the executor of the Process
+     * @param teamname the name of the Team
+     * @param playerName the name of the player
+     */
+    public void addMember(CommandSender commandSender, String teamname, String playerName) {
+        Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
+            Team team = teamRepository.findByName(teamname);
+            if(team != null) {
+                TeamMember member = teamMemberRepository.getPlayer(Bukkit.getOfflinePlayer(playerName));
+                if(member != null) {
+                    if(team.addMember(member)) {
+                        member.setTeam(team);
+                        main.getDB().save(member);
+                        main.getLogger().log(Level.INFO, String.format("%s adds %s to Team %s", commandSender.getName(), playerName, team.getName()));
+                        commandSender.sendMessage(
+                                ChatColor.translateAlternateColorCodes('&', String.format(
+                                        "&7Der Spieler &a%s &7wurde zum &5Team &d%s &ahinzugefügt", playerName, team.getName()
+                                ))
+                        );
+                    } else
+                        commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                                "&cDieser Spieler ist bereits in diesem Team"));
+                } else
+                    commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format(
+                            "&cDer Spieler %s konnte nicht gefunden werden. Prozess wurde abgebrochen", playerName)));
+            } else commandSender.sendMessage(
+                    ChatColor.translateAlternateColorCodes('&', "&cDieses Team existiert nicht"));
+        });
+    }
+
+    public void removeMember(CommandSender executor, String teamname, String playerName) {
+        Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
+            Team team = teamRepository.findByName(teamname);
+            if(team != null) {
+                TeamMember member = teamMemberRepository.getPlayer(Bukkit.getOfflinePlayer(playerName));
+                if(member != null) {
+                    if(team.removeMember(member)) {
+                        main.getDB().save(team);
+                        main.getLogger().log(Level.INFO,
+                                String.format("%s removes %s of Team %s", executor.getName(), playerName, team.getName()));
+                        executor.sendMessage(
+                                ChatColor.translateAlternateColorCodes('&', String.format(
+                                        "&7Der Spieler &a%s &7wurde vom &5Team &d%s &centfernt", playerName, team.getName()
+                                ))
+                        );
+                    } else
+                        executor.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                                "&cDieser Spieler ist nicht in diesem Team"));
+                } else
+                    executor.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format(
+                            "&cDer Spieler %s konnte nicht gefunden werden. Prozess wurde abgebrochen", playerName)));
+            } else executor.sendMessage(
+                    ChatColor.translateAlternateColorCodes('&', "&cDieses Team existiert nicht"));
+        });
+    }
 }

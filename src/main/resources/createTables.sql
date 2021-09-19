@@ -11,3 +11,12 @@ CREATE TABLE IF NOT EXISTS Players(
     PRIMARY KEY (uuid),
     FOREIGN KEY (team) REFERENCES Teams(name)
 );
+
+CREATE TABLE IF NOT EXISTS TeamItems(
+    id INTEGER NOT NULL,
+    slot INTEGER NOT NULL,
+    owner VARCHAR(30) NOT NULL,
+    item MESSAGE_TEXT,
+    PRIMARY KEY (id),
+    FOREIGN KEY (owner) REFERENCES Teams(name)
+);
