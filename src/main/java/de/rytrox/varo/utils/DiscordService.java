@@ -2,6 +2,7 @@ package de.rytrox.varo.utils;
 
 import de.rytrox.varo.Varo;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONObject;
@@ -54,7 +55,7 @@ public class DiscordService {
         }
         sb.append("```");
         sb.append(color.getKey());
-        sb.append(message.replaceAll("§[0-9|a-f]", ""));
+        sb.append(message.replaceAll(ChatColor.COLOR_CHAR + "[0-9|a-f]", ""));
         sb.append("\n```");
 
         final String modifiedMessage = sb.toString();
