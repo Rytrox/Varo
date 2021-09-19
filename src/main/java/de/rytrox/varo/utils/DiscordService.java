@@ -18,9 +18,6 @@ public class DiscordService {
     final SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd | HH:mm");
     static final String COORDINATE_TEMPLATE = "[x:%d | y:%d | z:%d]";
 
-    public DiscordService() {
-    }
-
     public void leakPlayerCoordinates(Player player, CoordinateLeakReason reason) {
 
         String messageBuilder = String.format("Koordinaten des Spielers %s:%n", player.getName()) +
