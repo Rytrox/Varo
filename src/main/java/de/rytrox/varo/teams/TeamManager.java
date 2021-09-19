@@ -25,8 +25,8 @@ public class TeamManager implements Listener {
 
     public TeamManager(@NotNull Varo main) {
         this.main = main;
-        this.teamMemberRepository = new TeamMemberRepository(main.getDatabase());
-        this.teamRepository = new TeamRepository(main.getDatabase());
+        this.teamMemberRepository = new TeamMemberRepository(main.getDB());
+        this.teamRepository = new TeamRepository(main.getDB());
 
         Bukkit.getPluginManager().registerEvents(this, main);
     }
@@ -43,11 +43,10 @@ public class TeamManager implements Listener {
                 // create a new member and save it
                 member = new TeamMember();
                 member.setTeam(null);
-                System.out.println(player.getUniqueId());
                 member.setUniqueID(player.getUniqueId());
 
                 // save entity in Database
-                main.getDatabase().save(member);
+                main.getDB().save(member);
                 main.getLogger().log(Level.INFO, "Saved Player {0} in database. It's his first start", player.getName());
             }
         });
@@ -69,7 +68,7 @@ public class TeamManager implements Listener {
                 team.setName(name);
 
                 // and save it in database
-                main.getDatabase().save(team);
+                main.getDB().save(team);
                 main.getLogger().log(Level.INFO, String.format("%s creates a new Team called %s", executor.getName(), name));
                 executor.sendMessage(
                         ChatColor.translateAlternateColorCodes('&', String.format("&7Das Team &a%s &7wurde &aerfolgreich erstellt!", name))
@@ -120,7 +119,7 @@ public class TeamManager implements Listener {
             if(team != null) {
                 TeamMember member = teamMemberRepository.getPlayer(Bukkit.getOfflinePlayer(playerName));
                 if(member != null) {
-                    if(team.addMember(member)) {
+                    if(!team.equals(member.getTeam())) {
                         member.setTeam(team);
                         main.getDB().save(member);
                         main.getLogger().log(Level.INFO, String.format("%s adds %s to Team %s", commandSender.getName(), playerName, team.getName()));
@@ -146,8 +145,9 @@ public class TeamManager implements Listener {
             if(team != null) {
                 TeamMember member = teamMemberRepository.getPlayer(Bukkit.getOfflinePlayer(playerName));
                 if(member != null) {
-                    if(team.removeMember(member)) {
-                        main.getDB().save(team);
+                    if(team.equals(member.getTeam())) {
+                        member.setTeam(null);
+                        main.getDB().save(member);
                         main.getLogger().log(Level.INFO,
                                 String.format("%s removes %s of Team %s", executor.getName(), playerName, team.getName()));
                         executor.sendMessage(

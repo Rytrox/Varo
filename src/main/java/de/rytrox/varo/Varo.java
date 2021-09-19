@@ -1,33 +1,37 @@
 package de.rytrox.varo;
 
-import com.avaje.ebean.config.DataSourceConfig;
-import com.avaje.ebean.config.ServerConfig;
-import com.avaje.ebean.config.dbplatform.SQLitePlatform;
-import com.avaje.ebeaninternal.api.SpiEbeanServer;
-import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
 import de.rytrox.varo.database.entity.Team;
+import de.rytrox.varo.database.entity.TeamItem;
 import de.rytrox.varo.database.entity.TeamMember;
-import de.rytrox.varo.database.util.SQLiteDDLGenerator;
 import de.rytrox.varo.teams.TeamManager;
 import de.rytrox.varo.teams.TeamsCommand;
+
+import io.ebean.Database;
+import io.ebean.DatabaseFactory;
+import io.ebean.config.DatabaseConfig;
+import io.ebean.config.dbplatform.h2.H2Platform;
+import io.ebean.datasource.DataSourceConfig;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.h2.Driver;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import javax.persistence.PersistenceException;
 import java.io.File;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
 
 public final class Varo extends JavaPlugin {
+
+    private Database database;
 
     private TeamManager teamManager;
 
     @Override
     public void onEnable() {
         // Plugin startup logic
-        setupDatabase();
+        installDDL();
         saveDefaultConfig();
 
         this.teamManager = new TeamManager(this);
@@ -39,15 +43,7 @@ public final class Varo extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-    }
-
-    private void setupDatabase() {
-        try {
-            getDatabase().find(Team.class).findRowCount();
-        } catch(PersistenceException e) {
-            installDDL();
-            getLogger().log(Level.INFO, "Initialize first usage for Varo");
-        }
+        DatabaseFactory.shutdown();
     }
 
     private void registerCommands() {
@@ -59,37 +55,51 @@ public final class Varo extends JavaPlugin {
     public @NotNull List<Class<?>> getDatabaseClasses() {
         return Arrays.asList(
                 TeamMember.class,
+                TeamItem.class,
                 Team.class
         );
     }
 
     @Override
     protected void installDDL() {
-        SpiEbeanServer serv = (SpiEbeanServer)this.getDatabase();
-        DdlGenerator gen = new SQLiteDDLGenerator(this, serv, serv.getDatabasePlatform(), getDatabaseConfig());
-        gen.runScript(false, gen.generateCreateDdl());
+        ClassLoader originalContextClassLoader = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+        try {
+            DriverManager.registerDriver(new Driver());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        DatabaseConfig config = getDatabaseConfig();
+        this.database = DatabaseFactory.create(config);
+
+        Thread.currentThread().setContextClassLoader(originalContextClassLoader);
     }
 
     @Override
     protected void removeDDL() {
-        SpiEbeanServer serv = (SpiEbeanServer)this.getDatabase();
-        DdlGenerator gen = new SQLiteDDLGenerator(this, serv, serv.getDatabasePlatform(), getDatabaseConfig());
-        gen.runScript(true, gen.generateDropDdl());
+    }
+
+    public Database getDB() {
+        return database;
     }
 
     @NotNull
-    private ServerConfig getDatabaseConfig() {
-        ServerConfig config = new ServerConfig();
-        config.setDdlRun(true);
-        config.setDdlGenerate(true);
+    private DatabaseConfig getDatabaseConfig() {
+        DatabaseConfig config = new DatabaseConfig();
+        config.setDdlRun(!(new File(getDataFolder(), "Varo.h2.db").exists()));
+        config.setDdlGenerate(!(new File(getDataFolder(), "Varo.h2.db").exists()));
+        config.setDdlCreateOnly(true);
+        config.setRegister(true);
+        config.setDefaultServer(true);
         config.setClasses(getDatabaseClasses());
-        config.setDatabasePlatform(new SQLitePlatform());
+        config.setDatabasePlatform(new H2Platform());
 
         DataSourceConfig sourceConfig = new DataSourceConfig();
+        sourceConfig.setDriver("org.h2.Driver");
         sourceConfig.setUsername("sa");
-        sourceConfig.setPassword("");
-        sourceConfig.setUrl(String.format("jdbc:sqlite:%s", new File(getDataFolder(), "Varo.db").getAbsolutePath()));
-        sourceConfig.setDriver("org.sqlite.JDBC");
+        sourceConfig.setPassword("sa");
+        sourceConfig.setUrl(String.format("jdbc:h2:%s;MV_STORE=false", new File(getDataFolder(), "Varo").getAbsolutePath()));
         config.setDataSourceConfig(sourceConfig);
 
         return config;

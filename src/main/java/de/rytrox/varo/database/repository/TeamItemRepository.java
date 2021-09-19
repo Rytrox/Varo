@@ -1,21 +1,25 @@
 package de.rytrox.varo.database.repository;
 
-import com.avaje.ebean.EbeanServer;
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.database.entity.TeamItem;
 import de.rytrox.varo.database.entity.TeamMember;
+
+import io.ebean.Database;
+
+import io.ebean.Finder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class TeamItemRepository {
+public class TeamItemRepository extends Finder<Integer, TeamItem> {
 
-    private final EbeanServer database;
+    private final Database database;
     private final TeamMemberRepository teamRepository;
 
     public TeamItemRepository(@NotNull Varo main, @NotNull TeamMemberRepository teamRepository) {
-        this.database = main.getDatabase();
+        super(TeamItem.class);
+        this.database = main.getDB();
         this.teamRepository = teamRepository;
     }
 

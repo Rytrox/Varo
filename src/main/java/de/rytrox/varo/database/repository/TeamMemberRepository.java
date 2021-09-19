@@ -1,7 +1,9 @@
 package de.rytrox.varo.database.repository;
 
-import com.avaje.ebean.EbeanServer;
 import de.rytrox.varo.database.entity.TeamMember;
+import de.rytrox.varo.database.entity.query.QTeamMember;
+
+import io.ebean.Database;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,9 +17,9 @@ import java.util.UUID;
  */
 public class TeamMemberRepository {
 
-    private final EbeanServer database;
+    private final Database database;
 
-    public TeamMemberRepository(@NotNull EbeanServer database) {
+    public TeamMemberRepository(@NotNull Database database) {
         this.database = database;
     }
 
@@ -43,6 +45,6 @@ public class TeamMemberRepository {
         return this.database.find(TeamMember.class)
                 .where()
                 .eq("uuid", uuid.toString())
-                .findUnique();
+                .findOne();
     }
 }

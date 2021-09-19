@@ -3,7 +3,6 @@ version: '${project.version}'
 main: de.rytrox.varo.Varo
 load: STARTUP
 description: Ein Varo-Plugin
-database: true
 
 commands:
   teams:
