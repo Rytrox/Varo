@@ -2,6 +2,7 @@ package de.rytrox.varo.utils;
 
 import de.rytrox.varo.Varo;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONObject;
 
@@ -15,8 +16,23 @@ import java.util.Date;
 public class DiscordService {
 
     final SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd | HH:mm");
+    static final String COORDINATE_TEMPLATE = "[x:%d | y:%d | z:%d]";
 
     public DiscordService() {
+    }
+
+    public void leakPlayerCoordinates(Player player, CoordinateLeakReason reason) {
+
+        String messageBuilder = String.format("Koordinaten des Spielers %s:%n", player.getName()) +
+                String.format(
+                        COORDINATE_TEMPLATE,
+                        player.getLocation().getBlockX(),
+                        player.getLocation().getBlockY(),
+                        player.getLocation().getBlockZ()) +
+                "\n" +
+                reason.getReason();
+
+        writeMessage(messageBuilder, DiscordColor.RED);
     }
 
     public void writeMessage(String message) {
@@ -93,6 +109,23 @@ public class DiscordService {
 
         public String getKey() {
             return key;
+        }
+    }
+
+    public enum CoordinateLeakReason {
+
+        CROSSTEAMING("Der Spieler wurde beim Crossteaming erwischt"),
+        SPAWN_OUTSIDE_BORDER("Der Spieler ist außerhalb der Weltborder gespawnt und wurde nun zum Weltspawn teleportiert"),
+        THREE_DAYS_RULE("Der Spieler hat seine drei Tage aufgebraucht");
+
+        String reason;
+
+        CoordinateLeakReason(String reason) {
+            this.reason = reason;
+        }
+
+        public String getReason() {
+            return reason;
         }
     }
 

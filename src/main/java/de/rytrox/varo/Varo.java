@@ -25,7 +25,7 @@ public final class Varo extends JavaPlugin {
         // Plugin shutdown logic
     }
 
-    public DiscordService getDiscordWebhook() {
+    public DiscordService getDiscordService() {
         return discordService;
     }
 }
