@@ -1,13 +1,14 @@
 package de.rytrox.varo.database.repository;
 
 import de.rytrox.varo.database.entity.TeamMember;
-import de.rytrox.varo.database.entity.query.QTeamMember;
 
 import io.ebean.Database;
+
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -42,9 +43,22 @@ public class TeamMemberRepository {
      */
     @Nullable
     public TeamMember getPlayerByUUID(@NotNull UUID uuid) {
+        return findPlayerByUUID(uuid)
+                .orElse(null);
+    }
+
+    /**
+     * Searches the Member based of its UUID. <br>
+     * Returns an empty Optional if the member cannot be found
+     *
+     * @param uuid the UUID of the Player
+     * @return the team member object of the player
+     */
+    @NotNull
+    public Optional<TeamMember> findPlayerByUUID(@NotNull UUID uuid) {
         return this.database.find(TeamMember.class)
                 .where()
                 .eq("uuid", uuid.toString())
-                .findOne();
+                .findOneOrEmpty();
     }
 }

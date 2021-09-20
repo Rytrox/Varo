@@ -1,6 +1,7 @@
 package de.rytrox.varo.database.entity;
 
 import de.rytrox.varo.database.enums.PlayerStatus;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jetbrains.annotations.ApiStatus;

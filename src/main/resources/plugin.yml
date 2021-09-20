@@ -8,6 +8,11 @@ commands:
   teams:
     description: 'Manage, erstelle und bearbeite Teams'
     usage: '/teams'
+  teaminventory:
+    description: 'Öffne dein Teaminventar'
+    aliases:
+      - teaminv
+    usage: '/teaminventory'
 
 permissions:
   varo.*:

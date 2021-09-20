@@ -190,6 +190,11 @@
         </dependency>
         <dependency>
             <groupId>io.ebean</groupId>
+            <artifactId>persistence-api</artifactId>
+            <version>2.2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>io.ebean</groupId>
             <artifactId>ebean-core</artifactId>
             <version>12.11.3</version>
         </dependency>

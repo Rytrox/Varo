@@ -25,8 +25,11 @@ public class Team {
     @Column(name = "displayname")
     private String displayName;
 
-    @OneToMany(targetEntity = TeamMember.class, mappedBy = "team", cascade = CascadeType.ALL)
+    @OneToMany(targetEntity = TeamMember.class, mappedBy = "team", cascade = CascadeType.MERGE)
     private Set<TeamMember> members;
+
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<TeamItem> items;
 
     @Override
     public boolean equals(Object o) {
@@ -100,5 +103,27 @@ public class Team {
      */
     public void setDisplayName(@Nullable String displayName) {
         this.displayName = displayName;
+    }
+
+    /**
+     * Sets the items of the team inventory
+     *
+     * @param items the new list of items
+     */
+    @ApiStatus.Internal
+    public void setItems(@Nullable List<TeamItem> items) {
+        this.items = items;
+    }
+
+    /**
+     * Returns a List containing all Items of the Team
+     *
+     * @return a list containing all teamitems
+     */
+    @NotNull
+    public List<TeamItem> getItems() {
+        return Optional.ofNullable(this.items)
+                .map(ArrayList::new)
+                .orElse(new ArrayList<>());
     }
 }

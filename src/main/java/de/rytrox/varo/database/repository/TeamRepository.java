@@ -4,6 +4,8 @@ import de.rytrox.varo.database.entity.Team;
 
 import io.ebean.Database;
 
+import io.ebean.Finder;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

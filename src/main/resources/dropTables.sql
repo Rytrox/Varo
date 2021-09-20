@@ -1,3 +1,0 @@
-DROP TABLE Players;
-DROP TABLE Teams;
-DROP TABLE TeamItems;

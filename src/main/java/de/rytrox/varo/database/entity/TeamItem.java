@@ -19,22 +19,23 @@ import java.util.Base64;
  * @author Timeout
  */
 @Entity
-@Table(name = "TeamItems")
+@Table(name = "TeamItems",
+       uniqueConstraints = { @UniqueConstraint(columnNames = {"owner", "slot" }) })
 public class TeamItem {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @GeneratedValue
     private Integer id;
 
     @Column(name = "slot", nullable = false)
     private Integer slot;
 
-    @ManyToOne(targetEntity = Team.class, cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "owner", nullable = false)
     private Team owner;
 
-    @Column(name = "item")
+    @Lob
+    @Column(name = "item", columnDefinition = "TEXT")
     private String item;
 
     /**
@@ -130,12 +131,14 @@ public class TeamItem {
      * @param item the new item of this object
      * @throws IOException if the ObjectStream could not be created
      */
-    public void setItemStack(@NotNull ItemStack item) throws IOException {
-        try(ByteArrayOutputStream str = new ByteArrayOutputStream();
-            BukkitObjectOutputStream data = new BukkitObjectOutputStream(str)) {
-            data.writeObject(item);
+    public void setItemStack(@Nullable ItemStack item) throws IOException {
+        if(item != null) {
+            try (ByteArrayOutputStream str = new ByteArrayOutputStream();
+                 BukkitObjectOutputStream data = new BukkitObjectOutputStream(str)) {
+                data.writeObject(item);
 
-            this.item = Base64.getEncoder().encodeToString(str.toByteArray());
-        }
+                this.item = Base64.getEncoder().encodeToString(str.toByteArray());
+            }
+        } else this.item = null;
     }
 }

@@ -93,6 +93,7 @@ public final class Varo extends JavaPlugin {
         config.setRegister(true);
         config.setDefaultServer(true);
         config.setClasses(getDatabaseClasses());
+        config.setAutoPersistUpdates(true);
         config.setDatabasePlatform(new H2Platform());
 
         DataSourceConfig sourceConfig = new DataSourceConfig();

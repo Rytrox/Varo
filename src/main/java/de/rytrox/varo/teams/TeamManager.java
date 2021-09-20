@@ -5,7 +5,10 @@ import de.rytrox.varo.database.entity.Team;
 import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.database.repository.TeamMemberRepository;
 import de.rytrox.varo.database.repository.TeamRepository;
+
+import de.rytrox.varo.teams.inventory.TeamInventoryManager;
 import net.md_5.bungee.api.ChatColor;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -23,12 +26,17 @@ public class TeamManager implements Listener {
     private final TeamMemberRepository teamMemberRepository;
     private final TeamRepository teamRepository;
 
+    private final int maxPlayersPerTeam;
+
     public TeamManager(@NotNull Varo main) {
         this.main = main;
         this.teamMemberRepository = new TeamMemberRepository(main.getDB());
         this.teamRepository = new TeamRepository(main.getDB());
 
+        this.maxPlayersPerTeam = main.getConfig().getInt("teams.maxMembers", 2);
+
         Bukkit.getPluginManager().registerEvents(this, main);
+        Bukkit.getPluginManager().registerEvents(new TeamInventoryManager(main, teamMemberRepository), main);
     }
 
     @EventHandler
@@ -120,14 +128,18 @@ public class TeamManager implements Listener {
                 TeamMember member = teamMemberRepository.getPlayer(Bukkit.getOfflinePlayer(playerName));
                 if(member != null) {
                     if(!team.equals(member.getTeam())) {
-                        member.setTeam(team);
-                        main.getDB().save(member);
-                        main.getLogger().log(Level.INFO, String.format("%s adds %s to Team %s", commandSender.getName(), playerName, team.getName()));
-                        commandSender.sendMessage(
-                                ChatColor.translateAlternateColorCodes('&', String.format(
-                                        "&7Der Spieler &a%s &7wurde zum &5Team &d%s &ahinzugefügt", playerName, team.getName()
-                                ))
-                        );
+                        if(team.getMembers().size() < this.maxPlayersPerTeam) {
+                            member.setTeam(team);
+                            main.getDB().save(member);
+                            main.getLogger().log(Level.INFO, String.format("%s adds %s to Team %s", commandSender.getName(), playerName, team.getName()));
+                            commandSender.sendMessage(
+                                    ChatColor.translateAlternateColorCodes('&', String.format(
+                                            "&7Der Spieler &a%s &7wurde zum &5Team &d%s &ahinzugefügt", playerName, team.getName()
+                                    ))
+                            );
+                        } else
+                            commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                                    "&cDieses Team ist bereits voll!"));
                     } else
                         commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&',
                                 "&cDieser Spieler ist bereits in diesem Team"));
