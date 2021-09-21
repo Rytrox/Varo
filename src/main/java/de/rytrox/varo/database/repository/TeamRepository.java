@@ -1,9 +1,15 @@
 package de.rytrox.varo.database.repository;
 
-import com.avaje.ebean.EbeanServer;
 import de.rytrox.varo.database.entity.Team;
+
+import io.ebean.Database;
+
+import io.ebean.Finder;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * Repository-Class for Teams
@@ -12,9 +18,9 @@ import org.jetbrains.annotations.Nullable;
  */
 public class TeamRepository {
 
-    private final EbeanServer database;
+    private final Database database;
 
-    public TeamRepository(@NotNull EbeanServer database) {
+    public TeamRepository(@NotNull Database database) {
         this.database = database;
     }
 
@@ -29,6 +35,18 @@ public class TeamRepository {
         return this.database.find(Team.class)
                 .where()
                 .eq("name", teamname)
-                .findUnique();
+                .findOne();
+    }
+
+    /**
+     * Returns a list containing all valid teamnames
+     *
+     * @return the list containing all team names
+     */
+    @NotNull
+    public List<String> getAllTeamNames() {
+        return this.database.find(Team.class)
+                .select("name")
+                .findIds();
     }
 }

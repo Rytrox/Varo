@@ -1,6 +1,9 @@
 package de.rytrox.varo.database.entity;
 
 import de.rytrox.varo.database.enums.PlayerStatus;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,6 +33,21 @@ public class TeamMember {
     @Column(name = "status")
     private PlayerStatus status = PlayerStatus.NOT_REGISTERED;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TeamMember member = (TeamMember) o;
+
+        return new EqualsBuilder().append(uuid, member.uuid).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).append(uuid).toHashCode();
+    }
 
     /**
      * Internal Method for EBean to get the UUID of the player
