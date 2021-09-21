@@ -3,8 +3,8 @@ package de.rytrox.varo;
 import de.rytrox.varo.database.entity.Team;
 import de.rytrox.varo.database.entity.TeamItem;
 import de.rytrox.varo.database.entity.TeamMember;
+import de.rytrox.varo.scoreboard.ScoreBoardManager;
 import de.rytrox.varo.teams.TeamManager;
-import de.rytrox.varo.teams.TeamsCommand;
 
 import io.ebean.Database;
 import io.ebean.DatabaseFactory;
@@ -26,13 +26,17 @@ public final class Varo extends JavaPlugin {
 
     private Database database;
 
+    private TeamManager teamManager;
+    private ScoreBoardManager scoreBoardManager;
+
     @Override
     public void onEnable() {
         // Plugin startup logic
         installDDL();
         saveDefaultConfig();
 
-        new TeamManager(this);
+        this.teamManager = new TeamManager(this);
+        this.scoreBoardManager = new ScoreBoardManager(this);
     }
 
     @Override
@@ -67,12 +71,19 @@ public final class Varo extends JavaPlugin {
         Thread.currentThread().setContextClassLoader(originalContextClassLoader);
     }
 
-    @Override
-    protected void removeDDL() {
-    }
-
+    @NotNull
     public Database getDB() {
         return database;
+    }
+
+    @NotNull
+    public TeamManager getTeamManager() {
+        return teamManager;
+    }
+
+    @NotNull
+    public ScoreBoardManager getScoreBoardManager() {
+        return scoreBoardManager;
     }
 
     @NotNull

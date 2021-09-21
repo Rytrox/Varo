@@ -25,6 +25,9 @@ public class Team {
     @Column(name = "displayname")
     private String displayName;
 
+    @Column(name = "prefix", length = 16)
+    private String prefix;
+
     @OneToMany(targetEntity = TeamMember.class, mappedBy = "team", cascade = CascadeType.MERGE)
     private Set<TeamMember> members;
 
@@ -125,5 +128,24 @@ public class Team {
         return Optional.ofNullable(this.items)
                 .map(ArrayList::new)
                 .orElse(new ArrayList<>());
+    }
+
+    /**
+     * Returns the prefix of the Team
+     *
+     * @return the prefix of the team
+     */
+    @Nullable
+    public String getPrefix() {
+        return prefix;
+    }
+
+    /**
+     * Sets the prefix of the Team
+     *
+     * @param prefix the abbreviation of the team
+     */
+    public void setPrefix(@Nullable String prefix) {
+        this.prefix = prefix;
     }
 }

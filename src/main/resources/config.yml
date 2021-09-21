@@ -7,6 +7,8 @@
 teams:
   # Decides the max amount of team members in a team
   maxMembers: 2
+  # Allow Friendly Fire
+  friedly-fire: false
   inventory:
     # Decides how many slots a Team-Inventory should have (number between 0 and 54)
     slots: 6

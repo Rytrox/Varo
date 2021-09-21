@@ -1,6 +1,7 @@
 package de.rytrox.varo.teams;
 
 import net.md_5.bungee.api.ChatColor;
+import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -39,13 +40,26 @@ public class TeamsCommand implements TabExecutor {
                         // create team
                         teamManager.createTeam(commandSender, teamname);
                     } else commandSender.sendMessage(ChatColor.RED + "Du hast nicht die nötige Berechtigung, diesen Befehl auszuführen");
-                    break;
+                    return true;
                 case "modify":
-                    if(args.length > 4 && args[2].equalsIgnoreCase("displayname")) {
-                        if(commandSender.hasPermission("varo.teams.modify.displayname")) {
-                            // set displayname
-                            teamManager.setDisplayName(commandSender, teamname, args[3]);
-                        } else commandSender.sendMessage(ChatColor.RED + "Du hast nicht die nötige Berechtigung, diesen Befehl auszuführen");
+                    if(args.length >= 4) {
+                        String value = String.join(" ", (String[]) ArrayUtils.subarray(args, 3, args.length));
+
+                        if(args[2].equalsIgnoreCase("displayname")) {
+                            if(commandSender.hasPermission("varo.teams.modify.displayname")) {
+                                // set displayname
+                                teamManager.setDisplayName(commandSender, teamname, ChatColor.translateAlternateColorCodes('&', value));
+                            } else commandSender.sendMessage(ChatColor.RED + "Du hast nicht die nötige Berechtigung, diesen Befehl auszuführen");
+
+                            return true;
+                        } else if(args[2].equalsIgnoreCase("prefix")) {
+                            if(commandSender.hasPermission("varo.teams.modify.prefix")) {
+                                // set prefix
+                                teamManager.setPrefix(commandSender, teamname, ChatColor.translateAlternateColorCodes('&', value));
+                            } else commandSender.sendMessage(ChatColor.RED + "Du hast nicht die nötige Berechtigung, diesen Befehl auszuführen");
+
+                            return true;
+                        }
                     }
                     break;
                 case "members":
@@ -55,10 +69,14 @@ public class TeamsCommand implements TabExecutor {
                                 // add member to team
                                 teamManager.addMember(commandSender, teamname, args[3]);
                             } else commandSender.sendMessage(ChatColor.RED + "Du hast nicht die nötige Berechtigung, diesen Befehl auszuführen");
+
+                            return true;
                         } else if(args[2].equalsIgnoreCase("remove")) {
                             if(commandSender.hasPermission("varo.teams.members.remove")) {
                                 teamManager.removeMember(commandSender, teamname, args[3]);
-                            }
+                            } else commandSender.sendMessage(ChatColor.RED + "Du hast nicht die nötige Berechtigung, diesen Befehl auszuführen");
+
+                            return true;
                         }
                     }
                     break;
@@ -86,7 +104,7 @@ public class TeamsCommand implements TabExecutor {
                 if(args[0].equalsIgnoreCase("members")) {
                     StringUtil.copyPartialMatches(args[2], Arrays.asList("add", "remove"), predictions);
                 } else if(args[0].equalsIgnoreCase("modify")) {
-                    StringUtil.copyPartialMatches(args[2], Collections.singletonList("displayname"), predictions);
+                    StringUtil.copyPartialMatches(args[2], Arrays.asList("displayname", "prefix"), predictions);
                 }
                 break;
             case 4:
