@@ -12,6 +12,8 @@ commands:
     description: 'Öffne dein Teaminventar'
     aliases:
       - teaminv
+      - inv
+      - ti
     usage: '/teaminventory'
 
 permissions:

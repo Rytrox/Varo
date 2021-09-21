@@ -41,13 +41,13 @@ public class TeamItemRepository {
                 .findList();
     }
 
-    public void save(@NotNull Team team, @NotNull Inventory inventory) throws IOException {
+    public void save(@NotNull Team team, @NotNull Inventory inventory, int maxSlotSize) throws IOException {
         List<TeamItem> list = new ArrayList<>(team.getItems())
                 .stream()
                 .sorted(Comparator.comparingInt(TeamItem::getSlot))
                 .collect(Collectors.toList());
 
-        for(int i = 0; i < inventory.getSize(); i++) {
+        for(int i = 0; i < maxSlotSize; i++) {
             ItemStack item = inventory.getItem(i);
 
             if(i < list.size()) {

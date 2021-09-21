@@ -24,6 +24,6 @@ public class TeamInventoryCommand implements CommandExecutor {
             manager.openTeamInventory(player);
         } else commandSender.sendMessage(ChatColor.RED + "Nur Spieler dürfen diesen Befehl ausführen");
 
-        return false;
+        return true;
     }
 }
