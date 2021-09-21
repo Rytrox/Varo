@@ -105,8 +105,8 @@ public class TeamsCommand implements TabExecutor {
     private void sendHelp(@NotNull CommandSender sender) {
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&a/teams&8: &7Ruft die Hilfe auf"));
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&a/teams add <name>&8: &7Erstellt ein neues &5Team &7mit internem Namen <name>"));
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&a/teams modify <name> displayname <displayname>&8: &7Setzt den Namen des &5Teams, der angezeigt wird. Farbcodes werden mit '&' geschrieben"));
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&a/teams members <name> add <playername>&8: &7Fügt einen Spieler zu einem &5Team hinzu. Der Spieler muss aber bereits auf dem Server gewesen sein"));
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&a/teams modify <name> displayname <displayname>&8: &7Setzt den Namen des &5Teams&7, der angezeigt wird. Farbcodes werden mit '&' geschrieben"));
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&a/teams members <name> add <playername>&8: &7Fügt einen Spieler zu einem &5Team &7hinzu. Der Spieler muss aber bereits auf dem Server gewesen sein"));
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&a/teams members <name> remove <playername>&8: &7Entfernt einen Spieler aus einem &5Team"));
     }
 }
