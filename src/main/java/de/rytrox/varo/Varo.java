@@ -26,28 +26,19 @@ public final class Varo extends JavaPlugin {
 
     private Database database;
 
-    private TeamManager teamManager;
-
     @Override
     public void onEnable() {
         // Plugin startup logic
         installDDL();
         saveDefaultConfig();
 
-        this.teamManager = new TeamManager(this);
-
-        // register commands
-        registerCommands();
+        new TeamManager(this);
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
         DatabaseFactory.shutdown();
-    }
-
-    private void registerCommands() {
-        this.getCommand("teams").setExecutor(new TeamsCommand(teamManager));
     }
 
     @Contract(pure = true)

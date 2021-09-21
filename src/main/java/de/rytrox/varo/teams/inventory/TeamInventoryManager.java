@@ -150,7 +150,7 @@ public class TeamInventoryManager implements Listener {
     @NotNull
     private Inventory createEmptyTeamInventory(@NotNull Team team) {
         // calculate max slots
-        int invSlots = ((this.maxSlotsInTeamInventory / 9) + 1) * 9;
+        int invSlots = ((this.maxSlotsInTeamInventory / 9) + (Math.min(this.maxSlotsInTeamInventory % 9, 1))) * 9;
         Inventory inventory = Bukkit.createInventory(null, invSlots,
                 ChatColor.translateAlternateColorCodes('&', String.format("&7Team-Inventar von &5Team &d%s", team.getName())));
 

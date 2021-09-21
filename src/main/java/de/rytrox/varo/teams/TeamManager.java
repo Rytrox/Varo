@@ -17,6 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.logging.Level;
 
 public class TeamManager implements Listener {
@@ -37,6 +38,7 @@ public class TeamManager implements Listener {
 
         Bukkit.getPluginManager().registerEvents(this, main);
         Bukkit.getPluginManager().registerEvents(new TeamInventoryManager(main, teamMemberRepository), main);
+        main.getCommand("teams").setExecutor(new TeamsCommand(this));
     }
 
     @EventHandler
@@ -58,6 +60,16 @@ public class TeamManager implements Listener {
                 main.getLogger().log(Level.INFO, "Saved Player {0} in database. It's his first start", player.getName());
             }
         });
+    }
+
+    /**
+     * Returns a List of all Teamnames
+     *
+     * @return a list containing all Team names
+     */
+    @NotNull
+    public List<String> getTeamNames() {
+        return this.teamRepository.getAllTeamNames();
     }
 
     /**
