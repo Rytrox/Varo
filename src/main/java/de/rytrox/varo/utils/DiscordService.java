@@ -47,6 +47,10 @@ public class DiscordService {
 
     public void writeMessage(String message, DiscordColor color, boolean addTimestamp) {
 
+        // don't send discord messages, as long as the game is in setup state
+        if(JavaPlugin.getPlugin(Varo.class).getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.SETUP)
+            return;
+
         StringBuilder sb = new StringBuilder();
         if(addTimestamp) {
             sb.append("Tag X : ");
