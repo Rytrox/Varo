@@ -6,6 +6,7 @@ import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.database.repository.TeamMemberRepository;
 import de.rytrox.varo.database.repository.TeamRepository;
 
+import de.rytrox.varo.teams.events.*;
 import de.rytrox.varo.teams.inventory.TeamInventoryManager;
 import net.md_5.bungee.api.ChatColor;
 
@@ -18,14 +19,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 
 public class TeamManager implements Listener {
-
-    private final List<TeamMember> onlineMembers = new LinkedList<>();
 
     private final Varo main;
 
@@ -65,19 +62,18 @@ public class TeamManager implements Listener {
                 main.getLogger().log(Level.INFO, "Saved Player {0} in database. It's his first start", player.getName());
             }
 
-            this.onlineMembers.add(member);
-
-
-            main.getScoreBoardManager().sendScoreboard();
+            Bukkit.getPluginManager().callEvent(new TeamMemberSpawnEvent(player, member));
         });
     }
 
     @EventHandler
     public void onDisconnectCacheClear(@NotNull PlayerQuitEvent event) {
-        this.onlineMembers.remove(this.onlineMembers.stream()
-                .filter((member) -> member.getUniqueID().equals(event.getPlayer().getUniqueId()))
-                .findAny()
-                .orElse(null));
+        Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
+            TeamMember member = teamMemberRepository.getPlayer(event.getPlayer());
+
+            assert member != null;
+            Bukkit.getPluginManager().callEvent(new TeamMemberDisconnectEvent(event.getPlayer(), member));
+        });
     }
 
     /**
@@ -88,16 +84,6 @@ public class TeamManager implements Listener {
     @NotNull
     public List<String> getTeamNames() {
         return this.teamRepository.getAllTeamNames();
-    }
-
-    /**
-     * Returns a list containing all online team members
-     *
-     * @return a list containing all players
-     */
-    @NotNull
-    public List<TeamMember> getOnlineMembers() {
-        return new ArrayList<>(onlineMembers);
     }
 
     /**
@@ -115,12 +101,16 @@ public class TeamManager implements Listener {
                 Team team = new Team();
                 team.setName(name);
 
-                // and save it in database
-                main.getDB().save(team);
-                main.getLogger().log(Level.INFO, String.format("%s creates a new Team called %s", executor.getName(), name));
-                executor.sendMessage(
-                        ChatColor.translateAlternateColorCodes('&', String.format("&7Das &5Team &d%s &7wurde &aerfolgreich erstellt!", name))
-                );
+                TeamCreateEvent event = new TeamCreateEvent(team);
+                Bukkit.getPluginManager().callEvent(event);
+                if(!event.isCancelled()) {
+                    // and save it in database
+                    main.getDB().save(team);
+                    main.getLogger().log(Level.INFO, String.format("%s creates a new Team called %s", executor.getName(), name));
+                    executor.sendMessage(
+                            ChatColor.translateAlternateColorCodes('&', String.format("&7Das &5Team &d%s &7wurde &aerfolgreich erstellt!", name))
+                    );
+                }
             } else executor.sendMessage(
                     ChatColor.translateAlternateColorCodes('&', "&cDieses Team existiert bereits"));
         });
@@ -140,15 +130,19 @@ public class TeamManager implements Listener {
             if(team != null) {
                 team.setDisplayName(teamDisplayName);
 
-                // save it in database
-                main.getDB().save(team);
-                main.getLogger().log(Level.INFO, String.format("%s modfied displayname of %s to %s",
-                        commandSender.getName(), team.getName(), team.getDisplayName()));
-                commandSender.sendMessage(
-                        ChatColor.translateAlternateColorCodes('&', String.format(
-                                "&7Der Displayname von &d%s &7wurde geändert zu %s", team.getName(), team.getDisplayName())
-                        )
-                );
+                TeamModifyEvent event = new TeamModifyEvent(team);
+                Bukkit.getPluginManager().callEvent(event);
+                if(!event.isCancelled()) {
+                    // save it in database
+                    main.getDB().save(team);
+                    main.getLogger().log(Level.INFO, String.format("%s modfied displayname of %s to %s",
+                            commandSender.getName(), team.getName(), team.getDisplayName()));
+                    commandSender.sendMessage(
+                            ChatColor.translateAlternateColorCodes('&', String.format(
+                                    "&7Der Displayname von &d%s &7wurde geändert zu %s", team.getName(), team.getDisplayName())
+                            )
+                    );
+                }
             } else commandSender.sendMessage(
                     ChatColor.translateAlternateColorCodes('&', "&cDieses Team existiert nicht"));
         });
@@ -228,16 +222,19 @@ public class TeamManager implements Listener {
                             String.format("&8[%s&8]&7 ", prefix))
                     );
 
-                    // save it in database
-                    main.getDB().save(team);
-                    main.getLogger().log(Level.INFO, String.format("%s modfied prefix of %s to %s",
-                            commandSender.getName(), team.getName(), team.getPrefix()));
-                    commandSender.sendMessage(
-                            ChatColor.translateAlternateColorCodes('&', String.format(
-                                    "&7Der Prefix von &5Team &d%s &7wurde geändert zu %s", team.getName(), team.getPrefix())
-                            )
-                    );
-                    main.getScoreBoardManager().sendScoreboard();
+                    TeamModifyEvent event = new TeamModifyEvent(team);
+                    Bukkit.getPluginManager().callEvent(event);
+                    if(!event.isCancelled()) {
+                        // save it in database
+                        main.getDB().save(team);
+                        main.getLogger().log(Level.INFO, String.format("%s modfied prefix of %s to %s",
+                                commandSender.getName(), team.getName(), team.getPrefix()));
+                        commandSender.sendMessage(
+                                ChatColor.translateAlternateColorCodes('&', String.format(
+                                        "&7Der Prefix von &5Team &d%s &7wurde geändert zu %s", team.getName(), team.getPrefix())
+                                )
+                        );
+                    }
                 } else commandSender.sendMessage(ChatColor.RED + "Der Prefix ist zu lang und kann nicht gespeichert werden");
             } else commandSender.sendMessage(
                     ChatColor.translateAlternateColorCodes('&', "&cDieses Team existiert nicht"));
