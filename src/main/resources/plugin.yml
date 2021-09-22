@@ -3,3 +3,38 @@ version: '${project.version}'
 main: de.rytrox.varo.Varo
 load: STARTUP
 description: Ein Varo-Plugin
+
+commands:
+  gamestate:
+    description: 'Managed die GameStates'
+    usage: '/gamestate'
+    aliases: [gs, gstate]
+
+permissions:
+  varo.*:
+    default: op
+    description: 'Super-Permission für Varo'
+    children:
+      - 'varo.gamestate.*'
+  varo.gamestate.*:
+    default: op
+    description: 'Super-Permission für das GameStateManagement in Varo'
+    children:
+      - 'varo.gamestate.list'
+      - 'varo.gamestate.status'
+      - 'varo.gamestate.next'
+      - 'varo.gamestate.set'
+  varo.teams.list:
+    default: op
+    description: 'Listet alle GameStates auf'
+  varo.teams.status:
+    default: op
+    description: 'Gibt den aktuellen GameState aus'
+  varo.teams.next:
+    default: op
+    description: 'Wechselt zum nächsten GameState'
+  varo.teams.set:
+    default: op
+    description: 'Setzt einen spezifischen GameState'
+
+
