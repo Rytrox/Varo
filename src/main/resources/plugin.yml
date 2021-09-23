@@ -8,7 +8,9 @@ commands:
   gamestate:
     description: 'Managed die GameStates'
     usage: '/gamestate'
-    aliases: [gs, gstate]
+    aliases:
+      - gs
+      - gstate
 
 permissions:
   varo.*:
