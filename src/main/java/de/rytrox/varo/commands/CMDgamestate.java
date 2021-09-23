@@ -1,7 +1,9 @@
 package de.rytrox.varo.commands;
 
 import de.rytrox.varo.Varo;
+import de.rytrox.varo.utils.CommandHelper;
 import de.rytrox.varo.utils.GameStateHandler;
+import net.minecraft.server.v1_8_R3.CommandHelp;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -43,12 +45,9 @@ public class CMDgamestate implements CommandExecutor {
                                 oldGameState.name(),
                                 gameStateHandler.getCurrentGameState().name()));
 
-                        return true;
                     } else {
 
                         sender.sendMessage("Der angegebene GameState konnte nicht gefunden werden. Nutze /gamestate list um alle verfügbaren GameStates aufzulisten");
-
-                        return true;
                     }
 
                 }
@@ -64,31 +63,28 @@ public class CMDgamestate implements CommandExecutor {
                         oldGameState.name(),
                         gameStateHandler.getCurrentGameState().name()));
 
-                return true;
-
             } else if("list".equalsIgnoreCase(args[0])) {
+
                 sender.sendMessage("GameStates:");
                 for (GameStateHandler.GameState gameState : GameStateHandler.GameState.values()) {
                     sender.sendMessage(gameState.name());
                 }
-                return true;
             } else if("status".equalsIgnoreCase(args[0])) {
-                sender.sendMessage("Aktueller GameState: " + JavaPlugin.getPlugin(Varo.class).getGameStateHandler().getCurrentGameState().name());
 
-                return true;
+                sender.sendMessage("Aktueller GameState: " + JavaPlugin.getPlugin(Varo.class).getGameStateHandler().getCurrentGameState().name());
             }
         }
 
         sendHelp(sender);
 
-        return false;
+        return true;
     }
 
     private void sendHelp(CommandSender sender) {
-        sender.sendMessage("Help - /gamestate");
-        sender.sendMessage("/gamestate list - Listet alle GameStates auf");
-        sender.sendMessage("/gamestate status - Gibt den aktuellen GameState aus");
-        sender.sendMessage("/gamestate next - Wechselt zum nächsten GameState");
-        sender.sendMessage("/gamestate set <gamestate> - Setzt einen spezifischen GameState");
+        sender.sendMessage(CommandHelper.formatCommandHeader("/gamestate"));
+        sender.sendMessage(CommandHelper.formatCommandExplanation("/gamestate list", "Listet alle GameStates auf"));
+        sender.sendMessage(CommandHelper.formatCommandExplanation("/gamestate status", "Gibt den aktuellen GameState aus"));
+        sender.sendMessage(CommandHelper.formatCommandExplanation("/gamestate next", "Wechselt zum nächsten GameState"));
+        sender.sendMessage(CommandHelper.formatCommandExplanation("/gamestate set <gamestate>", "Setzt einen spezifischen GameState"));
     }
 }
