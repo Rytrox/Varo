@@ -1,13 +1,19 @@
 package de.rytrox.varo.database.entity;
 
+import de.rytrox.varo.scoreboard.Tablist;
+
+import net.minecraft.server.v1_8_R3.ScoreboardTeam;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.persistence.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Entity for Teams
@@ -147,5 +153,11 @@ public class Team {
      */
     public void setPrefix(@Nullable String prefix) {
         this.prefix = prefix;
+    }
+
+    public Collection<String> getPlayerNameSet() {
+        return this.members.stream()
+                .map((member) -> Bukkit.getOfflinePlayer(member.getUniqueID()).getName())
+                .collect(Collectors.toList());
     }
 }
