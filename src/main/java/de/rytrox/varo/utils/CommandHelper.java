@@ -14,7 +14,7 @@ public class CommandHelper {
      */
     public static String formatCommandHeader(String command) {
         return ChatColor.translateAlternateColorCodes('&',
-                String.format("&7------- &8[&e%s&8]&7-------", command));
+                String.format("&7-------&8[&e%s&8]&7-------", command));
     }
 
     /**
