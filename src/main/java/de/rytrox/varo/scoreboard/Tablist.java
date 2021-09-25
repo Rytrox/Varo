@@ -82,8 +82,6 @@ public final class Tablist extends Scoreboard {
     public List<PacketPlayOutScoreboardTeam> addTeamMember(@NotNull TeamMember member, @Nullable Team team, boolean friendlyFire) {
         List<PacketPlayOutScoreboardTeam> list = new ArrayList<>();
 
-        // remove if necessary
-        list.add(removeTeamMember(member));
         if(team != null) {
             ScoreboardTeam scoreboardTeam = this.getTeam(team.getName());
             PacketPlayOutScoreboardTeam packet;

@@ -4,12 +4,15 @@ import de.rytrox.varo.database.entity.TeamMember;
 
 import io.ebean.Database;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Repository Class for {@link TeamMember}
@@ -60,5 +63,21 @@ public class TeamMemberRepository {
                 .where()
                 .eq("uuid", uuid.toString())
                 .findOneOrEmpty();
+    }
+
+    /**
+     * Searches all Members that are currently online. <br>
+     *
+     * @return all online members. Cannot be null
+     */
+    @NotNull
+    public List<TeamMember> getOnlineMembers() {
+        return this.database.find(TeamMember.class)
+                .where()
+                .idIn(Bukkit.getOnlinePlayers()
+                        .stream()
+                        .map((player) -> player.getUniqueId().toString())
+                        .toArray())
+                .findList();
     }
 }

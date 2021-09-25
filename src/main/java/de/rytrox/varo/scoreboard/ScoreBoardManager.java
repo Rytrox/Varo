@@ -2,6 +2,7 @@ package de.rytrox.varo.scoreboard;
 
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.database.entity.TeamMember;
+import de.rytrox.varo.database.repository.TeamMemberRepository;
 import de.rytrox.varo.teams.events.PlayerTeamJoinEvent;
 import de.rytrox.varo.teams.events.PlayerTeamKickEvent;
 import de.rytrox.varo.teams.events.TeamMemberSpawnEvent;
@@ -25,6 +26,15 @@ public class ScoreBoardManager implements Listener {
         this.friendlyFire = main.getConfig().getBoolean("teams.friendly-fire", false);
 
         Bukkit.getPluginManager().registerEvents(this, main);
+
+        // add all teammembers to scoreboard and send scoreboard
+        Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
+            new TeamMemberRepository(main.getDB())
+                    .getOnlineMembers()
+                    .forEach(member -> Tablist.getInstance().addTeamMember(member, friendlyFire));
+
+            Bukkit.getOnlinePlayers().forEach(this::sendScoreboard);
+        });
     }
 
     @EventHandler
