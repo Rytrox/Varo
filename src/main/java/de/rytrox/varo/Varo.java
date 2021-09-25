@@ -3,14 +3,20 @@ package de.rytrox.varo;
 import de.rytrox.varo.database.entity.Team;
 import de.rytrox.varo.database.entity.TeamItem;
 import de.rytrox.varo.database.entity.TeamMember;
+import de.rytrox.varo.scoreboard.ScoreBoardManager;
 import de.rytrox.varo.teams.TeamManager;
-import de.rytrox.varo.teams.TeamsCommand;
 
 import io.ebean.Database;
 import io.ebean.DatabaseFactory;
 import io.ebean.config.DatabaseConfig;
 import io.ebean.config.dbplatform.h2.H2Platform;
 import io.ebean.datasource.DataSourceConfig;
+import de.rytrox.varo.commands.CMDgamestate;
+import de.rytrox.varo.listener.JoinAndQuitListener;
+import de.rytrox.varo.utils.DiscordService;
+import de.rytrox.varo.utils.GameStateHandler;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.h2.Driver;
 import org.jetbrains.annotations.Contract;
@@ -24,7 +30,13 @@ import java.util.List;
 
 public final class Varo extends JavaPlugin {
 
+    private GameStateHandler gameStateHandler;
+    private DiscordService discordService;
+
     private Database database;
+
+    private TeamManager teamManager;
+    private ScoreBoardManager scoreBoardManager;
 
     @Override
     public void onEnable() {
@@ -32,7 +44,17 @@ public final class Varo extends JavaPlugin {
         installDDL();
         saveDefaultConfig();
 
-        new TeamManager(this);
+        this.teamManager = new TeamManager(this);
+        this.scoreBoardManager = new ScoreBoardManager(this);
+        this.gameStateHandler = new GameStateHandler();
+
+        this.discordService = new DiscordService();
+        this.discordService.writeMessage("Der Server wurde gestartet!", DiscordService.DiscordColor.CYAN);
+
+        PluginManager pluginManager = Bukkit.getPluginManager();
+        pluginManager.registerEvents(new JoinAndQuitListener(), this);
+
+        this.getCommand("gamestate").setExecutor(new CMDgamestate());
     }
 
     @Override
@@ -67,12 +89,19 @@ public final class Varo extends JavaPlugin {
         Thread.currentThread().setContextClassLoader(originalContextClassLoader);
     }
 
-    @Override
-    protected void removeDDL() {
-    }
-
+    @NotNull
     public Database getDB() {
         return database;
+    }
+
+    @NotNull
+    public TeamManager getTeamManager() {
+        return teamManager;
+    }
+
+    @NotNull
+    public ScoreBoardManager getScoreBoardManager() {
+        return scoreBoardManager;
     }
 
     @NotNull
@@ -95,5 +124,13 @@ public final class Varo extends JavaPlugin {
         config.setDataSourceConfig(sourceConfig);
 
         return config;
+    }
+
+    public GameStateHandler getGameStateHandler() {
+        return gameStateHandler;
+    }
+
+    public DiscordService getDiscordService() {
+        return discordService;
     }
 }

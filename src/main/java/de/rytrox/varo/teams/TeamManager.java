@@ -6,6 +6,7 @@ import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.database.repository.TeamMemberRepository;
 import de.rytrox.varo.database.repository.TeamRepository;
 
+import de.rytrox.varo.teams.events.*;
 import de.rytrox.varo.teams.inventory.TeamInventoryManager;
 import net.md_5.bungee.api.ChatColor;
 
@@ -15,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -59,6 +61,18 @@ public class TeamManager implements Listener {
                 main.getDB().save(member);
                 main.getLogger().log(Level.INFO, "Saved Player {0} in database. It's his first start", player.getName());
             }
+
+            Bukkit.getPluginManager().callEvent(new TeamMemberSpawnEvent(player, member));
+        });
+    }
+
+    @EventHandler
+    public void onDisconnectCacheClear(@NotNull PlayerQuitEvent event) {
+        Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
+            TeamMember member = teamMemberRepository.getPlayer(event.getPlayer());
+
+            assert member != null;
+            Bukkit.getPluginManager().callEvent(new TeamMemberDisconnectEvent(event.getPlayer(), member));
         });
     }
 
@@ -87,12 +101,16 @@ public class TeamManager implements Listener {
                 Team team = new Team();
                 team.setName(name);
 
-                // and save it in database
-                main.getDB().save(team);
-                main.getLogger().log(Level.INFO, String.format("%s creates a new Team called %s", executor.getName(), name));
-                executor.sendMessage(
-                        ChatColor.translateAlternateColorCodes('&', String.format("&7Das Team &a%s &7wurde &aerfolgreich erstellt!", name))
-                );
+                TeamCreateEvent event = new TeamCreateEvent(team);
+                Bukkit.getPluginManager().callEvent(event);
+                if(!event.isCancelled()) {
+                    // and save it in database
+                    main.getDB().save(team);
+                    main.getLogger().log(Level.INFO, String.format("%s creates a new Team called %s", executor.getName(), name));
+                    executor.sendMessage(
+                            ChatColor.translateAlternateColorCodes('&', String.format("&7Das &5Team &d%s &7wurde &aerfolgreich erstellt!", name))
+                    );
+                }
             } else executor.sendMessage(
                     ChatColor.translateAlternateColorCodes('&', "&cDieses Team existiert bereits"));
         });
@@ -110,17 +128,21 @@ public class TeamManager implements Listener {
             // check if team does not exist...
             Team team = teamRepository.findByName(teamname);
             if(team != null) {
-                team.setDisplayName(ChatColor.translateAlternateColorCodes('&', teamDisplayName));
+                team.setDisplayName(teamDisplayName);
 
-                // save it in database
-                main.getDB().save(team);
-                main.getLogger().log(Level.INFO, String.format("%s modfied displayname of %s to %s",
-                        commandSender.getName(), team.getName(), team.getDisplayName()));
-                commandSender.sendMessage(
-                        ChatColor.translateAlternateColorCodes('&', String.format(
-                                "&7Der Displayname von &a%s &7wurde geändert zu %s", team.getName(), team.getDisplayName())
-                        )
-                );
+                TeamModifyEvent event = new TeamModifyEvent(team);
+                Bukkit.getPluginManager().callEvent(event);
+                if(!event.isCancelled()) {
+                    // save it in database
+                    main.getDB().save(team);
+                    main.getLogger().log(Level.INFO, String.format("%s modfied displayname of %s to %s",
+                            commandSender.getName(), team.getName(), team.getDisplayName()));
+                    commandSender.sendMessage(
+                            ChatColor.translateAlternateColorCodes('&', String.format(
+                                    "&7Der Displayname von &d%s &7wurde geändert zu %s", team.getName(), team.getDisplayName())
+                            )
+                    );
+                }
             } else commandSender.sendMessage(
                     ChatColor.translateAlternateColorCodes('&', "&cDieses Team existiert nicht"));
         });
@@ -141,14 +163,19 @@ public class TeamManager implements Listener {
                 if(member != null) {
                     if(!team.equals(member.getTeam())) {
                         if(team.getMembers().size() < this.maxPlayersPerTeam) {
+                            PlayerTeamJoinEvent event = new PlayerTeamJoinEvent(team, member);
+                            Bukkit.getPluginManager().callEvent(event);
+
                             member.setTeam(team);
-                            main.getDB().save(member);
-                            main.getLogger().log(Level.INFO, String.format("%s adds %s to Team %s", commandSender.getName(), playerName, team.getName()));
-                            commandSender.sendMessage(
-                                    ChatColor.translateAlternateColorCodes('&', String.format(
-                                            "&7Der Spieler &a%s &7wurde zum &5Team &d%s &ahinzugefügt", playerName, team.getName()
-                                    ))
-                            );
+                            if(!event.isCancelled()) {
+                                main.getDB().save(member);
+                                main.getLogger().log(Level.INFO, String.format("%s adds %s to Team %s", commandSender.getName(), playerName, team.getName()));
+                                commandSender.sendMessage(
+                                        ChatColor.translateAlternateColorCodes('&', String.format(
+                                                "&7Der Spieler &a%s &7wurde zum &5Team &d%s &ahinzugefügt", playerName, team.getName()
+                                        ))
+                                );
+                            }
                         } else
                             commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&',
                                     "&cDieses Team ist bereits voll!"));
@@ -170,15 +197,20 @@ public class TeamManager implements Listener {
                 TeamMember member = teamMemberRepository.getPlayer(Bukkit.getOfflinePlayer(playerName));
                 if(member != null) {
                     if(team.equals(member.getTeam())) {
+                        PlayerTeamKickEvent event = new PlayerTeamKickEvent(team, member);
+                        Bukkit.getPluginManager().callEvent(event);
+
                         member.setTeam(null);
-                        main.getDB().save(member);
-                        main.getLogger().log(Level.INFO,
-                                String.format("%s removes %s of Team %s", executor.getName(), playerName, team.getName()));
-                        executor.sendMessage(
-                                ChatColor.translateAlternateColorCodes('&', String.format(
-                                        "&7Der Spieler &a%s &7wurde vom &5Team &d%s &centfernt", playerName, team.getName()
-                                ))
-                        );
+                        if(!event.isCancelled()) {
+                            main.getDB().save(member);
+                            main.getLogger().log(Level.INFO,
+                                    String.format("%s removes %s of Team %s", executor.getName(), playerName, team.getName()));
+                            executor.sendMessage(
+                                    ChatColor.translateAlternateColorCodes('&', String.format(
+                                            "&7Der Spieler &a%s &7wurde vom &5Team &d%s &centfernt", playerName, team.getName()
+                                    ))
+                            );
+                        }
                     } else
                         executor.sendMessage(ChatColor.translateAlternateColorCodes('&',
                                 "&cDieser Spieler ist nicht in diesem Team"));
@@ -186,6 +218,35 @@ public class TeamManager implements Listener {
                     executor.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format(
                             "&cDer Spieler %s konnte nicht gefunden werden. Prozess wurde abgebrochen", playerName)));
             } else executor.sendMessage(
+                    ChatColor.translateAlternateColorCodes('&', "&cDieses Team existiert nicht"));
+        });
+    }
+
+    public void setPrefix(CommandSender commandSender, String teamname, String prefix) {
+        Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
+            // check if team does not exist...
+            Team team = teamRepository.findByName(teamname);
+            if(team != null) {
+                if(prefix.length() < 8) {
+                    team.setPrefix(ChatColor.translateAlternateColorCodes('&',
+                            String.format("&8[%s&8]&7 ", prefix))
+                    );
+
+                    TeamModifyEvent event = new TeamModifyEvent(team);
+                    Bukkit.getPluginManager().callEvent(event);
+                    if(!event.isCancelled()) {
+                        // save it in database
+                        main.getDB().save(team);
+                        main.getLogger().log(Level.INFO, String.format("%s modfied prefix of %s to %s",
+                                commandSender.getName(), team.getName(), team.getPrefix()));
+                        commandSender.sendMessage(
+                                ChatColor.translateAlternateColorCodes('&', String.format(
+                                        "&7Der Prefix von &5Team &d%s &7wurde geändert zu %s", team.getName(), team.getPrefix())
+                                )
+                        );
+                    }
+                } else commandSender.sendMessage(ChatColor.RED + "Der Prefix ist zu lang und kann nicht gespeichert werden");
+            } else commandSender.sendMessage(
                     ChatColor.translateAlternateColorCodes('&', "&cDieses Team existiert nicht"));
         });
     }

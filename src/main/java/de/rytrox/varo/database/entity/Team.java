@@ -1,13 +1,19 @@
 package de.rytrox.varo.database.entity;
 
+import de.rytrox.varo.scoreboard.Tablist;
+
+import net.minecraft.server.v1_8_R3.ScoreboardTeam;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.persistence.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Entity for Teams
@@ -24,6 +30,9 @@ public class Team {
 
     @Column(name = "displayname")
     private String displayName;
+
+    @Column(name = "prefix", length = 16)
+    private String prefix;
 
     @OneToMany(targetEntity = TeamMember.class, mappedBy = "team", cascade = CascadeType.MERGE)
     private Set<TeamMember> members;
@@ -73,10 +82,11 @@ public class Team {
      *
      * @return the list of all Members
      */
+    @NotNull
     public Set<TeamMember> getMembers() {
         return Optional.ofNullable(this.members)
                 .map(HashSet::new)
-                .orElse(null);
+                .orElse(new HashSet<>());
     }
 
     @ApiStatus.Internal
@@ -125,5 +135,30 @@ public class Team {
         return Optional.ofNullable(this.items)
                 .map(ArrayList::new)
                 .orElse(new ArrayList<>());
+    }
+
+    /**
+     * Returns the prefix of the Team
+     *
+     * @return the prefix of the team
+     */
+    @Nullable
+    public String getPrefix() {
+        return prefix;
+    }
+
+    /**
+     * Sets the prefix of the Team
+     *
+     * @param prefix the abbreviation of the team
+     */
+    public void setPrefix(@Nullable String prefix) {
+        this.prefix = prefix;
+    }
+
+    public Collection<String> getPlayerNameSet() {
+        return this.members.stream()
+                .map((member) -> Bukkit.getOfflinePlayer(member.getUniqueID()).getName())
+                .collect(Collectors.toList());
     }
 }

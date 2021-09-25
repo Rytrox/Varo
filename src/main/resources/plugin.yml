@@ -15,6 +15,12 @@ commands:
       - inv
       - ti
     usage: '/teaminventory'
+  gamestate:
+    description: 'Managed die GameStates'
+    usage: '/gamestate'
+    aliases:
+      - gs
+      - gstate
 
 permissions:
   varo.*:
@@ -50,3 +56,24 @@ permissions:
   varo.teams.modify.displayname:
     description: 'Modifiziere den Displaynamen des Teams'
     default: op
+    
+  varo.gamestate.*:
+    default: op
+    description: 'Super-Permission für das GameStateManagement in Varo'
+    children:
+      - 'varo.gamestate.list'
+      - 'varo.gamestate.status'
+      - 'varo.gamestate.next'
+      - 'varo.gamestate.set'
+  varo.teams.list:
+    default: op
+    description: 'Listet alle GameStates auf'
+  varo.teams.status:
+    default: op
+    description: 'Gibt den aktuellen GameState aus'
+  varo.teams.next:
+    default: op
+    description: 'Wechselt zum nächsten GameState'
+  varo.teams.set:
+    default: op
+    description: 'Setzt einen spezifischen GameState'
