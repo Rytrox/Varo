@@ -1,5 +1,6 @@
 package de.rytrox.varo.teams;
 
+import de.rytrox.varo.utils.CommandHelper;
 import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
@@ -121,10 +122,11 @@ public class TeamsCommand implements TabExecutor {
     }
 
     private void sendHelp(@NotNull CommandSender sender) {
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&a/teams&8: &7Ruft die Hilfe auf"));
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&a/teams add <name>&8: &7Erstellt ein neues &5Team &7mit internem Namen <name>"));
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&a/teams modify <name> displayname <displayname>&8: &7Setzt den Namen des &5Teams&7, der angezeigt wird. Farbcodes werden mit '&' geschrieben"));
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&a/teams members <name> add <playername>&8: &7Fügt einen Spieler zu einem &5Team &7hinzu. Der Spieler muss aber bereits auf dem Server gewesen sein"));
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&a/teams members <name> remove <playername>&8: &7Entfernt einen Spieler aus einem &5Team"));
+        CommandHelper.formatCommandHeader("/teams");
+        CommandHelper.formatCommandExplanation("/teams", "Ruft die Hilfe auf");
+        CommandHelper.formatCommandExplanation("/teams add <name>", "Erstellt ein neues &5Team &7mit internem Namen <name>");
+        CommandHelper.formatCommandExplanation("/teams modify <name> displayname <displayname>", "Setzt den Namen des &5Teams&7, der angezeigt wird. Farbcodes werden mit '&' geschrieben");
+        CommandHelper.formatCommandExplanation("/teams members <name> add <playername>", "Fügt einen Spieler zu einem &5Team &7hinzu. Der Spieler muss aber bereits auf dem Server gewesen sein");
+        CommandHelper.formatCommandExplanation("/teams members <name> remove <playername>", "Entfernt einen Spieler aus einem &5Team");
     }
 }
