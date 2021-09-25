@@ -4,6 +4,9 @@ import de.rytrox.varo.database.enums.PlayerStatus;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -124,5 +127,26 @@ public class TeamMember {
      */
     public void setStatus(@NotNull PlayerStatus status) {
         this.status = status;
+    }
+
+    /**
+     * Returns the offline player of the team member
+     *
+     * @return the offline player
+     */
+    @NotNull
+    public OfflinePlayer getOfflinePlayer() {
+        return Bukkit.getOfflinePlayer(getUniqueID());
+    }
+
+    /**
+     * Returns the player of the team member. <br>
+     * If the player is offline it will return null
+     *
+     * @return the player or null if the player is offline
+     */
+    @Nullable
+    public Player getPlayer() {
+        return Bukkit.getPlayer(getUniqueID());
     }
 }

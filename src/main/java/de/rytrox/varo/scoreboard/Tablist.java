@@ -1,9 +1,12 @@
 package de.rytrox.varo.scoreboard;
 
 import de.rytrox.varo.database.entity.Team;
+import de.rytrox.varo.database.entity.TeamMember;
+import net.minecraft.server.v1_8_R3.PacketPlayOutScoreboardTeam;
 import net.minecraft.server.v1_8_R3.Scoreboard;
 import net.minecraft.server.v1_8_R3.ScoreboardTeam;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -12,55 +15,138 @@ public final class Tablist extends Scoreboard {
 
     private static final Tablist INSTANCE = new Tablist();
 
-    private final Set<Team> registeredTeams = new HashSet<>();
-
     public static Tablist getInstance() {
         return INSTANCE;
     }
 
     @Override
     public Collection<String> getTeamNames() {
-        return registeredTeams
+        return getTeams()
                 .stream()
-                .map(Team::getName)
+                .map(ScoreboardTeam::getName)
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public Collection<ScoreboardTeam> getTeams() {
-        return registeredTeams
-                .stream()
-                .map((team) -> new ScoreboardTeam(getInstance(), team.getName()))
-                .collect(Collectors.toList());
-    }
-
-    public ScoreboardTeam getScoreboardTeam(@NotNull Team team) {
-        ScoreboardTeam scoreboardTeam = new ScoreboardTeam(INSTANCE, team.getName());
-
-        scoreboardTeam.setPrefix(Optional.ofNullable(team.getPrefix()).orElse(""));
-        scoreboardTeam.setDisplayName(Optional.ofNullable(team.getDisplayName()).orElse(""));
-        scoreboardTeam.getPlayerNameSet().addAll(team.getPlayerNameSet());
-
-        return scoreboardTeam;
     }
 
     /**
-     * Register a new team in this scoreboard
+     * Removes a TeamMember from their current scoreboard-team.
      *
-     * @param team the team you want to register
-     * @return true if the team was not registered before. False otherwise
+     * @param member the member you want to remove
+     * @return The packet that needs to be sent to all clients
      */
-    public boolean registerTeam(@NotNull Team team) {
-        return this.registeredTeams.add(team);
+    @Nullable
+    public PacketPlayOutScoreboardTeam removeTeamMember(@NotNull TeamMember member) {
+        // remove team from loaded when no other player in a team is online
+        if(member.getTeam() != null) {
+            ScoreboardTeam team = this.getTeam(member.getTeam().getName());
+
+            if(team != null) {
+                // returns delete packet when no other player is online
+                if(member.getTeam().getMembers()
+                        .stream()
+                        .noneMatch((m) -> m != member && m.getPlayer() != null)) {
+                    this.removeTeam(team);
+
+                    return new PacketPlayOutScoreboardTeam(team, 1);
+                } else {
+                    // remove team member from scoreboard
+                    INSTANCE.removePlayerFromTeam(member.getOfflinePlayer().getName(), team);
+
+                    return new PacketPlayOutScoreboardTeam(team,
+                            Collections.singletonList(member.getOfflinePlayer().getName()), 4);
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
-     * Returns all registered teams
+     * Adds the member to a scoreboard team and returns the packet that must be sent to the client
      *
-     * @return a list containing all registered teams
+     * @param member the member itself
+     * @return the packet that must be sent to every client. Can be null
      */
     @NotNull
-    public List<Team> getRegisteredTeams() {
-        return new ArrayList<>(registeredTeams);
+    public List<PacketPlayOutScoreboardTeam> addTeamMember(@NotNull TeamMember member, boolean friendlyFire) {
+        return addTeamMember(member, member.getTeam(), friendlyFire);
+    }
+
+    /**
+     * Adds the member to a scoreboard team and returns the packet that must be sent to the client
+     *
+     * @param member the member itself
+     * @param team the team where the player is going to be added
+     * @return a list of packets that must be sent to every client. Can be null
+     */
+    @NotNull
+    public List<PacketPlayOutScoreboardTeam> addTeamMember(@NotNull TeamMember member, @Nullable Team team, boolean friendlyFire) {
+        List<PacketPlayOutScoreboardTeam> list = new ArrayList<>();
+
+        // remove if necessary
+        list.add(removeTeamMember(member));
+        if(team != null) {
+            ScoreboardTeam scoreboardTeam = this.getTeam(team.getName());
+            PacketPlayOutScoreboardTeam packet;
+            if(scoreboardTeam == null) {
+                // create team
+                list.add(this.createTeam(team, friendlyFire));
+                scoreboardTeam = this.getTeam(team.getName());
+            }
+
+            this.addPlayerToTeam(member.getOfflinePlayer().getName(), scoreboardTeam.getName());
+
+            // status 3 means that all players containing the list are added ti this team
+            list.add(new PacketPlayOutScoreboardTeam(scoreboardTeam, Collections.singletonList(member.getOfflinePlayer().getName()), 3));
+        }
+
+        return list.stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Updates a scoreboard team
+     *
+     * @param team the team you want to update
+     * @return the packet that must be sent to every client
+     */
+    @Nullable
+    public PacketPlayOutScoreboardTeam updateTeam(@NotNull Team team) {
+        if(this.getTeam(team.getName()) != null) {
+            ScoreboardTeam scoreboardTeam = this.getTeam(team.getName());
+
+            scoreboardTeam.setPrefix(Optional.ofNullable(team.getPrefix()).orElse(""));
+            scoreboardTeam.setDisplayName(Optional.ofNullable(team.getDisplayName()).orElse(""));
+            scoreboardTeam.getPlayerNameSet().addAll(team.getPlayerNameSet());
+
+            // status 0 means create this new team
+            return new PacketPlayOutScoreboardTeam(scoreboardTeam, 2);
+        }
+
+        return null;
+    }
+
+    /**
+     * Creates a scoreboard team of a team
+     *
+     * @param team the name of the team
+     * @param friendlyFire if friendly fire should be enabled
+     * @return the packet that should be sent to every client
+     */
+    @Nullable
+    public PacketPlayOutScoreboardTeam createTeam(@NotNull Team team, boolean friendlyFire) {
+        if(this.getTeam(team.getName()) == null) {
+            ScoreboardTeam scoreboardTeam = this.createTeam(team.getName());
+
+            scoreboardTeam.setPrefix(Optional.ofNullable(team.getPrefix()).orElse(""));
+            scoreboardTeam.setDisplayName(Optional.ofNullable(team.getDisplayName()).orElse(""));
+            scoreboardTeam.getPlayerNameSet().addAll(team.getPlayerNameSet());
+            scoreboardTeam.setAllowFriendlyFire(friendlyFire);
+
+            // status 0 means create this new team
+            return new PacketPlayOutScoreboardTeam(scoreboardTeam, 0);
+        }
+
+        return null;
     }
 }

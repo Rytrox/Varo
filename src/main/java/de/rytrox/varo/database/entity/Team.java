@@ -82,10 +82,11 @@ public class Team {
      *
      * @return the list of all Members
      */
+    @NotNull
     public Set<TeamMember> getMembers() {
         return Optional.ofNullable(this.members)
                 .map(HashSet::new)
-                .orElse(null);
+                .orElse(new HashSet<>());
     }
 
     @ApiStatus.Internal

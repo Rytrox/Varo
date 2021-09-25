@@ -163,14 +163,19 @@ public class TeamManager implements Listener {
                 if(member != null) {
                     if(!team.equals(member.getTeam())) {
                         if(team.getMembers().size() < this.maxPlayersPerTeam) {
+                            PlayerTeamJoinEvent event = new PlayerTeamJoinEvent(team, member);
+                            Bukkit.getPluginManager().callEvent(event);
+
                             member.setTeam(team);
-                            main.getDB().save(member);
-                            main.getLogger().log(Level.INFO, String.format("%s adds %s to Team %s", commandSender.getName(), playerName, team.getName()));
-                            commandSender.sendMessage(
-                                    ChatColor.translateAlternateColorCodes('&', String.format(
-                                            "&7Der Spieler &a%s &7wurde zum &5Team &d%s &ahinzugefügt", playerName, team.getName()
-                                    ))
-                            );
+                            if(!event.isCancelled()) {
+                                main.getDB().save(member);
+                                main.getLogger().log(Level.INFO, String.format("%s adds %s to Team %s", commandSender.getName(), playerName, team.getName()));
+                                commandSender.sendMessage(
+                                        ChatColor.translateAlternateColorCodes('&', String.format(
+                                                "&7Der Spieler &a%s &7wurde zum &5Team &d%s &ahinzugefügt", playerName, team.getName()
+                                        ))
+                                );
+                            }
                         } else
                             commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&',
                                     "&cDieses Team ist bereits voll!"));
@@ -192,15 +197,20 @@ public class TeamManager implements Listener {
                 TeamMember member = teamMemberRepository.getPlayer(Bukkit.getOfflinePlayer(playerName));
                 if(member != null) {
                     if(team.equals(member.getTeam())) {
+                        PlayerTeamKickEvent event = new PlayerTeamKickEvent(team, member);
+                        Bukkit.getPluginManager().callEvent(event);
+
                         member.setTeam(null);
-                        main.getDB().save(member);
-                        main.getLogger().log(Level.INFO,
-                                String.format("%s removes %s of Team %s", executor.getName(), playerName, team.getName()));
-                        executor.sendMessage(
-                                ChatColor.translateAlternateColorCodes('&', String.format(
-                                        "&7Der Spieler &a%s &7wurde vom &5Team &d%s &centfernt", playerName, team.getName()
-                                ))
-                        );
+                        if(!event.isCancelled()) {
+                            main.getDB().save(member);
+                            main.getLogger().log(Level.INFO,
+                                    String.format("%s removes %s of Team %s", executor.getName(), playerName, team.getName()));
+                            executor.sendMessage(
+                                    ChatColor.translateAlternateColorCodes('&', String.format(
+                                            "&7Der Spieler &a%s &7wurde vom &5Team &d%s &centfernt", playerName, team.getName()
+                                    ))
+                            );
+                        }
                     } else
                         executor.sendMessage(ChatColor.translateAlternateColorCodes('&',
                                 "&cDieser Spieler ist nicht in diesem Team"));
