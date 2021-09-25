@@ -11,6 +11,12 @@ import io.ebean.DatabaseFactory;
 import io.ebean.config.DatabaseConfig;
 import io.ebean.config.dbplatform.h2.H2Platform;
 import io.ebean.datasource.DataSourceConfig;
+import de.rytrox.varo.commands.CMDgamestate;
+import de.rytrox.varo.listener.JoinAndQuitListener;
+import de.rytrox.varo.utils.DiscordService;
+import de.rytrox.varo.utils.GameStateHandler;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.h2.Driver;
 import org.jetbrains.annotations.Contract;
@@ -23,6 +29,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public final class Varo extends JavaPlugin {
+
+    private GameStateHandler gameStateHandler;
+    private DiscordService discordService;
 
     private Database database;
 
@@ -37,6 +46,15 @@ public final class Varo extends JavaPlugin {
 
         this.teamManager = new TeamManager(this);
         this.scoreBoardManager = new ScoreBoardManager(this);
+        this.gameStateHandler = new GameStateHandler();
+
+        this.discordService = new DiscordService();
+        this.discordService.writeMessage("Der Server wurde gestartet!", DiscordService.DiscordColor.CYAN);
+
+        PluginManager pluginManager = Bukkit.getPluginManager();
+        pluginManager.registerEvents(new JoinAndQuitListener(), this);
+
+        this.getCommand("gamestate").setExecutor(new CMDgamestate());
     }
 
     @Override
@@ -106,5 +124,13 @@ public final class Varo extends JavaPlugin {
         config.setDataSourceConfig(sourceConfig);
 
         return config;
+    }
+
+    public GameStateHandler getGameStateHandler() {
+        return gameStateHandler;
+    }
+
+    public DiscordService getDiscordService() {
+        return discordService;
     }
 }
