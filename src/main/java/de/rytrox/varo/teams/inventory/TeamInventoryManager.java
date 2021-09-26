@@ -41,7 +41,6 @@ public class TeamInventoryManager implements Listener {
                                 @NotNull TeamMemberRepository teamMemberRepository) {
         this.main = main;
 
-        main.getCommand("teaminventory").setAliases(Arrays.asList("teaminv", "ti", "inv"));
         main.getCommand("teaminventory").setExecutor(new TeamInventoryCommand(this));
 
         this.blocked = new ItemStack(Material.BARRIER);

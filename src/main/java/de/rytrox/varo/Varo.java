@@ -4,6 +4,7 @@ import de.rytrox.varo.database.entity.Team;
 import de.rytrox.varo.database.entity.TeamItem;
 import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.scoreboard.ScoreBoardManager;
+import de.rytrox.varo.teams.MessageCommand;
 import de.rytrox.varo.teams.TeamManager;
 
 import io.ebean.Database;
@@ -26,6 +27,7 @@ import java.io.File;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public final class Varo extends JavaPlugin {
@@ -55,6 +57,7 @@ public final class Varo extends JavaPlugin {
         pluginManager.registerEvents(new JoinAndQuitListener(), this);
 
         this.getCommand("gamestate").setExecutor(new CMDgamestate());
+        this.getCommand("message").setExecutor(new MessageCommand());
     }
 
     @Override
