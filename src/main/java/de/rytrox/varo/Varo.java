@@ -58,7 +58,6 @@ public final class Varo extends JavaPlugin {
 
         this.getCommand("gamestate").setExecutor(new CMDgamestate());
         this.getCommand("message").setExecutor(new MessageCommand());
-        this.getCommand("message").setAliases(Collections.singletonList("msg"));
     }
 
     @Override
