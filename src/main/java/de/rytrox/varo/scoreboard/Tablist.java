@@ -2,9 +2,12 @@ package de.rytrox.varo.scoreboard;
 
 import de.rytrox.varo.database.entity.Team;
 import de.rytrox.varo.database.entity.TeamMember;
+import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.PacketPlayOutScoreboardTeam;
 import net.minecraft.server.v1_8_R3.Scoreboard;
 import net.minecraft.server.v1_8_R3.ScoreboardTeam;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -146,5 +149,22 @@ public final class Tablist extends Scoreboard {
         }
 
         return null;
+    }
+
+    /**
+     * Returns the display name of a player or console
+     * @param sender the player or console
+     * @return the correct displayname, cannot be null
+     */
+    @NotNull
+    public String getPrefix(CommandSender sender) {
+        if(sender instanceof OfflinePlayer) {
+            // get Prefix from Scoreboard
+            return Optional.ofNullable(Tablist.getInstance().getPlayerTeam(sender.getName()))
+                    .map(ScoreboardTeam::getPrefix)
+                    .orElse(ChatColor.translateAlternateColorCodes('&', "&8[&7Kein Team&8] &7"));
+        }
+
+        return ChatColor.translateAlternateColorCodes('&', "&8[&4TERMINAL&8] &7");
     }
 }

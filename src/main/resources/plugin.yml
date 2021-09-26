@@ -21,6 +21,11 @@ commands:
     aliases:
       - gs
       - gstate
+  message:
+    description: 'Sendet eine private Nachricht an einen anderen Spieler'
+    usage: '/message'
+    aliases:
+      - msg
 
 permissions:
   varo.*:
