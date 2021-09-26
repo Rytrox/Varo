@@ -1,6 +1,5 @@
 package de.rytrox.varo.teams;
 
-import de.rytrox.varo.scoreboard.Tablist;
 import de.rytrox.varo.utils.CommandHelper;
 import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang.ArrayUtils;
