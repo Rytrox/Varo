@@ -168,7 +168,7 @@ public class DiscordService {
         SPAWN_OUTSIDE_BORDER("Der Spieler ist außerhalb der Weltborder gespawnt und wurde nun zum Weltspawn teleportiert"),
         THREE_DAYS_RULE("Der Spieler hat seine drei Tage aufgebraucht");
 
-        final private String reason;
+        private final String reason;
 
         CoordinateLeakReason(String reason) {
             this.reason = reason;
