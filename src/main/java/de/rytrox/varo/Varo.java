@@ -2,6 +2,7 @@ package de.rytrox.varo;
 
 import de.rytrox.varo.commands.CMDgamestate;
 import de.rytrox.varo.listener.JoinAndQuitListener;
+import de.rytrox.varo.listener.PlayerDeathListener;
 import de.rytrox.varo.utils.DiscordService;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -16,6 +17,7 @@ public final class Varo extends JavaPlugin {
 
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new JoinAndQuitListener(), this);
+        pluginManager.registerEvents(new PlayerDeathListener(), this);
 
         this.getCommand("gamestate").setExecutor(new CMDgamestate());
     }
