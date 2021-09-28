@@ -1,13 +1,10 @@
 package de.rytrox.varo.commands;
 
-import de.rytrox.varo.Varo;
 import de.rytrox.varo.utils.CommandHelper;
 import de.rytrox.varo.utils.GameStateHandler;
-import net.minecraft.server.v1_8_R3.CommandHelp;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -36,7 +33,7 @@ public class CMDgamestate implements CommandExecutor {
                             .findAny();
 
                     if(foundGameState.isPresent()) {
-                        GameStateHandler gameStateHandler = JavaPlugin.getPlugin(Varo.class).getGameStateHandler();
+                        GameStateHandler gameStateHandler = GameStateHandler.getInstance();
 
                         GameStateHandler.GameState oldGameState = gameStateHandler.getCurrentGameState();
                         gameStateHandler.setCurrentGameState(foundGameState.get());
@@ -54,7 +51,7 @@ public class CMDgamestate implements CommandExecutor {
 
             } else if("next".equalsIgnoreCase(args[0])) {
 
-                GameStateHandler gameStateHandler = JavaPlugin.getPlugin(Varo.class).getGameStateHandler();
+                GameStateHandler gameStateHandler = GameStateHandler.getInstance();
 
                 GameStateHandler.GameState oldGameState = gameStateHandler.getCurrentGameState();
                 gameStateHandler.nextGameState();
@@ -71,7 +68,7 @@ public class CMDgamestate implements CommandExecutor {
                 }
             } else if("status".equalsIgnoreCase(args[0])) {
 
-                sender.sendMessage("Aktueller GameState: " + JavaPlugin.getPlugin(Varo.class).getGameStateHandler().getCurrentGameState().name());
+                sender.sendMessage("Aktueller GameState: " + GameStateHandler.getInstance().getCurrentGameState().name());
             }
         }
 

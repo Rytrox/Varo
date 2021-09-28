@@ -2,14 +2,19 @@ package de.rytrox.varo.utils;
 
 public class GameStateHandler {
 
+    private static final GameStateHandler instance = new GameStateHandler();
     private GameState currentGameState;
 
-    public GameStateHandler(GameState currentGameState) {
-        this.currentGameState = currentGameState;
+    private GameStateHandler() {
+        this.currentGameState = GameState.SETUP;
     }
 
-    public GameStateHandler() {
-        this.currentGameState = GameState.SETUP;
+    /**
+     * Returns an instance of the gamestatehandler
+     * @return an instance of the GamestateHandler
+     */
+    public static GameStateHandler getInstance() {
+        return instance;
     }
 
     /**
