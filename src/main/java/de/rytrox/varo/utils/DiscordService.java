@@ -16,9 +16,28 @@ import java.util.Date;
 
 public class DiscordService {
 
-    final SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd | HH:mm");
-    static final String COORDINATE_TEMPLATE = "[x:%d | y:%d | z:%d]";
+    private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyy-MM-dd | HH:mm");
+    private static final String COORDINATE_TEMPLATE = "[x:%d | y:%d | z:%d]";
+    private static DiscordService instance;
 
+    private DiscordService() {}
+
+    /**
+     * returns an instance of the discord service
+     * @return an instance of the discord service
+     */
+    public static DiscordService getInstance() {
+        if(instance == null) {
+            instance = new DiscordService();
+        }
+        return instance;
+    }
+
+    /**
+     * Leaks a players location in the discord log
+     * @param player the player you want to leak its coordinates from
+     * @param reason the reason why the coordinates are being leaked
+     */
     public void leakPlayerCoordinates(Player player, CoordinateLeakReason reason) {
 
         String messageBuilder = String.format("Koordinaten des Spielers %s:%n", player.getName()) +
@@ -33,28 +52,48 @@ public class DiscordService {
         writeMessage(messageBuilder, DiscordColor.RED);
     }
 
+    /**
+     * Prints a Discord message
+     * @param message The message
+     */
     public void writeMessage(String message) {
         writeMessage(message, DiscordColor.NONE, true);
     }
 
+    /**
+     * Prints a Discord message
+     * @param message The message
+     * @param color The color of the message
+     */
     public void writeMessage(String message, DiscordColor color) {
         writeMessage(message, color, true);
     }
 
+    /**
+     * Prints a Discord message
+     * @param message The message
+     * @param addTimestamp determines whether to add a timestamp
+     */
     public void writeMessage(String message, boolean addTimestamp) {
         writeMessage(message, DiscordColor.NONE, addTimestamp);
     }
 
+    /**
+     * Prints a Discord message
+     * @param message The message
+     * @param color The color of the message
+     * @param addTimestamp determines whether to add a timestamp
+     */
     public void writeMessage(String message, DiscordColor color, boolean addTimestamp) {
 
         // don't send discord messages, as long as the game is in setup state
-        if(JavaPlugin.getPlugin(Varo.class).getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.SETUP)
+        if(GameStateHandler.getInstance().getCurrentGameState() == GameStateHandler.GameState.SETUP)
             return;
 
         StringBuilder sb = new StringBuilder();
         if(addTimestamp) {
             sb.append("Tag X : ");
-            sb.append(timestampFormat.format(new Date()));
+            sb.append(TIMESTAMP_FORMAT.format(new Date()));
             sb.append("\n");
         }
         sb.append("```");
@@ -115,7 +154,7 @@ public class DiscordService {
         BLUE("md\n# "),
         RED("diff\n- ");
 
-        private String key;
+        private final String key;
 
         DiscordColor(String key) {
             this.key = key;
@@ -132,7 +171,7 @@ public class DiscordService {
         SPAWN_OUTSIDE_BORDER("Der Spieler ist außerhalb der Weltborder gespawnt und wurde nun zum Weltspawn teleportiert"),
         THREE_DAYS_RULE("Der Spieler hat seine drei Tage aufgebraucht");
 
-        String reason;
+        final private String reason;
 
         CoordinateLeakReason(String reason) {
             this.reason = reason;

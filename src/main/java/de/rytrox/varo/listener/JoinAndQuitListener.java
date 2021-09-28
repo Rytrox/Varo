@@ -12,11 +12,11 @@ public class JoinAndQuitListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        JavaPlugin.getPlugin(Varo.class).getDiscordService().writeMessage(event.getJoinMessage(), DiscordService.DiscordColor.BLUE);
+        DiscordService.getInstance().writeMessage(event.getJoinMessage(), DiscordService.DiscordColor.BLUE);
     }
 
     @EventHandler
     public void onLeave(PlayerQuitEvent event) {
-        JavaPlugin.getPlugin(Varo.class).getDiscordService().writeMessage(event.getQuitMessage(), DiscordService.DiscordColor.RED);
+        DiscordService.getInstance().writeMessage(event.getQuitMessage(), DiscordService.DiscordColor.RED);
     }
 }
