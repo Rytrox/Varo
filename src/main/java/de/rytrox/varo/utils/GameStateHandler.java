@@ -2,7 +2,7 @@ package de.rytrox.varo.utils;
 
 public class GameStateHandler {
 
-    private static GameStateHandler instance;
+    private static final GameStateHandler instance = new GameStateHandler();
     private GameState currentGameState;
 
     private GameStateHandler() {
@@ -14,9 +14,6 @@ public class GameStateHandler {
      * @return an instance of the GamestateHandler
      */
     public static GameStateHandler getInstance() {
-        if(instance == null) {
-            instance = new GameStateHandler();
-        }
         return instance;
     }
 

@@ -18,7 +18,7 @@ public class DiscordService {
 
     private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyy-MM-dd | HH:mm");
     private static final String COORDINATE_TEMPLATE = "[x:%d | y:%d | z:%d]";
-    private static DiscordService instance;
+    private static final DiscordService instance = new DiscordService();
 
     private DiscordService() {}
 
@@ -27,9 +27,6 @@ public class DiscordService {
      * @return an instance of the discord service
      */
     public static DiscordService getInstance() {
-        if(instance == null) {
-            instance = new DiscordService();
-        }
         return instance;
     }
 
