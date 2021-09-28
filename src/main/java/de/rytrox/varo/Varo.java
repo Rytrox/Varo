@@ -4,6 +4,7 @@ import de.rytrox.varo.commands.CMDgamestate;
 import de.rytrox.varo.listener.JoinAndQuitListener;
 import de.rytrox.varo.utils.DiscordService;
 import de.rytrox.varo.utils.GameStateHandler;
+import de.rytrox.varo.worldborder.WorldBorderHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -29,7 +30,7 @@ public final class Varo extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        WorldBorderHandler.getInstance().stopScheduler();
     }
 
     public GameStateHandler getGameStateHandler() {
