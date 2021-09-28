@@ -17,13 +17,14 @@ public class PlayerDeathListener implements Listener {
         Player player = event.getEntity();
 
         // create Skull item
-        ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) 3); // Create a new ItemStack of the Player Head type.
-        SkullMeta skullMeta = (SkullMeta) skull.getItemMeta(); // Get the created item's ItemMeta and cast it to SkullMeta so we can access the skull properties
-        skullMeta.setOwner(player.getName()); // Set the skull's owner so it will adapt the skin of the provided username (case sensitive).
-        skull.setItemMeta(skullMeta); // Apply the modified meta to the initial created item
+        ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+        SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
+        skullMeta.setOwner(player.getName());
+        skullMeta.setDisplayName("Kopf von " + player.getName());
+        skull.setItemMeta(skullMeta);
 
         // drop item at death location
-        Item skullItem = player.getLocation().getWorld().dropItemNaturally(player.getLocation(), skull);
+        player.getLocation().getWorld().dropItemNaturally(player.getLocation(), skull);
     }
 
 }
