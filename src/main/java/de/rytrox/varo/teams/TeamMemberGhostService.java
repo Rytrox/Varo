@@ -9,20 +9,21 @@ import de.rytrox.varo.teams.events.TeamMemberSpawnEvent;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TeamMemberGhostService implements Listener {
+
+    private final Map<Player, Entity> spectatorTarget = new HashMap<>();
 
     private final Varo main;
 
@@ -38,7 +39,6 @@ public class TeamMemberGhostService implements Listener {
         if(member.getStatus() == PlayerStatus.DEAD && player != null) {
             Bukkit.getScheduler().runTask(main, () -> {
                 if(member.getTeam() != null) {
-                    System.out.println(member.getTeam().getMembers());
                     player.setGameMode(GameMode.SPECTATOR);
                     List<TeamMember> alivePartner = findAliveTeamMember(member.getTeam(), false);
 
@@ -52,6 +52,7 @@ public class TeamMemberGhostService implements Listener {
                             Player target = onlinePartner.get().getPlayer();
 
                             player.setSpectatorTarget(target);
+                            spectatorTarget.put(player, target);
                         } else player.kickPlayer(ChatColor.translateAlternateColorCodes('&', "&8[&6Varo&8] &cDu kannst nur zuschauen, wenn dein Team online ist."));
                     } else player.kickPlayer(ChatColor.translateAlternateColorCodes('&', "&8[&6Varo&8] &cDein Team ist ausgeschieden"));
                 } else player.kickPlayer(ChatColor.translateAlternateColorCodes('&', "&8[&6Varo&8] &cTote Spieler ohne Team sind direkt ausgeschieden"));
@@ -77,10 +78,12 @@ public class TeamMemberGhostService implements Listener {
             // set all spectating players to the next member when one member disconnects
             if(teamMembers.isEmpty()) {
                 // kick all spectators
-                spectators.forEach((spectator) ->
-                        Objects.requireNonNull(spectator.getPlayer()).kickPlayer(
-                                ChatColor.translateAlternateColorCodes('&', "&8[&6Varo&8] &cDu kannst nur zuschauen, wenn dein Team online ist.")
-                        ));
+                Bukkit.getScheduler().runTask(main, () -> {
+                    spectators.forEach((spectator) ->
+                            Objects.requireNonNull(spectator.getPlayer()).kickPlayer(
+                                    ChatColor.translateAlternateColorCodes('&', "&8[&6Varo&8] &cDu kannst nur zuschauen, wenn dein Team online ist.")
+                            ));
+                });
             } else spectators.forEach((spectator) ->
                     Objects.requireNonNull(spectator.getPlayer()).setSpectatorTarget(teamMembers.get(0).getPlayer()));
         }
@@ -89,6 +92,15 @@ public class TeamMemberGhostService implements Listener {
     @EventHandler
     public void onDenySwitchSpectatorTarget(PlayerTeleportEvent event) {
         if(event.getCause() == PlayerTeleportEvent.TeleportCause.SPECTATE) {
+            event.setCancelled(true);
+
+            event.getPlayer().setSpectatorTarget(spectatorTarget.get(event.getPlayer()));
+        }
+    }
+
+    @EventHandler
+    public void onCancelQuit(PlayerToggleSneakEvent event) {
+        if(event.getPlayer().getGameMode() == GameMode.SPECTATOR && event.getPlayer().getSpectatorTarget() != null) {
             event.setCancelled(true);
         }
     }
