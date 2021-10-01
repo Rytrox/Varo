@@ -97,7 +97,6 @@ public class ScoreBoardManager implements Listener {
     }
 
     private void sendPacket(@NotNull Player player, @NotNull Packet<?> packet) {
-        System.out.println(player.getName() + " " + packet.getClass().getName());
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
     }
 }
