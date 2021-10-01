@@ -1,6 +1,5 @@
 package de.rytrox.varo.discord;
 
-import de.rytrox.varo.discord.DiscordService;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;

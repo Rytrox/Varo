@@ -1,7 +1,6 @@
 package de.rytrox.varo.gamestate;
 
 import de.rytrox.varo.utils.CommandHelper;
-import de.rytrox.varo.gamestate.GameStateHandler;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
