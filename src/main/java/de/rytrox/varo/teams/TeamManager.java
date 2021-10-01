@@ -42,6 +42,7 @@ public class TeamManager implements Listener {
 
         Bukkit.getPluginManager().registerEvents(this, main);
         Bukkit.getPluginManager().registerEvents(new TeamInventoryManager(main, teamMemberRepository), main);
+        Bukkit.getPluginManager().registerEvents(new TeamMemberGhostService(main), main);
         main.getCommand("teams").setExecutor(new TeamsCommand(this));
     }
 
@@ -73,8 +74,9 @@ public class TeamManager implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
             TeamMember member = teamMemberRepository.getPlayer(event.getPlayer());
 
-            assert member != null;
-            Bukkit.getPluginManager().callEvent(new TeamMemberDisconnectEvent(event.getPlayer(), member));
+            if(member != null) {
+                Bukkit.getPluginManager().callEvent(new TeamMemberDisconnectEvent(event.getPlayer(), member));
+            }
         });
     }
 

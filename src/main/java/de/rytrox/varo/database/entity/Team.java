@@ -1,9 +1,5 @@
 package de.rytrox.varo.database.entity;
 
-import de.rytrox.varo.scoreboard.Tablist;
-
-import net.minecraft.server.v1_8_R3.ScoreboardTeam;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.bukkit.Bukkit;
