@@ -1,6 +1,7 @@
-package de.rytrox.varo.utils;
+package de.rytrox.varo.discord;
 
 import de.rytrox.varo.Varo;
+import de.rytrox.varo.gamestate.GameStateHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

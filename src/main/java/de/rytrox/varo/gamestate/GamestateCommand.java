@@ -1,7 +1,6 @@
-package de.rytrox.varo.commands;
+package de.rytrox.varo.gamestate;
 
 import de.rytrox.varo.utils.CommandHelper;
-import de.rytrox.varo.utils.GameStateHandler;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -16,7 +15,7 @@ import java.util.Optional;
  *      /gamestate list
  *      /gamestate status
  */
-public class CMDgamestate implements CommandExecutor {
+public class GamestateCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {

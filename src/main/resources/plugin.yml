@@ -5,19 +5,63 @@ load: STARTUP
 description: Ein Varo-Plugin
 
 commands:
+  teams:
+    description: 'Manage, erstelle und bearbeite Teams'
+    usage: '/teams'
+  teaminventory:
+    description: 'Öffne dein Teaminventar'
+    aliases:
+      - teaminv
+      - inv
+      - ti
+    usage: '/teaminventory'
   gamestate:
     description: 'Managed die GameStates'
     usage: '/gamestate'
     aliases:
       - gs
       - gstate
+  message:
+    description: 'Sendet eine private Nachricht an einen anderen Spieler'
+    usage: '/message'
+    aliases:
+      - msg
 
 permissions:
   varo.*:
     default: op
     description: 'Super-Permission für Varo'
     children:
-      - 'varo.gamestate.*'
+      - 'varo.teams.*'
+  varo.teams.*:
+    default: op
+    description: 'Super-Permission für das TeamManagement in Varo'
+    children:
+      - 'varo.teams.add'
+      - 'varo.teams.remove'
+      - 'varo.teams.modify.*'
+      - 'varo.teams.members.*'
+  varo.teams.members.*:
+    default: op
+    description: 'Füge neue Member zu einem Team hinzu und entferne Member von seinem Team'
+    children:
+      - 'varo.teams.members.add'
+      - 'varo.teams.members.remove'
+  varo.teams.members.add:
+    default: op
+    description: 'Füge neue Mitglieder zu einem Team hinzu'
+  varo.teams.members.remove:
+    default: op
+    description: 'Entferne Mitglieder aus einem Team'
+  varo.teams.modify.*:
+    default: op
+    description: 'Bearbeite Teams wie den Displaynamen'
+    children:
+      - 'varo.teams.modify.displayname'
+  varo.teams.modify.displayname:
+    description: 'Modifiziere den Displaynamen des Teams'
+    default: op
+    
   varo.gamestate.*:
     default: op
     description: 'Super-Permission für das GameStateManagement in Varo'
@@ -38,5 +82,3 @@ permissions:
   varo.teams.set:
     default: op
     description: 'Setzt einen spezifischen GameState'
-
-

@@ -1,7 +1,6 @@
-package de.rytrox.varo.listener;
+package de.rytrox.varo.resurrection;
 
 import org.bukkit.Material;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -9,7 +8,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-public class PlayerDeathListener implements Listener {
+public class PlayerSkullDropService implements Listener {
 
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {

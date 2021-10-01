@@ -1,4 +1,4 @@
-package de.rytrox.varo.utils;
+package de.rytrox.varo.gamestate;
 
 public class GameStateHandler {
 
