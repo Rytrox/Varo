@@ -3,7 +3,7 @@ package de.rytrox.varo.resurrection;
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.database.enums.PlayerStatus;
-import de.rytrox.varo.discord.DiscordService;
+import de.rytrox.varo.discord.MessageService;
 import de.rytrox.varo.utils.ParticleUtils;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import org.bukkit.*;
@@ -92,7 +92,7 @@ public class PlayerResurrectionListener implements Listener {
                 resurrectablePlayer.getInventory().addItem(drop.getItemStack());
 
                 // send Log-Message
-                DiscordService.getInstance().writeMessage(String.format("%s - %s hat seinen Teammate %s wiederbelebt",
+                MessageService.getInstance().writeMessage(String.format("%s - %s hat seinen Teammate %s wiederbelebt",
                         ChatColor.stripColor(resurrectableTeamMember.getTeam().getDisplayName()),
                         player.getName(),
                         resurrectablePlayer.getName()));
