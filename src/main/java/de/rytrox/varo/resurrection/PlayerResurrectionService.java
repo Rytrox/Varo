@@ -31,13 +31,13 @@ public class PlayerResurrectionService {
     public static DropDestination evaluateDropDestination(Item item) {
         // get initial position and velocity
         Location loc0 = item.getLocation();
-        Vector v0 = item.getVelocity();
+        // "* 20" in order for the unit to be blocks/seconds instead of blocks/ticks
+        Vector v0 = item.getVelocity().multiply(20);
 
         // get x-, y- and z-part of velocity
-        // "* 20" in order for the unit to be blocks/seconds instead of blocks/ticks
-        double vx0 = v0.getX() * 20;
-        double vy0 = v0.getY() * 20;
-        double vz0 = v0.getZ() * 20;
+        double vx0 = v0.getX();
+        double vy0 = v0.getY();
+        double vz0 = v0.getZ();
 
         // iterate through time in 1/10 s steps
         for(int i = 1; i <= 10*100; i++) {
