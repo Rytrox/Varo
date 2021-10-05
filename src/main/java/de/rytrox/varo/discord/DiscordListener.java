@@ -9,11 +9,11 @@ public class DiscordListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        DiscordService.getInstance().writeMessage(event.getJoinMessage(), DiscordService.DiscordColor.BLUE);
+        MessageService.getInstance().writeMessage(event.getJoinMessage(), MessageService.DiscordColor.BLUE);
     }
 
     @EventHandler
     public void onLeave(PlayerQuitEvent event) {
-        DiscordService.getInstance().writeMessage(event.getQuitMessage(), DiscordService.DiscordColor.RED);
+        MessageService.getInstance().writeMessage(event.getQuitMessage(), MessageService.DiscordColor.RED);
     }
 }
