@@ -6,6 +6,7 @@ import de.rytrox.varo.database.enums.PlayerStatus;
 import de.rytrox.varo.utils.ParticleUtils;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import org.bukkit.*;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -28,12 +29,14 @@ public class PlayerResurrectionListener implements Listener {
 
         Player player = event.getPlayer();
 
+        Item drop = event.getItemDrop();
+
         // check if dropped item is a golden apple
-        if(event.getItemDrop().getItemStack().getType() != Material.GOLDEN_APPLE)
+        if(drop.getItemStack().getType() != Material.GOLDEN_APPLE)
             return;
 
         // calculate drop destination
-        PlayerResurrectionService.DropDestination dropDestination = PlayerResurrectionService.evaluateDropDestination(event.getItemDrop());
+        PlayerResurrectionService.DropDestination dropDestination = PlayerResurrectionService.evaluateDropDestination(drop);
 
         // check if drop location could have been evaluated
         if(dropDestination == null)
@@ -64,6 +67,7 @@ public class PlayerResurrectionListener implements Listener {
             if(PlayerResurrectionService.checkScheme(flowerLocation)) {
 
                 // strike lightning effect and create explosion
+                drop.remove();
                 flowerLocation.getWorld().strikeLightningEffect(flowerLocation.getBlock().getLocation());
                 flowerLocation.getWorld().createExplosion(
                         flowerLocation.getBlockX(),
@@ -84,7 +88,7 @@ public class PlayerResurrectionListener implements Listener {
 
                 resurrectablePlayer.setGameMode(GameMode.SURVIVAL);
                 resurrectablePlayer.setHealth(20);
-                resurrectablePlayer.getInventory().addItem(event.getItemDrop().getItemStack());
+                resurrectablePlayer.getInventory().addItem(drop.getItemStack());
 
             } else {
                 // if scheme has not been build correctly, tell player by creating some effects
