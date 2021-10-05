@@ -101,8 +101,6 @@ public class MessageService {
 
         final String modifiedMessage = sb.toString();
 
-        Bukkit.getConsoleSender().sendMessage("Sending message to discord: " + modifiedMessage);
-
         Bukkit.getScheduler().runTaskAsynchronously(JavaPlugin.getPlugin(Varo.class), () -> {
 
             HttpsURLConnection connection = null;
@@ -128,7 +126,7 @@ public class MessageService {
 
             } catch (IOException ex) {
                 Bukkit.getConsoleSender().sendMessage("ERROR - Discord-Nachricht konnte nicht gesendet werden");
-                ex.printStackTrace();
+
             } finally {
                 if(stream != null) {
                     try {

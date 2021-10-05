@@ -95,7 +95,7 @@ public class PlayerResurrectionListener implements Listener {
                 MessageService.getInstance().writeMessage(String.format("%s - %s hat seinen Teammate %s wiederbelebt",
                         ChatColor.stripColor(resurrectableTeamMember.getTeam().getDisplayName()),
                         player.getName(),
-                        resurrectablePlayer.getName()));
+                        resurrectablePlayer.getName()), MessageService.DiscordColor.RED);
 
             } else {
                 // if scheme has not been build correctly, tell player by creating some effects
