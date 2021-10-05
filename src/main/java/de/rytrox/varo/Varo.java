@@ -9,7 +9,7 @@ import de.rytrox.varo.teams.TeamManager;
 import de.rytrox.varo.gamestate.GamestateCommand;
 import de.rytrox.varo.discord.DiscordListener;
 import de.rytrox.varo.resurrection.PlayerSkullDropService;
-import de.rytrox.varo.discord.DiscordService;
+import de.rytrox.varo.discord.MessageService;
 
 import io.ebean.Database;
 import io.ebean.DatabaseFactory;
@@ -45,7 +45,7 @@ public final class Varo extends JavaPlugin {
 
         this.teamManager = new TeamManager(this);
         this.scoreBoardManager = new ScoreBoardManager(this);
-        DiscordService.getInstance().writeMessage("Der Server wurde gestartet!", DiscordService.DiscordColor.CYAN);
+        MessageService.getInstance().writeMessage("Der Server wurde gestartet!", MessageService.DiscordColor.CYAN);
 
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new DiscordListener(), this);

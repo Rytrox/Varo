@@ -15,19 +15,19 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class DiscordService {
+public class MessageService {
 
     private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyy-MM-dd | HH:mm");
     private static final String COORDINATE_TEMPLATE = "[x:%d | y:%d | z:%d]";
-    private static final DiscordService instance = new DiscordService();
+    private static final MessageService instance = new MessageService();
 
-    private DiscordService() {}
+    private MessageService() {}
 
     /**
      * returns an instance of the discord service
      * @return an instance of the discord service
      */
-    public static DiscordService getInstance() {
+    public static MessageService getInstance() {
         return instance;
     }
 
@@ -124,6 +124,8 @@ public class DiscordService {
                 stream.write(jsonObject.toJSONString().getBytes());
                 stream.flush();
 
+                Bukkit.getServer().broadcastMessage(color == DiscordColor.NONE ? message : ChatColor.translateAlternateColorCodes('&', "&" + color.chatColorEquivalent + message));
+
             } catch (IOException ex) {
                 Bukkit.getConsoleSender().sendMessage("ERROR - Discord-Nachricht konnte nicht gesendet werden");
                 ex.printStackTrace();
@@ -145,23 +147,30 @@ public class DiscordService {
     }
 
     public enum DiscordColor {
-        NONE(""),
-        BLACK("tex\n$ "),
-        YELLOW("fix\n"),
-        CYAN("yaml\n"),
-        BLUE("md\n# "),
-        RED("diff\n- ");
+        NONE("", ' '),
+        BLACK("tex\n$ ", '0'),
+        YELLOW("fix\n", 'e'),
+        CYAN("yaml\n", 'b'),
+        BLUE("md\n# ", '9'),
+        RED("diff\n- ", 'c');
 
         private final String key;
+        private final char chatColorEquivalent;
 
-        DiscordColor(String key) {
+        DiscordColor(String key, char chatColorEquivalent) {
             this.key = key;
+            this.chatColorEquivalent = chatColorEquivalent;
         }
 
         public String getKey() {
             return key;
         }
+
+        public char getChatColorEquivalent() {
+            return chatColorEquivalent;
+        }
     }
+
 
     public enum CoordinateLeakReason {
 
