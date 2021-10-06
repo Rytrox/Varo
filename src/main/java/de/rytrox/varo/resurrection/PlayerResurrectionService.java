@@ -131,11 +131,8 @@ public class PlayerResurrectionService {
 
         TeamMember teamMember = teamMemberRepository.getPlayer(player);
 
-        if(teamMember == null)
+        if(teamMember == null || teamMember.getTeam() == null)
             return null;
-        if(teamMember.getTeam() == null) {
-            return null;
-        }
 
         Optional<TeamMember> deadTeamMember = teamMember.getTeam().getMembers()
                 .stream()
