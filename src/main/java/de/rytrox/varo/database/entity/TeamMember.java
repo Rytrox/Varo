@@ -36,6 +36,10 @@ public class TeamMember {
     @Column(name = "status")
     private PlayerStatus status = PlayerStatus.NOT_REGISTERED;
 
+    @OneToOne(cascade = CascadeType.ALL, targetEntity = SpawnPoint.class)
+    @JoinColumn(name = "spawn")
+    private SpawnPoint spawnPoint;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -148,5 +152,25 @@ public class TeamMember {
     @Nullable
     public Player getPlayer() {
         return Bukkit.getPlayer(getUniqueID());
+    }
+
+    /**
+     * Returns the SpawnPoint of a Player. <br>
+     * Returns null if the point was not set before
+     *
+     * @return the SpawnPoint of a Player
+     */
+    @Nullable
+    public SpawnPoint getSpawnPoint() {
+        return spawnPoint;
+    }
+
+    /**
+     * Sets the SpawnPoint of a TeamMember
+     *
+     * @param spawnPoint the new SpawnPoint of the Player. Can be null
+     */
+    public void setSpawnPoint(@Nullable SpawnPoint spawnPoint) {
+        this.spawnPoint = spawnPoint;
     }
 }

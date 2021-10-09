@@ -1,5 +1,6 @@
 package de.rytrox.varo;
 
+import de.rytrox.varo.database.entity.SpawnPoint;
 import de.rytrox.varo.database.entity.Team;
 import de.rytrox.varo.database.entity.TeamItem;
 import de.rytrox.varo.database.entity.TeamMember;
@@ -67,7 +68,8 @@ public final class Varo extends JavaPlugin {
         return Arrays.asList(
                 TeamMember.class,
                 TeamItem.class,
-                Team.class
+                Team.class,
+                SpawnPoint.class
         );
     }
 
