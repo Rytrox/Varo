@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.persistence.*;
 
@@ -39,7 +40,8 @@ public class SpawnPoint {
     @Column(name = "pitch", nullable = false)
     private Float pitch;
 
-    @OneToOne(mappedBy = "spawnPoint", targetEntity = TeamMember.class)
+    @OneToOne(targetEntity = TeamMember.class)
+    @JoinColumn(name = "member")
     private TeamMember member;
 
     /**
@@ -48,17 +50,22 @@ public class SpawnPoint {
     public SpawnPoint() {
     }
 
-    public SpawnPoint(World world, Double x, Double y, Double z) {
-        this(world, x, y, z, 0F, 0F);
+    public SpawnPoint(@NotNull Location location) {
+        this.world = location.getWorld().getName();
+        this.x = location.getX();
+        this.y = location.getY();
+        this.z = location.getZ();
+        this.yaw = location.getYaw();
+        this.pitch = location.getPitch();
     }
 
-    public SpawnPoint(World world, Double x, Double y, Double z, Float yaw, Float pitch) {
-        this.world = world.getName();
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.yaw = yaw;
-        this.pitch = pitch;
+    @Nullable
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(@NotNull Integer id) {
+        this.id = id;
     }
 
     public void setWorld(@NotNull String name) {
@@ -132,5 +139,26 @@ public class SpawnPoint {
     @NotNull
     public Location getLocation() {
         return new Location(getWorld(), x, y, z, yaw, pitch);
+    }
+
+    public void setLocation(@NotNull Location location) {
+        this.world = location.getWorld().getName();
+
+        this.x = location.getX();
+        this.y = location.getY();
+        this.z = location.getZ();
+
+        this.yaw = location.getYaw();
+        this.pitch = location.getPitch();
+    }
+
+    @Override
+    public String toString() {
+        return "world: '" + world + '\'' +
+                ", x: " + x +
+                ", y: " + y +
+                ", z: " + z +
+                ", yaw: " + yaw +
+                ", pitch: " + pitch;
     }
 }

@@ -36,8 +36,7 @@ public class TeamMember {
     @Column(name = "status")
     private PlayerStatus status = PlayerStatus.NOT_REGISTERED;
 
-    @OneToOne(cascade = CascadeType.ALL, targetEntity = SpawnPoint.class)
-    @JoinColumn(name = "spawn")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "member", targetEntity = SpawnPoint.class, fetch = FetchType.LAZY)
     private SpawnPoint spawnPoint;
 
     @Override

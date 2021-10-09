@@ -9,6 +9,8 @@ import de.rytrox.varo.database.repository.TeamRepository;
 import de.rytrox.varo.scoreboard.Tablist;
 import de.rytrox.varo.teams.events.*;
 import de.rytrox.varo.teams.inventory.TeamInventoryManager;
+import de.rytrox.varo.teams.spawnpoint.SpawnpointCommand;
+
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Bukkit;
@@ -43,7 +45,9 @@ public class TeamManager implements Listener {
         Bukkit.getPluginManager().registerEvents(this, main);
         Bukkit.getPluginManager().registerEvents(new TeamInventoryManager(main, teamMemberRepository), main);
         Bukkit.getPluginManager().registerEvents(new TeamMemberGhostService(main), main);
+
         main.getCommand("teams").setExecutor(new TeamsCommand(this));
+        main.getCommand("spawnpoint").setExecutor(new SpawnpointCommand(main, this.teamMemberRepository));
     }
 
     @EventHandler
