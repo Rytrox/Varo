@@ -91,6 +91,9 @@ public class PlayerResurrectionListener implements Listener {
                 resurrectablePlayer.setHealth(20);
                 resurrectablePlayer.getInventory().addItem(drop.getItemStack());
 
+                // play sound
+                Bukkit.getOnlinePlayers().forEach(ap -> ap.playSound(ap.getLocation(), Sound.WITHER_DEATH, 1, 1));
+
                 // send Log-Message
                 MessageService.getInstance().writeMessage(String.format("%s - %s hat seinen Teammate %s wiederbelebt",
                         ChatColor.stripColor(resurrectableTeamMember.getTeam().getDisplayName()),
@@ -109,7 +112,7 @@ public class PlayerResurrectionListener implements Listener {
                         0, 0.1f,
                         10)
                         .sendAll();
-                // player sound
+                // play sound
                 flowerLocation.getWorld().playSound(flowerLocation, Sound.FIZZ, 1, 1);
             }
 
