@@ -6,7 +6,6 @@ import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.database.enums.PlayerStatus;
 import de.rytrox.varo.database.repository.TeamMemberRepository;
 import de.rytrox.varo.gamestate.GameStateHandler;
-import de.rytrox.varo.teams.events.TeamMemberDisconnectEvent;
 import de.rytrox.varo.teams.events.TeamMemberSpawnEvent;
 
 import org.bukkit.Bukkit;
@@ -20,8 +19,6 @@ import java.util.Optional;
 import java.util.logging.Level;
 
 public class SpawnPointService implements Listener {
-
-    private final GameStateHandler gameStateHandler = GameStateHandler.getInstance();
 
     private final Varo main;
 
@@ -67,8 +64,7 @@ public class SpawnPointService implements Listener {
 
         // Only teleport if the game is running and the player is alive
         if(event.getMember().getStatus() == PlayerStatus.ALIVE &&
-                (gameStateHandler.getCurrentGameState() == GameStateHandler.GameState.MAIN ||
-                 gameStateHandler.getCurrentGameState() == GameStateHandler.GameState.FINAL)) {
+                GameStateHandler.getInstance().getCurrentGameState() == GameStateHandler.GameState.PRE_GAME)) {
             Bukkit.getScheduler().runTask(main, () -> {
                 SpawnPoint spawnPoint = event.getMember().getSpawnPoint();
 
@@ -76,17 +72,6 @@ public class SpawnPointService implements Listener {
                     player.teleport(spawnPoint.getLocation());
                 }
             });
-        }
-    }
-
-    @EventHandler
-    public void onUpdateSpawnPoint(TeamMemberDisconnectEvent event) {
-        if(gameStateHandler.getCurrentGameState() == GameStateHandler.GameState.MAIN &&
-                event.getMember().getStatus() == PlayerStatus.ALIVE &&
-                event.getMember().getSpawnPoint() != null) {
-            event.getMember().getSpawnPoint().setLocation(event.getPlayer().getLocation());
-
-            main.getDB().update(event.getMember().getSpawnPoint());
         }
     }
 }
