@@ -4,6 +4,7 @@ import de.rytrox.varo.database.entity.SpawnPoint;
 import de.rytrox.varo.database.entity.Team;
 import de.rytrox.varo.database.entity.TeamItem;
 import de.rytrox.varo.database.entity.TeamMember;
+import de.rytrox.varo.resurrection.PlayerResurrectionListener;
 import de.rytrox.varo.scoreboard.ScoreBoardManager;
 import de.rytrox.varo.teams.MessageCommand;
 import de.rytrox.varo.teams.TeamManager;
@@ -51,6 +52,7 @@ public final class Varo extends JavaPlugin {
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new DiscordListener(), this);
         pluginManager.registerEvents(new PlayerSkullDropService(), this);
+        pluginManager.registerEvents(new PlayerResurrectionListener(), this);
 
         this.getCommand("gamestate").setExecutor(new GamestateCommand());
         this.getCommand("message").setExecutor(new MessageCommand());
