@@ -107,9 +107,9 @@ public class PlayerResurrectionListener implements Listener {
                 new ParticleUtils(EnumParticle.SMOKE_LARGE,
                         flowerLocation,
                         true,
-                        0,
-                        0,
-                        0, 0.1f,
+                        Float.MIN_VALUE,
+                        2,
+                        Float.MIN_VALUE, 0.1f,
                         10)
                         .sendAll();
                 // play sound
