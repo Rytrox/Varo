@@ -1,5 +1,6 @@
 package de.rytrox.varo;
 
+import de.rytrox.varo.countdown.CountdownCommand;
 import de.rytrox.varo.database.entity.Team;
 import de.rytrox.varo.database.entity.TeamItem;
 import de.rytrox.varo.database.entity.TeamMember;
@@ -53,6 +54,7 @@ public final class Varo extends JavaPlugin {
 
         this.getCommand("gamestate").setExecutor(new GamestateCommand());
         this.getCommand("message").setExecutor(new MessageCommand());
+        this.getCommand("countdown").setExecutor(new CountdownCommand(this));
     }
 
     @Override
