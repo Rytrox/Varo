@@ -26,6 +26,9 @@ commands:
     usage: '/message'
     aliases:
       - msg
+  spawnpoint:
+    description: 'Setzt Spawnpoints von Spieler'
+    usage: '/spawnpoint'
   countdown:
     description: 'Startet und Stoppt den Countdown'
     usage: '/countdown'
@@ -44,6 +47,7 @@ permissions:
       - 'varo.teams.remove'
       - 'varo.teams.modify.*'
       - 'varo.teams.members.*'
+      - 'varo.teams.spawnpoint.*'
   varo.teams.members.*:
     default: op
     description: 'Füge neue Member zu einem Team hinzu und entferne Member von seinem Team'
@@ -64,7 +68,15 @@ permissions:
   varo.teams.modify.displayname:
     description: 'Modifiziere den Displaynamen des Teams'
     default: op
-    
+  varo.teams.spawnpoint.*:
+    description: Permission zum Bearbeiten von Spawnpoints
+    default: op
+    children:
+      - 'varo.teams.spawnpoint.set'
+  varo.teams.spawnpoint.set:
+    description: Permission zum Setzen des SpawnPoints von Spielern
+    default: op
+
   varo.gamestate.*:
     default: op
     description: 'Super-Permission für das GameStateManagement in Varo'
