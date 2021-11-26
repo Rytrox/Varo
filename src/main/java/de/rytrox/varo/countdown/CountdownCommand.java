@@ -1,11 +1,15 @@
 package de.rytrox.varo.countdown;
 
+import com.google.gson.JsonObject;
+
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.gamestate.GameStateHandler;
 import de.rytrox.varo.utils.CommandHelper;
+
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.IChatBaseComponent;
 import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
@@ -66,7 +70,6 @@ public class CountdownCommand implements TabExecutor {
                 if(sender.hasPermission("varo.countdown.stop")) {
                     if(gameStateHandler.getCurrentGameState() == GameStateHandler.GameState.PRE_GAME) {
                         stop();
-                        this.counter.set(60);
                     } else sender.sendMessage(ChatColor.RED + "Um den Countdown zu starten, muss das Spiel in der Vorbereitungsphase sein");
                 } else sender.sendMessage(ChatColor.RED + "Du hast nicht die benötigte Berechtigung, diesen Befehl auszuführen");
 
@@ -101,9 +104,7 @@ public class CountdownCommand implements TabExecutor {
                 gameStateHandler.nextGameState();
                 stop();
 
-                // Farbverlauf 4 -> c -> 6 -> e -> 2 -> a
-//                Bukkit.getOnlinePlayers()
-//                        .forEach((player) -> sendCountdown(player, ChatColor.RED + "Das Spiel beginnt!"));
+                sendStartMessage();
             } else if(current < 10 || current % 5 == 0) {
                 Bukkit.getOnlinePlayers()
                         .forEach((player) -> sendCountdown(player, current));
@@ -116,6 +117,21 @@ public class CountdownCommand implements TabExecutor {
         this.countingRunner.cancel();
 
         this.countingRunner = null;
+        this.counter.set(60);
+    }
+
+    private void sendStartMessage() {
+        JsonObject json = new JsonObject();
+        json.addProperty("text", ChatColor.GREEN + "Möget die Spiele beginnen!");
+
+        IChatBaseComponent message = IChatBaseComponent.ChatSerializer.a(json.toString());
+        PacketPlayOutTitle packet = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, message, 4, 12, 4);
+
+        Bukkit.getOnlinePlayers().forEach((Player p) -> {
+            ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
+
+            p.playSound(p.getLocation(), Sound.FIREWORK_LAUNCH, 1F, 1F);
+        });
     }
 
     /**
