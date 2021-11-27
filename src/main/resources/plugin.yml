@@ -29,6 +29,11 @@ commands:
   spawnpoint:
     description: 'Setzt Spawnpoints von Spieler'
     usage: '/spawnpoint'
+  spectate:
+    description: 'Beobachte Spieler'
+    usage: '/spectate'
+    aliases:
+      - spec
   countdown:
     description: 'Startet und Stoppt den Countdown'
     usage: '/countdown'
@@ -97,6 +102,12 @@ permissions:
   varo.gamestate.set:
     default: op
     description: 'Setzt einen spezifischen GameState'
+  varo.admin.*:
+    default: op
+    description: 'Managerpermission für Varo'
+  varo.admin.moderator:
+    default: op
+    description: 'Moderatorrolle für Varo. Moderatoren nehmen nicht am Spiel teil!'
 
   varo.countdown.*:
     default: op
