@@ -31,7 +31,7 @@ public class GameTimeService implements Listener {
         this.endTime = LocalTime.parse(main.getConfig().getString("game.end", "22:00"));
 
         kickMessage = ChatColor.translateAlternateColorCodes('&',
-                "&8[&6Varo&8] &cDie maximale Zeit für diesen Tag ist erreicht. \n" +
+                "&8[&6Varo&8] &cDer aktuelle Spieltag ist zu Ende!\n" +
                         String.format("&cDas Spiel wird morgen um %d:%d fortgesetzt", startTime.getHour(), startTime.getMinute()));
 
         registerEndScheduler();
