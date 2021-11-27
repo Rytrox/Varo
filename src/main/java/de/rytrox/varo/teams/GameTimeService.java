@@ -27,8 +27,8 @@ public class GameTimeService implements Listener {
     public GameTimeService(@NotNull Varo main) {
         this.main = main;
 
-        this.startTime = LocalTime.parse(main.getConfig().getString("teams.start", "16:00"));
-        this.endTime = LocalTime.parse(main.getConfig().getString("teams.end", "22:00"));
+        this.startTime = LocalTime.parse(main.getConfig().getString("game.start", "16:00"));
+        this.endTime = LocalTime.parse(main.getConfig().getString("game.end", "22:00"));
 
         kickMessage = ChatColor.translateAlternateColorCodes('&',
                 "&8[&6Varo&8] &cDie maximale Zeit für diesen Tag ist erreicht. \n" +
