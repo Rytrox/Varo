@@ -7,6 +7,7 @@ import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.database.enums.PlayerStatus;
 import de.rytrox.varo.database.repository.TeamItemRepository;
 import de.rytrox.varo.database.repository.TeamMemberRepository;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -77,14 +78,14 @@ public class TeamInventoryManager implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onBlockBlockedSlotsClick(InventoryClickEvent event) {
-        if(event.getCurrentItem().equals(blocked)) {
+        if(blocked.equals(event.getCurrentItem())) {
             event.setResult(Event.Result.DENY);
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onBlockBlockedSlotsDrop(PlayerDropItemEvent event) {
-        if(event.getItemDrop().getItemStack().equals(blocked)) {
+        if(blocked.equals(event.getItemDrop().getItemStack())) {
             event.setCancelled(true);
         }
     }
