@@ -34,6 +34,9 @@ commands:
     usage: '/spectate'
     aliases:
       - spec
+  countdown:
+    description: 'Startet und Stoppt den Countdown'
+    usage: '/countdown'
 
 permissions:
   varo.*:
@@ -87,16 +90,16 @@ permissions:
       - 'varo.gamestate.status'
       - 'varo.gamestate.next'
       - 'varo.gamestate.set'
-  varo.teams.list:
+  varo.gamestate.list:
     default: op
     description: 'Listet alle GameStates auf'
-  varo.teams.status:
+  varo.gamestate.status:
     default: op
     description: 'Gibt den aktuellen GameState aus'
-  varo.teams.next:
+  varo.gamestate.next:
     default: op
     description: 'Wechselt zum nächsten GameState'
-  varo.teams.set:
+  varo.gamestate.set:
     default: op
     description: 'Setzt einen spezifischen GameState'
   varo.admin.*:
@@ -105,3 +108,13 @@ permissions:
   varo.admin.moderator:
     default: op
     description: 'Moderatorrolle für Varo. Moderatoren nehmen nicht am Spiel teil!'
+
+  varo.countdown.*:
+    default: op
+    description: Super-Permission für Countdown
+  varo.countdown.start:
+    default: op
+    description: 'Startet den Countdown'
+  varo.countdown.stop:
+    default: op
+    description: 'Stoppt den Countdown'
