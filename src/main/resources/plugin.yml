@@ -29,6 +29,11 @@ commands:
   spawnpoint:
     description: 'Setzt Spawnpoints von Spieler'
     usage: '/spawnpoint'
+  spectate:
+    description: 'Beobachte Spieler'
+    usage: '/spectate'
+    aliases:
+      - spec
 
 permissions:
   varo.*:
@@ -94,3 +99,9 @@ permissions:
   varo.teams.set:
     default: op
     description: 'Setzt einen spezifischen GameState'
+  varo.admin.*:
+    default: op
+    description: 'Managerpermission für Varo'
+  varo.admin.moderator:
+    default: op
+    description: 'Moderatorrolle für Varo. Moderatoren nehmen nicht am Spiel teil!'
