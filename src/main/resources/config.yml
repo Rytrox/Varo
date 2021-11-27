@@ -12,3 +12,9 @@ teams:
   inventory:
     # Decides how many slots a Team-Inventory should have (number between 0 and 54)
     slots: 6
+
+game:
+  # The Start-Date when players are allowed to join
+  start: '16:00'
+  # The End-Date when all players must leave the server
+  end: '22:00'
