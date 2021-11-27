@@ -24,7 +24,7 @@ public class SpectateCommand implements TabExecutor {
                     if(!target.hasPermission("varo.admin.moderator")) {
                         ((Player) sender).teleport(target);
 
-                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6Varo&8] &7Du beobachtest nun den &2Spieler &a" + target.getDisplayName()));
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6Varo&8] &7Du wurdest zum &2Spieler &a" + target.getDisplayName() + " &dteleportiert."));
                     } else sender.sendMessage(ChatColor.RED + "Moderatoren können nicht spectatet werden!");
                 } else sender.sendMessage(ChatColor.RED + "Der Spieler " + args[0] + " ist nicht online!");
             } else sendHelp(sender);
@@ -47,7 +47,7 @@ public class SpectateCommand implements TabExecutor {
     }
 
     private void sendHelp(CommandSender sender) {
-        CommandHelper.formatCommandHeader("/spectate");
-        CommandHelper.formatCommandExplanation("/spectate <player>", "Teleportier dich zu einen Spieler und beobachte diesen");
+        sender.sendMessage(CommandHelper.formatCommandHeader("/spectate"));
+        sender.sendMessage(CommandHelper.formatCommandExplanation("/spectate <player>", "Teleportier dich zu einen Spieler und beobachte diesen"));
     }
 }
