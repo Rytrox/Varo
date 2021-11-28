@@ -100,6 +100,8 @@ public class PlayerResurrectionListener implements Listener {
                         player.getName(),
                         resurrectablePlayer.getName()), MessageService.DiscordColor.RED);
 
+                Bukkit.getPluginManager().callEvent(new PlayerResurrectionEvent(resurrectablePlayer, event.getPlayer()));
+
             } else {
                 // if scheme has not been build correctly, tell player by creating some effects
 

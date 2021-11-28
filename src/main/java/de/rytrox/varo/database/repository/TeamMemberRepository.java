@@ -2,6 +2,7 @@ package de.rytrox.varo.database.repository;
 
 import de.rytrox.varo.database.entity.TeamMember;
 
+import de.rytrox.varo.database.enums.PlayerStatus;
 import io.ebean.Database;
 
 import org.bukkit.Bukkit;
@@ -62,6 +63,26 @@ public class TeamMemberRepository {
                 .where()
                 .eq("uuid", uuid.toString())
                 .findOneOrEmpty();
+    }
+
+    /**
+     * returns the total amount of participants
+     * @return total amount of participants
+     */
+    public int getTotalPlayerAmount() {
+        return this.database.find(TeamMember.class)
+                .findCount();
+    }
+
+    /**
+     * returns the total amount of participants
+     * @return total amount of participants
+     */
+    public int getAlivePlayerAmount() {
+        return this.database.find(TeamMember.class)
+                .where()
+                .eq("status", PlayerStatus.ALIVE)
+                .findCount();
     }
 
     /**
