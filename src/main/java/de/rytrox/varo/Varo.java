@@ -8,6 +8,7 @@ import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.moderation.ModeratorManager;
 import de.rytrox.varo.resurrection.PlayerResurrectionListener;
 import de.rytrox.varo.scoreboard.ScoreBoardManager;
+import de.rytrox.varo.teams.GameTimeService;
 import de.rytrox.varo.teams.MessageCommand;
 import de.rytrox.varo.teams.TeamManager;
 import de.rytrox.varo.gamestate.GamestateCommand;
@@ -55,6 +56,7 @@ public final class Varo extends JavaPlugin {
         pluginManager.registerEvents(new DiscordListener(), this);
         pluginManager.registerEvents(new PlayerSkullDropService(), this);
         pluginManager.registerEvents(new PlayerResurrectionListener(), this);
+        pluginManager.registerEvents(new GameTimeService(this), this);
         pluginManager.registerEvents(new ModeratorManager(this), this);
 
         this.getCommand("gamestate").setExecutor(new GamestateCommand());
