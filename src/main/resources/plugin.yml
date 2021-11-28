@@ -5,19 +5,83 @@ load: STARTUP
 description: Ein Varo-Plugin
 
 commands:
+  teams:
+    description: 'Manage, erstelle und bearbeite Teams'
+    usage: '/teams'
+  teaminventory:
+    description: 'Öffne dein Teaminventar'
+    aliases:
+      - teaminv
+      - inv
+      - ti
+    usage: '/teaminventory'
   gamestate:
     description: 'Managed die GameStates'
     usage: '/gamestate'
     aliases:
       - gs
       - gstate
+  message:
+    description: 'Sendet eine private Nachricht an einen anderen Spieler'
+    usage: '/message'
+    aliases:
+      - msg
+  spawnpoint:
+    description: 'Setzt Spawnpoints von Spieler'
+    usage: '/spawnpoint'
+  spectate:
+    description: 'Beobachte Spieler'
+    usage: '/spectate'
+    aliases:
+      - spec
+  countdown:
+    description: 'Startet und Stoppt den Countdown'
+    usage: '/countdown'
 
 permissions:
   varo.*:
     default: op
     description: 'Super-Permission für Varo'
     children:
-      - 'varo.gamestate.*'
+      - 'varo.teams.*'
+  varo.teams.*:
+    default: op
+    description: 'Super-Permission für das TeamManagement in Varo'
+    children:
+      - 'varo.teams.add'
+      - 'varo.teams.remove'
+      - 'varo.teams.modify.*'
+      - 'varo.teams.members.*'
+      - 'varo.teams.spawnpoint.*'
+  varo.teams.members.*:
+    default: op
+    description: 'Füge neue Member zu einem Team hinzu und entferne Member von seinem Team'
+    children:
+      - 'varo.teams.members.add'
+      - 'varo.teams.members.remove'
+  varo.teams.members.add:
+    default: op
+    description: 'Füge neue Mitglieder zu einem Team hinzu'
+  varo.teams.members.remove:
+    default: op
+    description: 'Entferne Mitglieder aus einem Team'
+  varo.teams.modify.*:
+    default: op
+    description: 'Bearbeite Teams wie den Displaynamen'
+    children:
+      - 'varo.teams.modify.displayname'
+  varo.teams.modify.displayname:
+    description: 'Modifiziere den Displaynamen des Teams'
+    default: op
+  varo.teams.spawnpoint.*:
+    description: Permission zum Bearbeiten von Spawnpoints
+    default: op
+    children:
+      - 'varo.teams.spawnpoint.set'
+  varo.teams.spawnpoint.set:
+    description: Permission zum Setzen des SpawnPoints von Spielern
+    default: op
+
   varo.gamestate.*:
     default: op
     description: 'Super-Permission für das GameStateManagement in Varo'
@@ -26,17 +90,31 @@ permissions:
       - 'varo.gamestate.status'
       - 'varo.gamestate.next'
       - 'varo.gamestate.set'
-  varo.teams.list:
+  varo.gamestate.list:
     default: op
     description: 'Listet alle GameStates auf'
-  varo.teams.status:
+  varo.gamestate.status:
     default: op
     description: 'Gibt den aktuellen GameState aus'
-  varo.teams.next:
+  varo.gamestate.next:
     default: op
     description: 'Wechselt zum nächsten GameState'
-  varo.teams.set:
+  varo.gamestate.set:
     default: op
     description: 'Setzt einen spezifischen GameState'
+  varo.admin.*:
+    default: op
+    description: 'Managerpermission für Varo'
+  varo.admin.moderator:
+    default: op
+    description: 'Moderatorrolle für Varo. Moderatoren nehmen nicht am Spiel teil!'
 
-
+  varo.countdown.*:
+    default: op
+    description: Super-Permission für Countdown
+  varo.countdown.start:
+    default: op
+    description: 'Startet den Countdown'
+  varo.countdown.stop:
+    default: op
+    description: 'Stoppt den Countdown'
