@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Service that manages the GameTime based on the internal System-Time
@@ -32,7 +33,7 @@ public class GameTimeService implements Listener {
 
         kickMessage = ChatColor.translateAlternateColorCodes('&',
                 "&8[&6Varo&8] &cDer aktuelle Spieltag ist zu Ende!\n" +
-                        String.format("&cDas Spiel wird morgen um %d:%d fortgesetzt", startTime.getHour(), startTime.getMinute()));
+                        String.format("&cDas Spiel wird morgen um %s fortgesetzt", startTime.format(DateTimeFormatter.ofPattern("HH:mm"))));
 
         registerEndScheduler();
     }

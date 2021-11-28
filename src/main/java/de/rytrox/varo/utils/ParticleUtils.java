@@ -43,7 +43,5 @@ public class ParticleUtils {
 		PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(this.particletype, this.longdistance, (float)this.location.getX(), (float)this.location.getY(), (float)this.location.getZ(), this.offsetx, this.offsety, this.offsetz, this.speed, this.amount);
 		((CraftPlayer)player).getHandle().playerConnection.sendPacket(packet);
 	}
-	
-	
-	
+
 }
