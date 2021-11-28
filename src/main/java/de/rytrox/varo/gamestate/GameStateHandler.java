@@ -1,5 +1,8 @@
 package de.rytrox.varo.gamestate;
 
+import de.rytrox.varo.Varo;
+import org.bukkit.plugin.java.JavaPlugin;
+
 public class GameStateHandler {
 
     private static final GameStateHandler instance = new GameStateHandler();
@@ -31,13 +34,18 @@ public class GameStateHandler {
      */
     public void setCurrentGameState(GameState gameState) {
         this.currentGameState = gameState;
+
+        switch(this.currentGameState) {
+            case START:
+                JavaPlugin.getPlugin(Varo.class).getWorldBorderHandler().startScheduler();
+        }
     }
 
     /**
      * switches to the next game state
      */
     public void nextGameState() {
-        this.currentGameState = GameState.values()[(currentGameState.ordinal() + 1) % GameState.values().length];
+        setCurrentGameState(GameState.values()[(currentGameState.ordinal() + 1) % GameState.values().length]);
     }
 
     public enum GameState {

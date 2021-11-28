@@ -18,3 +18,13 @@ game:
   start: '16:00'
   # The End-Date when all players must leave the server
   end: '22:00'
+
+worldborder:
+  # world you play in
+  world: 'world'
+  # initial size of worldborder
+  intialSize: 4000
+  # center location
+  center:
+    x: 0
+    z: 0

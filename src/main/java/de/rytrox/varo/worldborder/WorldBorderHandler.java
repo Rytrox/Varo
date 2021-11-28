@@ -1,57 +1,71 @@
 package de.rytrox.varo.worldborder;
 
 import de.rytrox.varo.Varo;
-import de.rytrox.varo.utils.GameStateHandler;
+import de.rytrox.varo.gamestate.GameStateHandler;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
 
 public class WorldBorderHandler {
 
-    private static WorldBorderHandler instance;
+    private final Varo main;
+    private final int intialSize;
+    private int currentSize;
+    private final Location center;
+    private BukkitTask scheduler;
 
-    BukkitTask scheduler;
+    public WorldBorderHandler(@NotNull Varo main) {
+        this.main = main;
+        this.intialSize = main.getConfig().getInt("worldborder.intialSize");
+        this.currentSize = this.intialSize;
 
-    private WorldBorderHandler() {
-        int initialSize = 4000;
+        World world = Bukkit.getWorld(main.getConfig().getString("worldborder.world"));
+        int centerX = main.getConfig().getInt("worldborder.center.x");
+        int centerZ = main.getConfig().getInt("worldborder.center.z");
+        this.center = new Location(world, centerX, 0, centerZ);
 
-        GameStateHandler.GameState gameState = JavaPlugin.getPlugin(Varo.class).getGameStateHandler().getCurrentGameState();
+        world.getWorldBorder().setCenter(center);
+        world.getWorldBorder().setSize(intialSize);
+
+        GameStateHandler.GameState gameState = GameStateHandler.getInstance().getCurrentGameState();
 
         if(gameState != GameStateHandler.GameState.SETUP
-            && gameState != GameStateHandler.GameState.PRE_GAME
-            && gameState != GameStateHandler.GameState.POST) {
+                && gameState != GameStateHandler.GameState.PRE_GAME
+                && gameState != GameStateHandler.GameState.POST) {
 
             startScheduler();
         }
-    }
-
-    public static WorldBorderHandler getInstance() {
-        if(instance == null) {
-            instance = new WorldBorderHandler();
-        }
-        return instance;
     }
 
     public void stopScheduler() {
         if(scheduler != null) scheduler.cancel();
     }
 
-    private void startScheduler() {
+    public void startScheduler() {
 
-        Varo main = JavaPlugin.getPlugin(Varo.class);
+        if(scheduler != null) {
+            this.scheduler.cancel();
+        }
 
         scheduler = Bukkit.getScheduler().runTaskTimerAsynchronously(main, () -> {
 
-            switch(main.getGameStateHandler().getCurrentGameState()) {
+            switch(GameStateHandler.getInstance().getCurrentGameState()) {
 
-                case START: break;
-                case MAIN: break;
-                case FINAL: break;
-                case POST: break;
-
+                case START: return;
+                case MAIN: this.currentSize -= this.currentSize > 10 ? 1 : 0; break;
+                case FINAL: this.currentSize -= this.currentSize > 10 ? 2 : 0; break;
+                case POST:
+                    this.currentSize = 10;
+                    this.center.getWorld().getWorldBorder().setSize(10);
+                    this.stopScheduler();
+                    return;
             }
 
-        }, 0, 20);
+            this.center.getWorld().getWorldBorder().setSize(currentSize, 1);
+
+        }, 0, 20); // per second
     }
 
 

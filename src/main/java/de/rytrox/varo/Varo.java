@@ -40,6 +40,7 @@ public final class Varo extends JavaPlugin {
 
     private Database database;
 
+    private WorldBorderHandler worldBorderHandler;
     private TeamManager teamManager;
     private ScoreBoardManager scoreBoardManager;
 
@@ -49,6 +50,7 @@ public final class Varo extends JavaPlugin {
         installDDL();
         saveDefaultConfig();
 
+        this.worldBorderHandler = new WorldBorderHandler(this);
         this.teamManager = new TeamManager(this);
         this.scoreBoardManager = new ScoreBoardManager(this);
         MessageService.getInstance().writeMessage("Der Server wurde gestartet!", MessageService.DiscordColor.CYAN);
@@ -69,7 +71,7 @@ public final class Varo extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
         DatabaseFactory.shutdown();
-        WorldBorderHandler.getInstance().stopScheduler();
+        this.worldBorderHandler.stopScheduler();
     }
 
     @Contract(pure = true)
@@ -112,6 +114,10 @@ public final class Varo extends JavaPlugin {
     @NotNull
     public ScoreBoardManager getScoreBoardManager() {
         return scoreBoardManager;
+    }
+
+    public WorldBorderHandler getWorldBorderHandler() {
+        return worldBorderHandler;
     }
 
     @NotNull
