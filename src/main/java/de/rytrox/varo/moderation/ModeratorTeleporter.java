@@ -1,11 +1,13 @@
 package de.rytrox.varo.moderation;
 
 import de.rytrox.varo.Varo;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -29,6 +31,7 @@ public class ModeratorTeleporter implements Listener {
     private static final ItemStack TELEPORTER = new ItemStack(Material.COMPASS);
 
     private final Varo main;
+    private final ModeratorManager manager;
 
     static {
         ItemMeta meta = TELEPORTER.getItemMeta();
@@ -40,13 +43,14 @@ public class ModeratorTeleporter implements Listener {
         TELEPORTER.setItemMeta(meta);
     }
 
-    public ModeratorTeleporter(@NotNull Varo main) {
+    public ModeratorTeleporter(@NotNull Varo main, @NotNull ModeratorManager manager) {
         this.main = main;
+        this.manager = manager;
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onItemGet(PlayerJoinEvent event) {
-        if(event.getPlayer().hasPermission("varo.admin.moderator")) {
+        if(manager.isModerator(event.getPlayer())) {
             event.getPlayer().getInventory().addItem(TELEPORTER);
         }
     }
@@ -69,11 +73,17 @@ public class ModeratorTeleporter implements Listener {
             Optional.ofNullable(event.getCurrentItem())
                     .filter((item) -> item.getItemMeta() instanceof SkullMeta)
                     .ifPresent((skull) -> {
+                        HumanEntity player = event.getWhoClicked();
                         Player target = Bukkit.getPlayer(((SkullMeta) skull.getItemMeta()).getOwner());
 
-                        event.getWhoClicked().teleport(target);
-                        event.getWhoClicked().closeInventory();
-                        event.getWhoClicked().sendMessage(
+                        if(player instanceof Player) {
+                            ((Player) event.getWhoClicked())
+                                    .playSound(player.getLocation(), Sound.ENDERMAN_TELEPORT, 1F, 1F);
+                        }
+
+                        player.teleport(target);
+                        player.closeInventory();
+                        player.sendMessage(
                                 ChatColor.translateAlternateColorCodes('&',
                                         String.format("&8[&6Varo&8] &7Du wurdest zu Spieler %s teleportiert", skull.getItemMeta().getDisplayName())));
                     });
@@ -88,7 +98,7 @@ public class ModeratorTeleporter implements Listener {
         inventory.addItem(
                 Bukkit.getOnlinePlayers()
                         .stream()
-                        .filter((player) -> !player.hasPermission("varo.admin.moderator"))
+                        .filter((player) -> !manager.isModerator(player))
                         .map((player) -> {
                             ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
 
@@ -103,6 +113,6 @@ public class ModeratorTeleporter implements Listener {
         );
 
         entity.openInventory(inventory);
-        entity.playSound(entity.getLocation(), Sound.ENDERMAN_TELEPORT, 1F, 1F);
+        entity.playSound(entity.getLocation(), Sound.PORTAL, 1F, 1F);
     }
 }

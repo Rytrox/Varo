@@ -28,7 +28,7 @@ public class ModeratorManager implements Listener {
         this.main = main;
 
         main.getCommand("spectate").setExecutor(new SpectateCommand());
-        Bukkit.getPluginManager().registerEvents(new ModeratorTeleporter(main), main);
+        Bukkit.getPluginManager().registerEvents(new ModeratorTeleporter(main, this), main);
     }
 
     public boolean isModerator(@NotNull CommandSender sender) {
@@ -113,13 +113,6 @@ public class ModeratorManager implements Listener {
     }
 
     @EventHandler
-    public void onDamage(EntityDamageEvent event) {
-        if(isModerator(event.getEntity())) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
     public void onHit(EntityDamageByEntityEvent event) {
         if(isModerator(event.getDamager())) {
             event.setCancelled(true);
@@ -135,6 +128,13 @@ public class ModeratorManager implements Listener {
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
+        if(isModerator(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPickupItem(PlayerPickupItemEvent event) {
         if(isModerator(event.getPlayer())) {
             event.setCancelled(true);
         }
