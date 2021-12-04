@@ -45,9 +45,8 @@ public class GamestateCommand implements CommandExecutor {
 
                         sender.sendMessage("Der angegebene GameState konnte nicht gefunden werden. Nutze /gamestate list um alle verfügbaren GameStates aufzulisten");
                     }
-
+                    return true;
                 }
-
             } else if("next".equalsIgnoreCase(args[0])) {
 
                 GameStateHandler gameStateHandler = GameStateHandler.getInstance();
@@ -58,21 +57,22 @@ public class GamestateCommand implements CommandExecutor {
                 sender.sendMessage(String.format("Der GameState wurde von %s auf %s gewechselt",
                         oldGameState.name(),
                         gameStateHandler.getCurrentGameState().name()));
-
+                return true;
             } else if("list".equalsIgnoreCase(args[0])) {
 
                 sender.sendMessage("GameStates:");
                 for (GameStateHandler.GameState gameState : GameStateHandler.GameState.values()) {
                     sender.sendMessage(gameState.name());
                 }
+                return true;
             } else if("status".equalsIgnoreCase(args[0])) {
 
                 sender.sendMessage("Aktueller GameState: " + GameStateHandler.getInstance().getCurrentGameState().name());
+                return true;
             }
         }
 
         sendHelp(sender);
-
         return true;
     }
 
