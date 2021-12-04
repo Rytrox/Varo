@@ -28,3 +28,8 @@ worldborder:
   center:
     x: 0
     z: 0
+  suddenDeath:
+    # speed of the shrinking (in blocks per second)
+    speed: 0.5
+    # minimal size that can be reached
+    minimal: 20
