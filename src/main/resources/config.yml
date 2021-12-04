@@ -27,6 +27,7 @@ worldborder:
   # center location
   center:
     x: 0
+    y: 80
     z: 0
   suddenDeath:
     # speed of the shrinking (in blocks per second)

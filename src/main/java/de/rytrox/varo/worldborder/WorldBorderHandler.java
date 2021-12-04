@@ -44,9 +44,11 @@ public class WorldBorderHandler implements Listener {
         this.alivePlayers = teamMemberRepository.getAlivePlayerAmount();
 
         World world = Bukkit.getWorld(main.getConfig().getString("worldborder.world"));
-        int centerX = main.getConfig().getInt("worldborder.center.x");
-        int centerZ = main.getConfig().getInt("worldborder.center.z");
-        this.center = new Location(world, centerX, 0, centerZ);
+
+        double centerX = main.getConfig().getDouble("worldborder.center.x");
+        double centerY = main.getConfig().getDouble("world.center.y");
+        double centerZ = main.getConfig().getDouble("worldborder.center.z");
+        this.center = new Location(world, centerX, centerY, centerZ);
 
         world.getWorldBorder().setCenter(center);
         world.getWorldBorder().setSize(currentSize);
