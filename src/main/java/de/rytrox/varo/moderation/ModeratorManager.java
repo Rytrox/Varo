@@ -1,15 +1,23 @@
 package de.rytrox.varo.moderation;
 
 import de.rytrox.varo.Varo;
+
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.player.*;
 import org.jetbrains.annotations.NotNull;
 
 public class ModeratorManager implements Listener {
@@ -20,44 +28,114 @@ public class ModeratorManager implements Listener {
         this.main = main;
 
         main.getCommand("spectate").setExecutor(new SpectateCommand());
+        Bukkit.getPluginManager().registerEvents(new ModeratorTeleporter(main, this), main);
+    }
+
+    public boolean isModerator(@NotNull CommandSender sender) {
+        return sender.hasPermission("varo.admin.moderator");
     }
 
     @EventHandler
     public void onModSpawn(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
-        if(player.hasPermission("varo.admin.moderator")) {
+        if(isModerator(player)) {
             event.setJoinMessage(null);
 
-            // Remove Mods Inventory
-            player.getInventory().clear();
-            player.updateInventory();
-            player.setGameMode(GameMode.SPECTATOR);
-
-            // Disguise Mod for online TeamMembers
-            PacketPlayOutPlayerInfo despawnPacket = new PacketPlayOutPlayerInfo(
-                    PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER,
-                    ((CraftPlayer) player).getHandle());
-
-            Bukkit.getScheduler().runTaskLater(main, () -> {
-                Bukkit.getOnlinePlayers()
-                        .stream()
-                        .filter((p) -> !p.hasPermission("varo.admin.moderator"))
-                        .forEach((p) -> {
-                            p.hidePlayer(player);
-
-                            ((CraftPlayer) p).getHandle().playerConnection.sendPacket(despawnPacket);
-                        });
-            }, 2);
+            enableModeratorMode(player);
         }
     }
 
     @EventHandler
-    public void onModDropItem(PlayerDropItemEvent event) {
-        Player player = event.getPlayer();
+    public void onRemoveAgro(EntityTargetLivingEntityEvent event) {
+        if(event.getTarget() != null && isModerator(event.getTarget())) {
+            event.setCancelled(true);
+        }
+    }
 
+    private void enableModeratorMode(@NotNull Player player) {
+        player.setGameMode(GameMode.ADVENTURE);
+        player.setAllowFlight(true);
+
+        // Remove Mods Inventory
+        player.getInventory().clear();
+        player.updateInventory();
+        player.setHealth(20D);
+        player.setFoodLevel(20);
+
+        // Add Compass to moderator
+
+        // Disguise Mod for online TeamMembers
+        PacketPlayOutPlayerInfo despawnPacket = new PacketPlayOutPlayerInfo(
+                PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER,
+                ((CraftPlayer) player).getHandle());
+
+        Bukkit.getScheduler().runTaskLater(main, () -> {
+            Bukkit.getOnlinePlayers()
+                    .stream()
+                    .filter((p) -> !this.isModerator(p))
+                    .forEach((p) -> {
+                        p.hidePlayer(player);
+
+                        ((CraftPlayer) p).getHandle().playerConnection.sendPacket(despawnPacket);
+                    });
+        }, 2);
+    }
+
+    @EventHandler
+    public void onModDropItem(PlayerDropItemEvent event) {
         // Mods are not allowed to drop any Items
-        if(player.hasPermission("varo.admin.moderator")) {
+        if(isModerator(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onDenyDamage(EntityDamageEvent event) {
+        if(isModerator(event.getEntity())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onHunger(FoodLevelChangeEvent event) {
+        if(isModerator(event.getEntity())) {
+            event.setCancelled(true);
+            event.setFoodLevel(20);
+        }
+    }
+
+    @EventHandler
+    public void onInteract(PlayerInteractEntityEvent event) {
+        if(isModerator(event.getPlayer()) || isModerator(event.getRightClicked())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onHit(EntityDamageByEntityEvent event) {
+        if(isModerator(event.getDamager())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+        if(isModerator(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+        if(isModerator(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPickupItem(PlayerPickupItemEvent event) {
+        if(isModerator(event.getPlayer())) {
             event.setCancelled(true);
         }
     }
