@@ -39,7 +39,7 @@ public class WorldBorderCommand implements CommandExecutor {
                     }
 
                     // set new worldborder size
-                    main.getWorldBorderHandler().setSize(size);
+                    main.getWorldBorderHandler().setSize(size, 1);
                     return true;
                 }
             } else if("status".equalsIgnoreCase(args[0])) {

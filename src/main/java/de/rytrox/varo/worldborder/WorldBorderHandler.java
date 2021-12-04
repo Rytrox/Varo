@@ -13,7 +13,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 public class WorldBorderHandler implements Listener {
@@ -27,7 +26,7 @@ public class WorldBorderHandler implements Listener {
     private int alivePlayers;
 
     private final Location center;
-    private BukkitTask suddenDeathTask;
+    private boolean suddenDeathActivated = false;
 
     public WorldBorderHandler(@NotNull Varo main) {
         this.main = main;
@@ -63,7 +62,7 @@ public class WorldBorderHandler implements Listener {
      * @return result of check
      */
     public boolean isSuddenDeath() {
-        return suddenDeathTask != null && suddenDeathTask.getTaskId() != -1;
+        return suddenDeathActivated;
     }
 
     /**
@@ -72,18 +71,12 @@ public class WorldBorderHandler implements Listener {
      * false if SuddenDeath has been deactivated
      */
     public boolean toggleSuddenDeath() {
-
         if(!isSuddenDeath()) {
-            this.suddenDeathTask = Bukkit.getScheduler().runTaskTimer(main, () -> {
-                if(getSize() > minSize) {
-                    setSize(getSize() - shrinkSpeed);
-                }
-            }, 20, 20);
-            return true;
+            setSize(minSize,  (long) ((getSize() - minSize) / shrinkSpeed));
+            return suddenDeathActivated = true;
         }
 
-        this.suddenDeathTask.cancel();
-        return false;
+        return suddenDeathActivated = false;
     }
 
     /**
@@ -98,14 +91,14 @@ public class WorldBorderHandler implements Listener {
             default: newSize = this.intialSize;
         }
 
-        setSize(newSize);
+        setSize(newSize, 1);
     }
 
     /**
      * Sets the size of the worldborder
      */
-    public void setSize(double size) {
-        this.center.getWorld().getWorldBorder().setSize(size, 1);
+    public void setSize(double size, long seconds) {
+        this.center.getWorld().getWorldBorder().setSize(size, seconds);
         // TODO VARO-28 save size in json
     }
 
@@ -166,14 +159,14 @@ public class WorldBorderHandler implements Listener {
         double worldBorderSize = center.getWorld().getWorldBorder().getSize();
 
         double maxX = center.getX() + worldBorderSize/2;
-        double maxY = center.getY() + worldBorderSize/2;
+        double maxZ = center.getZ() + worldBorderSize/2;
         double minX = center.getX() + worldBorderSize/2;
-        double minY = center.getY() + worldBorderSize/2;
+        double minZ = center.getZ() + worldBorderSize/2;
 
         double playerX = playerLocation.getX();
-        double playerY = playerLocation.getY();
+        double playerZ = playerLocation.getZ();
 
-        return playerX <= maxX && playerX >= minX && playerY <= maxY && playerY >= minY;
+        return playerX <= maxX && playerX >= minX && playerZ <= maxZ && playerZ >= minZ;
     }
 
 }
