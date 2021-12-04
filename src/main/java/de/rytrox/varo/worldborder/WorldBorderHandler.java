@@ -63,7 +63,7 @@ public class WorldBorderHandler implements Listener {
      * @return result of check
      */
     public boolean isSuddenDeath() {
-        return suddenDeathTask.getTaskId() != -1;
+        return suddenDeathTask != null && suddenDeathTask.getTaskId() != -1;
     }
 
     /**
@@ -73,7 +73,7 @@ public class WorldBorderHandler implements Listener {
      */
     public boolean toggleSuddenDeath() {
 
-        if(suddenDeathTask.getTaskId() == -1) {
+        if(!isSuddenDeath()) {
             this.suddenDeathTask = Bukkit.getScheduler().runTaskTimer(main, () -> {
                 if(getSize() > minSize) {
                     setSize(getSize() - shrinkSpeed);
@@ -105,7 +105,7 @@ public class WorldBorderHandler implements Listener {
      * Sets the size of the worldborder
      */
     public void setSize(double size) {
-        this.center.getWorld().getWorldBorder().setSize(size);
+        this.center.getWorld().getWorldBorder().setSize(size, 1);
         // TODO VARO-28 save size in json
     }
 
@@ -150,6 +150,13 @@ public class WorldBorderHandler implements Listener {
      */
     private boolean isInsideWorldBorder(Player player) {
         Location playerLocation = player.getLocation();
+
+        if(center.getWorld() == null) {
+            center.setWorld(Bukkit.getWorld(main.getConfig().getString("worldborder.world")));
+            if(center.getWorld() == null) {
+                return true;
+            }
+        }
 
         // check if player is in the same world as the worldborder
         if(!(playerLocation.getWorld().getName().equals(center.getWorld().getName()))) {

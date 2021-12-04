@@ -44,9 +44,12 @@ public class WorldBorderCommand implements CommandExecutor {
                 }
             } else if("status".equalsIgnoreCase(args[0])) {
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                        String.format("&eDie Worldborder hat momentan eine Größe von &6%.2f &eBlöcken; &4SuddenDeath&e: %s",
-                                this.main.getWorldBorderHandler().getSize(),
-                                this.main.getWorldBorderHandler().isSuddenDeath() ? "&a[aktiv]" : "&c[inaktiv]")));
+                        String.format("&eDie Worldborder hat momentan eine Größe von &6%.2f &eBlöcken",
+                                this.main.getWorldBorderHandler().getSize())));
+
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                        "&4SuddenDeath&e: " + (this.main.getWorldBorderHandler().isSuddenDeath() ? "&a[aktiv]" : "&c[inaktiv]")));
+
                 return true;
             } else if("sd".equalsIgnoreCase(args[0]) || "suddendeath".equalsIgnoreCase(args[0])) {
                 boolean result = main.getWorldBorderHandler().toggleSuddenDeath();
