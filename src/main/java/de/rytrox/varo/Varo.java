@@ -71,7 +71,6 @@ public final class Varo extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
         DatabaseFactory.shutdown();
-        this.worldBorderHandler.stopScheduler();
     }
 
     @Contract(pure = true)
