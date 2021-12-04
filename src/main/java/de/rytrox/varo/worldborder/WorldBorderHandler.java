@@ -23,7 +23,6 @@ public class WorldBorderHandler implements Listener {
     private int alivePlayers;
 
     private final Location center;
-    private BukkitTask scheduler;
 
     public WorldBorderHandler(@NotNull Varo main) {
         this.main = main;
@@ -45,43 +44,24 @@ public class WorldBorderHandler implements Listener {
         world.getWorldBorder().setCenter(center);
         world.getWorldBorder().setSize(intialSize);
 
-        GameStateHandler.GameState gameState = GameStateHandler.getInstance().getCurrentGameState();
-
-        if(gameState != GameStateHandler.GameState.SETUP
-                && gameState != GameStateHandler.GameState.PRE_GAME
-                && gameState != GameStateHandler.GameState.POST) {
-
-            startScheduler();
-        }
     }
 
-    public void stopScheduler() {
-        if(scheduler != null) scheduler.cancel();
-    }
+    public void updateWorldBorder() {
 
-    public void startScheduler() {
+        switch(GameStateHandler.getInstance().getCurrentGameState()) {
 
-        if(scheduler != null) {
-            this.scheduler.cancel();
+            case SETUP:
+            case PRE_GAME:
+            case START: return;
+            case MAIN: this.currentSize = (alivePlayers / ((double) totalPlayers)) * intialSize; break;
+            case FINAL: this.currentSize -= this.currentSize > 24 ? 0.1 : 0; break;
+            case POST:
+                this.currentSize = 10;
+                this.center.getWorld().getWorldBorder().setSize(10);
+                return;
         }
 
-        scheduler = Bukkit.getScheduler().runTaskTimerAsynchronously(main, () -> {
-
-            switch(GameStateHandler.getInstance().getCurrentGameState()) {
-
-                case START: return;
-                case MAIN: this.currentSize = (alivePlayers / ((double) totalPlayers)) * intialSize; break;
-                case FINAL: this.currentSize -= this.currentSize > 24 ? 0.1 : 0; break;
-                case POST:
-                    this.currentSize = 10;
-                    this.center.getWorld().getWorldBorder().setSize(10);
-                    this.stopScheduler();
-                    return;
-            }
-
-            this.center.getWorld().getWorldBorder().setSize(currentSize, 1);
-
-        }, 0, 20); // per second
+        this.center.getWorld().getWorldBorder().setSize(currentSize, 1);
     }
 
     @EventHandler
