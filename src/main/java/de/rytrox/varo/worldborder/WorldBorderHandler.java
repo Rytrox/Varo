@@ -13,26 +13,31 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 public class WorldBorderHandler implements Listener {
 
     private final Varo main;
-    private final int intialSize;
-    private double currentSize;
+    private final double intialSize;
+    private final double minSize;
+    private final double shrinkSpeed;
 
     private final int totalPlayers;
     private int alivePlayers;
 
     private final Location center;
+    private BukkitTask suddenDeathTask;
 
     public WorldBorderHandler(@NotNull Varo main) {
         this.main = main;
 
         Bukkit.getPluginManager().registerEvents(this, main);
 
-        this.intialSize = main.getConfig().getInt("worldborder.intialSize");
-        this.currentSize = this.intialSize; // TODO should be one of those single-value that should be saved in a json later (VARO-28)
+        this.intialSize = main.getConfig().getDouble("worldborder.intialSize");
+        this.minSize = main.getConfig().getDouble("worldborder.suddenDeath.minimal");
+        this.shrinkSpeed = main.getConfig().getDouble("worldborder.suddenDeath.speed");
+        double currentSize = this.intialSize; // TODO VARO-28 read from json
 
         TeamMemberRepository teamMemberRepository = new TeamMemberRepository(main.getDB());
         this.totalPlayers = teamMemberRepository.getTotalPlayerAmount();
@@ -44,27 +49,70 @@ public class WorldBorderHandler implements Listener {
         this.center = new Location(world, centerX, 0, centerZ);
 
         world.getWorldBorder().setCenter(center);
-        world.getWorldBorder().setSize(intialSize);
+        world.getWorldBorder().setSize(currentSize);
         world.getWorldBorder().setDamageAmount(0.1D);
 
+        // register worldborder command
+        main.getCommand("varoworldborder").setExecutor(new WorldBorderCommand(main));
     }
 
-    public void updateWorldBorder() {
+    /**
+     * Checks if sudden death mode is active or not
+     * @return result of check
+     */
+    public boolean isSuddenDeath() {
+        return suddenDeathTask.getTaskId() != -1;
+    }
 
-        switch(GameStateHandler.getInstance().getCurrentGameState()) {
+    /**
+     * Toggles the SuddenDeath Mode
+     * @return true if SuddenDeath has been activated <br>
+     * false if SuddenDeath has been deactivated
+     */
+    public boolean toggleSuddenDeath() {
 
-            case SETUP:
-            case PRE_GAME:
-            case START: return;
-            case MAIN: this.currentSize = (alivePlayers / ((double) totalPlayers)) * intialSize; break;
-            case FINAL: this.currentSize -= this.currentSize > 24 ? 0.1 : 0; break;
-            case POST:
-                this.currentSize = 10;
-                this.center.getWorld().getWorldBorder().setSize(10);
-                return;
+        if(suddenDeathTask.getTaskId() == -1) {
+            this.suddenDeathTask = Bukkit.getScheduler().runTaskTimer(main, () -> {
+                if(getSize() > minSize) {
+                    setSize(getSize() - shrinkSpeed);
+                }
+            }, 20, 20);
+            return true;
         }
 
-        this.center.getWorld().getWorldBorder().setSize(currentSize, 1);
+        this.suddenDeathTask.cancel();
+        return false;
+    }
+
+    /**
+     * updates the size of the worldborder
+     */
+    public void updateWorldBorder() {
+        double newSize;
+
+        switch(GameStateHandler.getInstance().getCurrentGameState()) {
+            case MAIN: newSize = (alivePlayers / ((double) totalPlayers)) * intialSize; break;
+            case POST: newSize = 10; break;
+            default: newSize = this.intialSize;
+        }
+
+        setSize(newSize);
+    }
+
+    /**
+     * Sets the size of the worldborder
+     */
+    public void setSize(double size) {
+        this.center.getWorld().getWorldBorder().setSize(size);
+        // TODO VARO-28 save size in json
+    }
+
+    /**
+     * Gets the size of the worldborder
+     * @return current worldborder size
+     */
+    public double getSize() {
+        return this.center.getWorld().getWorldBorder().getSize();
     }
 
     @EventHandler
