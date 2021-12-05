@@ -16,11 +16,17 @@ commands:
       - ti
     usage: '/teaminventory'
   gamestate:
-    description: 'Managed die GameStates'
+    description: 'Managet die GameStates'
     usage: '/gamestate'
     aliases:
       - gs
       - gstate
+  varoworldborder:
+    description: 'Managet die WorldBorder'
+    usage: '/varoworldborder'
+    aliases:
+      - vwb
+      - vworldborder
   message:
     description: 'Sendet eine private Nachricht an einen anderen Spieler'
     usage: '/message'
@@ -81,7 +87,6 @@ permissions:
   varo.teams.spawnpoint.set:
     description: Permission zum Setzen des SpawnPoints von Spielern
     default: op
-
   varo.gamestate.*:
     default: op
     description: 'Super-Permission für das GameStateManagement in Varo'
@@ -90,6 +95,9 @@ permissions:
       - 'varo.gamestate.status'
       - 'varo.gamestate.next'
       - 'varo.gamestate.set'
+  varo.worldborder:
+    default: op
+    description: Permission für den WorldBorder Befehl
   varo.gamestate.list:
     default: op
     description: 'Listet alle GameStates auf'

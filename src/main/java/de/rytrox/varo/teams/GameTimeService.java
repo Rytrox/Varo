@@ -1,6 +1,7 @@
 package de.rytrox.varo.teams;
 
 import de.rytrox.varo.Varo;
+import de.rytrox.varo.worldborder.WorldBorderHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
@@ -45,9 +46,13 @@ public class GameTimeService implements Listener {
      public void registerEndScheduler() {
         Bukkit.getScheduler().runTaskLater(main, () ->
             Bukkit.getScheduler().runTaskTimer(main, () ->
-                Bukkit.getOnlinePlayers().forEach(player ->
-                    player.kickPlayer(this.kickMessage)
-                )
+                    {
+                        Bukkit.getOnlinePlayers().forEach(player ->
+                                player.kickPlayer(this.kickMessage)
+                        );
+
+                        main.getWorldBorderHandler().updateWorldBorder();
+                    }
             , 0, 24 * 60 * 60 * 20)
         , getTimerOffset());
     }

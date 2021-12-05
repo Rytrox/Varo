@@ -22,6 +22,7 @@ import io.ebean.config.DatabaseConfig;
 import io.ebean.config.dbplatform.h2.H2Platform;
 import io.ebean.datasource.DataSourceConfig;
 
+import de.rytrox.varo.worldborder.WorldBorderHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -39,6 +40,7 @@ public final class Varo extends JavaPlugin {
 
     private Database database;
 
+    private WorldBorderHandler worldBorderHandler;
     private TeamManager teamManager;
     private ScoreBoardManager scoreBoardManager;
 
@@ -48,6 +50,7 @@ public final class Varo extends JavaPlugin {
         installDDL();
         saveDefaultConfig();
 
+        this.worldBorderHandler = new WorldBorderHandler(this);
         this.teamManager = new TeamManager(this);
         this.scoreBoardManager = new ScoreBoardManager(this);
         MessageService.getInstance().writeMessage("Der Server wurde gestartet!", MessageService.DiscordColor.CYAN);
@@ -110,6 +113,10 @@ public final class Varo extends JavaPlugin {
     @NotNull
     public ScoreBoardManager getScoreBoardManager() {
         return scoreBoardManager;
+    }
+
+    public WorldBorderHandler getWorldBorderHandler() {
+        return worldBorderHandler;
     }
 
     @NotNull

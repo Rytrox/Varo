@@ -37,7 +37,7 @@ public class GameStateHandler {
      * switches to the next game state
      */
     public void nextGameState() {
-        this.currentGameState = GameState.values()[(currentGameState.ordinal() + 1) % GameState.values().length];
+        setCurrentGameState(GameState.values()[(currentGameState.ordinal() + 1) % GameState.values().length]);
     }
 
     public enum GameState {
