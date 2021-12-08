@@ -40,6 +40,9 @@ commands:
     usage: '/spectate'
     aliases:
       - spec
+  invsee:
+    description: 'Inventar betrachten'
+    usage: '/invsee <player>'
   countdown:
     description: 'Startet und Stoppt den Countdown'
     usage: '/countdown'
