@@ -17,6 +17,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,6 +29,8 @@ public class ModeratorManager implements Listener {
         this.main = main;
 
         main.getCommand("spectate").setExecutor(new SpectateCommand());
+        main.getCommand("invsee").setExecutor(new InvseeCommand(main));
+        Bukkit.getPluginManager().registerEvents(this, main);
         Bukkit.getPluginManager().registerEvents(new ModeratorTeleporter(main, this), main);
     }
 
@@ -136,6 +139,13 @@ public class ModeratorManager implements Listener {
     @EventHandler
     public void onPickupItem(PlayerPickupItemEvent event) {
         if(isModerator(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onInvSeeClick(InventoryClickEvent event) {
+        if(!event.getInventory().getHolder().equals(event.getWhoClicked())) {
             event.setCancelled(true);
         }
     }

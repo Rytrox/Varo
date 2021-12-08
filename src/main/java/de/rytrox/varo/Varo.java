@@ -43,6 +43,7 @@ public final class Varo extends JavaPlugin {
     private WorldBorderHandler worldBorderHandler;
     private TeamManager teamManager;
     private ScoreBoardManager scoreBoardManager;
+    private ModeratorManager moderatorManager;
 
     @Override
     public void onEnable() {
@@ -60,7 +61,8 @@ public final class Varo extends JavaPlugin {
         pluginManager.registerEvents(new PlayerSkullDropService(), this);
         pluginManager.registerEvents(new PlayerResurrectionListener(), this);
         pluginManager.registerEvents(new GameTimeService(this), this);
-        pluginManager.registerEvents(new ModeratorManager(this), this);
+
+        this.moderatorManager = new ModeratorManager(this);
 
         this.getCommand("gamestate").setExecutor(new GamestateCommand());
         this.getCommand("message").setExecutor(new MessageCommand());
@@ -115,8 +117,14 @@ public final class Varo extends JavaPlugin {
         return scoreBoardManager;
     }
 
+    @NotNull
     public WorldBorderHandler getWorldBorderHandler() {
         return worldBorderHandler;
+    }
+
+    @NotNull
+    public ModeratorManager getModeratorManager() {
+        return moderatorManager;
     }
 
     @NotNull
