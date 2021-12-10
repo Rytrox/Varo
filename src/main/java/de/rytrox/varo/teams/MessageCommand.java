@@ -68,6 +68,7 @@ public class MessageCommand implements TabExecutor {
 
         if(args.length == 1) {
             StringUtil.copyPartialMatches(args[0], Bukkit.getOnlinePlayers().stream()
+                    .filter(p -> !main.getModeratorManager().isModerator(p))
                     .map(Player::getName)
                     .collect(Collectors.toList()), list);
         }
