@@ -1,6 +1,7 @@
 package de.rytrox.varo.discord;
 
 import de.rytrox.varo.Varo;
+import de.rytrox.varo.gamestate.GameState;
 import de.rytrox.varo.gamestate.GameStateHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -21,6 +22,7 @@ public class MessageService {
     private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyy-MM-dd | HH:mm");
     private static final String COORDINATE_TEMPLATE = "[x:%d | y:%d | z:%d]";
     private static final MessageService instance = new MessageService();
+    private static JavaPlugin main;
 
     private MessageService() {}
 
@@ -28,7 +30,10 @@ public class MessageService {
      * returns an instance of the discord service
      * @return an instance of the discord service
      */
-    public static MessageService getInstance() {
+    public static MessageService getInstance(JavaPlugin main) {
+        if(MessageService.main == null) {
+            MessageService.main = main;
+        }
         return instance;
     }
 
@@ -86,7 +91,7 @@ public class MessageService {
     public void writeMessage(String message, DiscordColor color, boolean addTimestamp) {
 
         // don't send discord messages, as long as the game is in setup state
-        if(GameStateHandler.getInstance().getCurrentGameState() == GameStateHandler.GameState.SETUP)
+        if(GameStateHandler.getInstance(main).getCurrentGameState().equalsIgnoreCase(GameState.SETUP.getName()))
             return;
 
         StringBuilder sb = new StringBuilder();

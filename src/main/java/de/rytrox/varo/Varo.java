@@ -64,7 +64,6 @@ public final class Varo extends JavaPlugin {
 
         this.moderatorManager = new ModeratorManager(this);
 
-        this.getCommand("gamestate").setExecutor(new GamestateCommand());
         this.getCommand("message").setExecutor(new MessageCommand());
         this.getCommand("countdown").setExecutor(new CountdownCommand(this));
     }
