@@ -17,11 +17,11 @@ import java.util.Optional;
  *      /gamestate list
  *      /gamestate status
  */
-public class GamestateCommand implements TabExecutor {
+public class GameStateCommand implements TabExecutor {
 
     private final JavaPlugin main;
 
-    public GamestateCommand(JavaPlugin main) {
+    public GameStateCommand(JavaPlugin main) {
         this.main = main;
     }
 
@@ -42,7 +42,7 @@ public class GamestateCommand implements TabExecutor {
                             .findAny();
 
                     if(foundGameState.isPresent()) {
-                        GameStateHandler gameStateHandler = GameStateHandler.getInstance();
+                        GameStateHandler gameStateHandler = GameStateHandler.getInstance(main);
 
                         String oldGameState = gameStateHandler.getCurrentGameState();
                         gameStateHandler.setCurrentGameState(foundGameState.get());
@@ -59,7 +59,7 @@ public class GamestateCommand implements TabExecutor {
                 }
             } else if("next".equalsIgnoreCase(args[0])) {
 
-                GameStateHandler gameStateHandler = GameStateHandler.getInstance();
+                GameStateHandler gameStateHandler = GameStateHandler.getInstance(main);
 
                 String oldGameState = gameStateHandler.getCurrentGameState();
                 gameStateHandler.nextGameState();
@@ -71,12 +71,12 @@ public class GamestateCommand implements TabExecutor {
             } else if("list".equalsIgnoreCase(args[0])) {
 
                 sender.sendMessage("GameStates:");
-                GameStateHandler.getInstance().getGameStates().forEach(sender::sendMessage);
+                GameStateHandler.getInstance(main).getGameStates().forEach(sender::sendMessage);
 
                 return true;
             } else if("status".equalsIgnoreCase(args[0])) {
 
-                sender.sendMessage("Aktueller GameState: " + GameStateHandler.getInstance().getCurrentGameState());
+                sender.sendMessage("Aktueller GameState: " + GameStateHandler.getInstance(main).getCurrentGameState());
                 return true;
             }
         }
@@ -96,7 +96,7 @@ public class GamestateCommand implements TabExecutor {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         if(args.length > 0 && "set".equalsIgnoreCase(args[0])) {
-            return GameStateHandler.getInstance().getGameStates();
+            return GameStateHandler.getInstance(main).getGameStates();
         }
 
         return new ArrayList<>();
