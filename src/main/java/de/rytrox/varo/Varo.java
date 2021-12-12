@@ -5,6 +5,7 @@ import de.rytrox.varo.countdown.CountdownCommand;
 import de.rytrox.varo.database.entity.Team;
 import de.rytrox.varo.database.entity.TeamItem;
 import de.rytrox.varo.database.entity.TeamMember;
+import de.rytrox.varo.gamestate.GameState;
 import de.rytrox.varo.moderation.ModeratorManager;
 import de.rytrox.varo.resurrection.PlayerResurrectionListener;
 import de.rytrox.varo.scoreboard.ScoreBoardManager;
@@ -50,6 +51,8 @@ public final class Varo extends JavaPlugin {
         // Plugin startup logic
         installDDL();
         saveDefaultConfig();
+
+        GameState.register();
 
         this.worldBorderHandler = new WorldBorderHandler(this);
         this.teamManager = new TeamManager(this);
