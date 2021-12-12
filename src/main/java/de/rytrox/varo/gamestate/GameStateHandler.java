@@ -27,7 +27,7 @@ public class GameStateHandler {
         if(GameStateHandler.main == null) {
             GameStateHandler.main = main;
             if(main.getCommand("gamestate").getExecutor() == null) {
-                main.getCommand("gamestate").setExecutor(new GamestateCommand(main));
+                main.getCommand("gamestate").setExecutor(new GameStateCommand(main));
             }
         }
         return instance;
@@ -52,9 +52,19 @@ public class GameStateHandler {
     }
 
     /**
+     * Registers a listener on a specified gamestates
+     */
+    public void registerListener(Listener listener, String... gameStates) {
+        for(String gameState : gameStates) {
+            registerListener(listener, gameState);
+        }
+    }
+
+    /**
      * Registers a listener on a specified gamestate
      */
-    public void registerListener(String gameState, Listener listener) {
+    public void registerListener(Listener listener, String gameState) {
+
         Optional<GameState> gameStateOptional = findGameState(gameState);
         if(!gameStateOptional.isPresent()) {
             throw new IllegalArgumentException("The GameState " + gameState + " is not registered. Therefore no listener can be registered");
