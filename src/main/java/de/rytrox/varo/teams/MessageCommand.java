@@ -1,5 +1,6 @@
 package de.rytrox.varo.teams;
 
+import de.rytrox.varo.Varo;
 import de.rytrox.varo.utils.CommandHelper;
 import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang.ArrayUtils;
@@ -15,6 +16,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class MessageCommand implements TabExecutor {
+
+    private final Varo main;
+
+    public MessageCommand(Varo main) {
+        this.main = main;
+    }
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
@@ -35,6 +42,12 @@ public class MessageCommand implements TabExecutor {
 
                     commandSender.sendMessage(fullMessage);
                     target.sendMessage(fullMessage);
+
+                    Bukkit.getOnlinePlayers().forEach(p -> {
+                        if(main.getModeratorManager().isModerator(p)) {
+                            p.sendMessage(fullMessage);
+                        }
+                    });
                 } else commandSender.sendMessage(ChatColor.RED + "Du kannst dir nicht selbst eine Nachricht verschicken.");
             } else commandSender.sendMessage(ChatColor.RED + "Der angegebene Spieler ist nicht online.");
         } else sendHelp(commandSender);
@@ -55,6 +68,7 @@ public class MessageCommand implements TabExecutor {
 
         if(args.length == 1) {
             StringUtil.copyPartialMatches(args[0], Bukkit.getOnlinePlayers().stream()
+                    .filter(p -> !main.getModeratorManager().isModerator(p))
                     .map(Player::getName)
                     .collect(Collectors.toList()), list);
         }
