@@ -6,7 +6,7 @@ import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.database.enums.PlayerStatus;
 import de.rytrox.varo.database.repository.TeamMemberRepository;
 import de.rytrox.varo.gamestate.GameStates;
-import de.rytrox.gamestate.GameStateHandler;
+import de.rytrox.gamestate.sether.GameStateHandler;
 import de.rytrox.varo.teams.events.TeamMemberSpawnEvent;
 
 import org.bukkit.Bukkit;

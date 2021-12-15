@@ -1,4 +1,4 @@
-package de.rytrox.gamestate;
+package de.rytrox.gamestate.sether;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;

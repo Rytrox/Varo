@@ -1,4 +1,4 @@
-package de.rytrox.gamestate;
+package de.rytrox.gamestate.sether;
 
 import de.rytrox.varo.utils.CommandHelper;
 import org.bukkit.command.Command;

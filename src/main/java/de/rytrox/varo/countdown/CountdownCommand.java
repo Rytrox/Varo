@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.gamestate.GameStates;
-import de.rytrox.gamestate.GameStateHandler;
+import de.rytrox.gamestate.sether.GameStateHandler;
 import de.rytrox.varo.utils.CommandHelper;
 
 import net.md_5.bungee.api.ChatColor;

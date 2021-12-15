@@ -1,7 +1,7 @@
 package de.rytrox.varo;
 
-import de.rytrox.gamestate.GameState;
-import de.rytrox.gamestate.GameStateHandler;
+import de.rytrox.gamestate.sether.GameState;
+import de.rytrox.gamestate.sether.GameStateHandler;
 import de.rytrox.varo.database.entity.SpawnPoint;
 import de.rytrox.varo.countdown.CountdownCommand;
 import de.rytrox.varo.database.entity.Team;
@@ -41,6 +41,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public final class Varo extends JavaPlugin {
+
+    private final de.rytrox.gamestate.mixed.GameStateHandler gameStateHandler = new de.rytrox.gamestate.mixed.GameStateHandler(this);
 
     private Database database;
 
@@ -119,6 +121,11 @@ public final class Varo extends JavaPlugin {
     @NotNull
     public ModeratorManager getModeratorManager() {
         return moderatorManager;
+    }
+
+    @NotNull
+    public de.rytrox.gamestate.mixed.GameStateHandler getGameStateHandler() {
+        return gameStateHandler;
     }
 
     @NotNull

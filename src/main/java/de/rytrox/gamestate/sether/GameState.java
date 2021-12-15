@@ -1,4 +1,4 @@
-package de.rytrox.gamestate;
+package de.rytrox.gamestate.sether;
 
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -27,8 +27,9 @@ public class GameState {
     }
 
     public boolean unregisterListener(Listener listener) {
-        return this.registeredListener.remove(listener);
         HandlerList.unregisterAll(listener);
+
+        return this.registeredListener.remove(listener);
     }
 
     public List<Listener> getRegisteredListener() {
