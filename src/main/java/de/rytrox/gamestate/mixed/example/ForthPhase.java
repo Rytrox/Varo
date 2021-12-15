@@ -1,6 +1,5 @@
 package de.rytrox.gamestate.mixed.example;
 
-import de.rytrox.gamestate.mixed.AbstractState;
 import de.rytrox.gamestate.mixed.State;
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.discord.DiscordListener;
@@ -11,7 +10,7 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ForthPhase extends AbstractState {
+public class ForthPhase extends State {
 
     private final Varo main;
 

@@ -1,6 +1,5 @@
 package de.rytrox.gamestate.mixed.example;
 
-import de.rytrox.gamestate.mixed.AbstractState;
 import de.rytrox.gamestate.mixed.State;
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.scoreboard.ScoreBoardManager;
@@ -9,7 +8,7 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class FifthPhase extends AbstractState {
+public class FifthPhase extends State {
 
     private final Varo main;
 

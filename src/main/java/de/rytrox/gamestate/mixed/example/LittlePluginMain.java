@@ -41,6 +41,6 @@ public class LittlePluginMain {
         main.getGameStateHandler().nextGameState();
         // Und durch meine Custom Implementierung wieder auf die vordefinierte erste
         main.getGameStateHandler().nextGameState();
-        
+
     }
 }

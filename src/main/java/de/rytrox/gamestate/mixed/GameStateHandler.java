@@ -1,10 +1,7 @@
 package de.rytrox.gamestate.mixed;
 
-import org.bukkit.Bukkit;
-import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -66,6 +63,7 @@ public class GameStateHandler {
             throw new IllegalArgumentException("The GameState " + gameState + " has already been registered");
         }
 
+        gameState.setMain(main);
         before.next(gameState);
         gameStates.add(gameState);
     }
@@ -93,42 +91,28 @@ public class GameStateHandler {
         public void setCurrentGameStateByIdentifier(String gameState) {
             GameState foundState = getGameState(gameState);
 
-            this.disableCurrentPhase();
+            this.currentState.onDisable();
             this.currentState = foundState;
-            this.enableCurrentPhase();
+            this.currentState.onEnable();
         }
 
-        public void setCurrentGameState(@NotNull AbstractState gameState) {
+        public void setCurrentGameState(@NotNull State gameState) {
             // Disable all old listener
-            this.disableCurrentPhase();
+            this.currentState.onDisable();
 
             this.currentState = gameState;
             gameState.onEnable();
         }
 
-        private void disableCurrentPhase() {
-            if(this.currentState instanceof GameState) {
-                ((GameState) currentState).getRegisteredListener()
-                        .forEach(HandlerList::unregisterAll);
-            } else {
-                ((AbstractState) this.currentState).onDisable();
-            }
-        }
-
-        private void enableCurrentPhase() {
-            if(this.currentState instanceof GameState) {
-                ((GameState) currentState).getRegisteredListener()
-                        .forEach(listener -> Bukkit.getPluginManager().registerEvents(listener, main));
-            } else {
-                ((AbstractState) this.currentState).onEnable();
-            }
-        }
-
-        /**
+    /**
          * switches to the next game state
          */
         public void nextGameState() {
-            disableCurrentPhase();
+            this.currentState.onDisable();
             this.currentState = this.currentState.next();
+
+            if(this.currentState != null) {
+                this.currentState.onEnable();
+            }
         }
 }

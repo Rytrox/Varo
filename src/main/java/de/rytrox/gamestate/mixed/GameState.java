@@ -2,8 +2,10 @@ package de.rytrox.gamestate.mixed;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,21 +13,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public final class GameState implements State {
+public final class GameState extends State {
 
-    private final String identifier;
     private final List<Listener> registeredListener;
 
     private State nextState;
+    private JavaPlugin main;
 
     public GameState(String identifier, State nextState) {
-        this.identifier = identifier;
+        super(identifier);
         this.registeredListener = new ArrayList<>();
         this.nextState = nextState;
     }
 
     public GameState(String identifier, Listener... listeners) {
-        this.identifier = identifier;
+        super(identifier);
         this.registeredListener = Arrays.asList(listeners);
     }
 
@@ -65,7 +67,29 @@ public final class GameState implements State {
     }
 
     public void next(State state) {
+        this.nextState = state;
+    }
 
+    /**
+     * Diese Methode möchte ich für die Vererbung offen lassen!
+     */
+    @Override
+    public void onEnable() {
+        this.registeredListener
+                .forEach((listener) -> Bukkit.getPluginManager().registerEvents(listener, main));
+    }
+
+    /**
+     * Diese Methode möchte ich für die Vererbung offen lassen!
+     */
+    @Override
+    public void onDisable() {
+        this.registeredListener
+                .forEach(HandlerList::unregisterAll);
+    }
+
+    void setMain(@NotNull JavaPlugin main) {
+        this.main = main;
     }
 
     public @NotNull String getIdentifier() {

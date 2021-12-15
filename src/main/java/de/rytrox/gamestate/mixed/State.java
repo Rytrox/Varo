@@ -6,11 +6,23 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Interface for GameStates to manage
  */
-public interface State {
+public abstract class State {
+
+    protected final String identifier;
+
+    public State(@NotNull String identifier) {
+        this.identifier = identifier;
+    }
 
     @Nullable
-    State next();
+    public abstract State next();
 
     @NotNull
-    String getIdentifier();
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public abstract void onEnable();
+
+    public abstract void onDisable();
 }
