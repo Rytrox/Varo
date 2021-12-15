@@ -1,4 +1,4 @@
-package de.rytrox.varo.gamestate;
+package de.rytrox.gamestate;
 
 import de.rytrox.varo.utils.CommandHelper;
 import org.bukkit.command.Command;
@@ -36,7 +36,7 @@ public class GameStateCommand implements TabExecutor {
 
                     Optional<String> foundGameState = GameStateHandler
                             .getInstance(main)
-                            .getGameStates()
+                            .getGameStateIdentifiers()
                             .stream()
                             .filter(gameState -> gameState.equalsIgnoreCase(demandedGameState))
                             .findAny();
@@ -45,7 +45,7 @@ public class GameStateCommand implements TabExecutor {
                         GameStateHandler gameStateHandler = GameStateHandler.getInstance(main);
 
                         String oldGameState = gameStateHandler.getCurrentGameState();
-                        gameStateHandler.setCurrentGameState(foundGameState.get());
+                        gameStateHandler.setCurrentGameStateByIdentifier(foundGameState.get());
 
                         sender.sendMessage(String.format("Der GameState wurde von %s auf %s gewechselt",
                                 oldGameState,
@@ -71,7 +71,7 @@ public class GameStateCommand implements TabExecutor {
             } else if("list".equalsIgnoreCase(args[0])) {
 
                 sender.sendMessage("GameStates:");
-                GameStateHandler.getInstance(main).getGameStates().forEach(sender::sendMessage);
+                GameStateHandler.getInstance(main).getGameStateIdentifiers().forEach(sender::sendMessage);
 
                 return true;
             } else if("status".equalsIgnoreCase(args[0])) {
@@ -96,7 +96,7 @@ public class GameStateCommand implements TabExecutor {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         if(args.length > 0 && "set".equalsIgnoreCase(args[0])) {
-            return GameStateHandler.getInstance(main).getGameStates();
+            return GameStateHandler.getInstance(main).getGameStateIdentifiers();
         }
 
         return new ArrayList<>();

@@ -3,8 +3,8 @@ package de.rytrox.varo.worldborder;
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.database.repository.TeamMemberRepository;
 import de.rytrox.varo.discord.MessageService;
-import de.rytrox.varo.gamestate.GameState;
-import de.rytrox.varo.gamestate.GameStateHandler;
+import de.rytrox.varo.gamestate.GameStates;
+import de.rytrox.gamestate.GameStateHandler;
 import de.rytrox.varo.resurrection.PlayerResurrectionEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -86,7 +86,7 @@ public class WorldBorderHandler implements Listener {
     public void updateWorldBorder() {
         double newSize;
 
-        switch(GameState.valueOf(GameStateHandler.getInstance(main).getCurrentGameState())) {
+        switch(GameStates.valueOf(GameStateHandler.getInstance(main).getCurrentGameState())) {
             case MAIN: newSize = (alivePlayers / ((double) totalPlayers)) * intialSize; break;
             case POST: newSize = 10; break;
             default: newSize = this.intialSize;

@@ -3,8 +3,8 @@ package de.rytrox.varo.countdown;
 import com.google.gson.JsonObject;
 
 import de.rytrox.varo.Varo;
-import de.rytrox.varo.gamestate.GameState;
-import de.rytrox.varo.gamestate.GameStateHandler;
+import de.rytrox.varo.gamestate.GameStates;
+import de.rytrox.gamestate.GameStateHandler;
 import de.rytrox.varo.utils.CommandHelper;
 
 import net.md_5.bungee.api.ChatColor;
@@ -62,7 +62,7 @@ public class CountdownCommand implements TabExecutor {
         if(args.length > 0) {
             if("start".equalsIgnoreCase(args[0])) {
                 if(sender.hasPermission("varo.countdown.start")) {
-                    if(gameStateHandler.getCurrentGameState().equalsIgnoreCase(GameState.PRE_GAME.getName())) {
+                    if(gameStateHandler.getCurrentGameState().equalsIgnoreCase(GameStates.PRE_GAME.getName())) {
                         start();
                     } else sender.sendMessage(ChatColor.RED + "Um den Countdown zu starten, muss das Spiel in der Vorbereitungsphase sein");
                 } else sender.sendMessage(ChatColor.RED + "Du hast nicht die benötigte Berechtigung, diesen Befehl auszuführen");
@@ -70,7 +70,7 @@ public class CountdownCommand implements TabExecutor {
                 return true;
             } else if("stop".equalsIgnoreCase(args[0])) {
                 if(sender.hasPermission("varo.countdown.stop")) {
-                    if(gameStateHandler.getCurrentGameState().equalsIgnoreCase(GameState.PRE_GAME.getName())) {
+                    if(gameStateHandler.getCurrentGameState().equalsIgnoreCase(GameStates.PRE_GAME.getName())) {
                         stop();
                     } else sender.sendMessage(ChatColor.RED + "Um den Countdown zu starten, muss das Spiel in der Vorbereitungsphase sein");
                 } else sender.sendMessage(ChatColor.RED + "Du hast nicht die benötigte Berechtigung, diesen Befehl auszuführen");

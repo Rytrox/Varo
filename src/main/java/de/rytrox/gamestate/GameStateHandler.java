@@ -1,4 +1,4 @@
-package de.rytrox.varo.gamestate;
+package de.rytrox.gamestate;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
@@ -34,50 +34,47 @@ public class GameStateHandler {
     }
 
     /**
-     * Searches for a gamestate with the specified name
+     * Searches for a gamestate with the specified identifier
      */
-    private Optional<GameState> findGameState(String gameState) {
-        return this.gameStates.stream().filter(gs -> gs.getName().equalsIgnoreCase(gameState)).findAny();
+    private Optional<GameState> findGameState(String identifier) {
+        return this.gameStates.stream().filter(gs -> gs.getIdentifier().equalsIgnoreCase(identifier)).findAny();
+    }
+
+    /**
+     * Registers new gamestates
+     * @param gameStates the gamestates you want to register
+     */
+    public void registerGameStates(GameState... gameStates) {
+        for(GameState gameState : gameStates) {
+            registerGameState(gameState);
+        }
     }
 
     /**
      * Registers a new gamestate
-     * @param gameState
+     * @param gameState the gamestate you want to register
      */
-    public void registerGameState(String gameState) {
-        if(findGameState(gameState).isPresent()) {
+    public void registerGameState(GameState gameState) {
+        if(findGameState(gameState.getIdentifier()).isPresent()) {
             throw new IllegalArgumentException("The GameState " + gameState + " has already been registered");
         }
-        gameStates.add(new GameState(gameState.toLowerCase()));
-    }
-
-    /**
-     * Registers a listener on a specified gamestates
-     */
-    public void registerListener(Listener listener, String... gameStates) {
-        for(String gameState : gameStates) {
-            registerListener(listener, gameState);
-        }
-    }
-
-    /**
-     * Registers a listener on a specified gamestate
-     */
-    public void registerListener(Listener listener, String gameState) {
-
-        Optional<GameState> gameStateOptional = findGameState(gameState);
-        if(!gameStateOptional.isPresent()) {
-            throw new IllegalArgumentException("The GameState " + gameState + " is not registered. Therefore no listener can be registered");
-        }
-        gameStateOptional.get().registerListener(listener);
+        gameStates.add(gameState);
     }
 
     /**
      * Returns a list of all available game states
      * @return all available game states
      */
-    public List<String> getGameStates() {
-        return this.gameStates.stream().map(GameState::getName).collect(Collectors.toList());
+    public List<String> getGameStateIdentifiers() {
+        return this.gameStates.stream().map(GameState::getIdentifier).collect(Collectors.toList());
+    }
+
+    /**
+     * Returns a list of all available game states
+     * @return all available game states
+     */
+    public List<GameState> getGameStates() {
+        return this.gameStates;
     }
 
     /**
@@ -85,27 +82,27 @@ public class GameStateHandler {
      * @return the current game state
      */
     public String getCurrentGameState() {
-        return this.gameStates.get(currentGameState).getName();
+        return this.gameStates.get(currentGameState).getIdentifier();
     }
 
     /**
      * Sets the current game state
      * @param gameState the new game state
      */
-    public void setCurrentGameState(String gameState) {
+    public void setCurrentGameStateByIdentifier(String gameState) {
         Optional<GameState> gameStateOptional = findGameState(gameState);
         if(!gameStateOptional.isPresent()) {
             throw new IllegalArgumentException("Cannot set gamestate to " + gameState +" because it has not been registered");
         }
 
-        setCurrentGameState(gameStates.indexOf(gameStateOptional.get()));
+        this.setCurrentGameStateByIndex(gameStates.indexOf(gameStateOptional.get()));
     }
 
     /**
      * Sets the current game state and registers events
      * @param gameState the index of the new gamestate
      */
-    private void setCurrentGameState(int gameState) {
+    private void setCurrentGameStateByIndex(int gameState) {
         if(gameState < 0 || gameState >= gameStates.size()) {
             throw new IllegalArgumentException("Cannot set gamestate to index " + gameState + ". Index is out of bounds");
         }
@@ -126,31 +123,6 @@ public class GameStateHandler {
      * switches to the next game state
      */
     public void nextGameState() {
-        setCurrentGameState((this.currentGameState + 1) % this.gameStates.size());
-    }
-
-
-    private static class GameState {
-
-        private final String name;
-        private List<Listener> registeredListener;
-
-        public GameState(String name) {
-            this.name = name;
-            this.registeredListener = new ArrayList<>();
-        }
-
-        public void registerListener(Listener listener) {
-            this.registeredListener.add(listener);
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public List<Listener> getRegisteredListener() {
-            return registeredListener;
-        }
-
+        setCurrentGameStateByIndex((this.currentGameState + 1) % this.gameStates.size());
     }
 }

@@ -1,8 +1,8 @@
 package de.rytrox.varo.discord;
 
 import de.rytrox.varo.Varo;
-import de.rytrox.varo.gamestate.GameState;
-import de.rytrox.varo.gamestate.GameStateHandler;
+import de.rytrox.varo.gamestate.GameStates;
+import de.rytrox.gamestate.GameStateHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -91,7 +91,7 @@ public class MessageService {
     public void writeMessage(String message, DiscordColor color, boolean addTimestamp) {
 
         // don't send discord messages, as long as the game is in setup state
-        if(GameStateHandler.getInstance(main).getCurrentGameState().equalsIgnoreCase(GameState.SETUP.getName()))
+        if(GameStateHandler.getInstance(main).getCurrentGameState().equalsIgnoreCase(GameStates.SETUP.getName()))
             return;
 
         StringBuilder sb = new StringBuilder();

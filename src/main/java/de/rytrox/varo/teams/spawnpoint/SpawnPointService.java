@@ -5,8 +5,8 @@ import de.rytrox.varo.database.entity.SpawnPoint;
 import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.database.enums.PlayerStatus;
 import de.rytrox.varo.database.repository.TeamMemberRepository;
-import de.rytrox.varo.gamestate.GameState;
-import de.rytrox.varo.gamestate.GameStateHandler;
+import de.rytrox.varo.gamestate.GameStates;
+import de.rytrox.gamestate.GameStateHandler;
 import de.rytrox.varo.teams.events.TeamMemberSpawnEvent;
 
 import org.bukkit.Bukkit;
@@ -65,7 +65,7 @@ public class SpawnPointService implements Listener {
 
         // Only teleport if the game is running and the player is alive
         if(event.getMember().getStatus() == PlayerStatus.ALIVE &&
-                GameStateHandler.getInstance(main).getCurrentGameState().equalsIgnoreCase(GameState.PRE_GAME.getName())) {
+                GameStateHandler.getInstance(main).getCurrentGameState().equalsIgnoreCase(GameStates.PRE_GAME.getName())) {
             Bukkit.getScheduler().runTask(main, () -> {
                 SpawnPoint spawnPoint = event.getMember().getSpawnPoint();
 
