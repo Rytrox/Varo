@@ -1,5 +1,6 @@
 package de.rytrox.gamestate;
 
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class GameState {
 
     public void registerListener(Listener listener) {
         this.registeredListener.add(listener);
+        HandlerList.unregisterAll(listener);
     }
 
     public boolean unregisterListener(Listener listener) {
