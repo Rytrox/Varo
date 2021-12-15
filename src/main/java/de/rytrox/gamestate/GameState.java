@@ -24,11 +24,11 @@ public class GameState {
 
     public void registerListener(Listener listener) {
         this.registeredListener.add(listener);
-        HandlerList.unregisterAll(listener);
     }
 
     public boolean unregisterListener(Listener listener) {
         return this.registeredListener.remove(listener);
+        HandlerList.unregisterAll(listener);
     }
 
     public List<Listener> getRegisteredListener() {
