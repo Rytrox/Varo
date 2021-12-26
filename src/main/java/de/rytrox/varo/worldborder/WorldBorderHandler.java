@@ -34,24 +34,23 @@ public class WorldBorderHandler implements Listener {
 
         Bukkit.getPluginManager().registerEvents(this, main);
 
-        this.intialSize = main.getConfig().getDouble("worldborder.intialSize");
-        this.minSize = main.getConfig().getDouble("worldborder.suddenDeath.minimal");
-        this.shrinkSpeed = main.getConfig().getDouble("worldborder.suddenDeath.speed");
-        double currentSize = this.intialSize; // TODO VARO-28 read from json
+        this.intialSize = main.getConfig().getDouble("worldborder.intialSize", 4000D);
+        this.minSize = main.getConfig().getDouble("worldborder.suddenDeath.minimal", 20D);
+        this.shrinkSpeed = main.getConfig().getDouble("worldborder.suddenDeath.speed", 0.5D);
 
         TeamMemberRepository teamMemberRepository = new TeamMemberRepository(main.getDB());
         this.totalPlayers = teamMemberRepository.getTotalPlayerAmount();
         this.alivePlayers = teamMemberRepository.getAlivePlayerAmount();
 
-        World world = Bukkit.getWorld(main.getConfig().getString("worldborder.world"));
+        World world = Bukkit.getWorld(main.getConfig().getString("worldborder.world", "world"));
 
-        double centerX = main.getConfig().getDouble("worldborder.center.x");
-        double centerY = main.getConfig().getDouble("world.center.y");
-        double centerZ = main.getConfig().getDouble("worldborder.center.z");
+        double centerX = main.getConfig().getDouble("worldborder.center.x", 0D);
+        double centerY = main.getConfig().getDouble("worldborder.center.y", 80D);
+        double centerZ = main.getConfig().getDouble("worldborder.center.z", 0D);
         this.center = new Location(world, centerX, centerY, centerZ);
 
         world.getWorldBorder().setCenter(center);
-        world.getWorldBorder().setSize(currentSize);
+        world.getWorldBorder().setSize(this.intialSize);
         world.getWorldBorder().setDamageAmount(0.1D);
 
         // register worldborder command
@@ -151,7 +150,7 @@ public class WorldBorderHandler implements Listener {
         Location playerLocation = player.getLocation();
 
         if(center.getWorld() == null) {
-            center.setWorld(Bukkit.getWorld(main.getConfig().getString("worldborder.world")));
+            center.setWorld(Bukkit.getWorld(main.getConfig().getString("worldborder.world", "world")));
             if(center.getWorld() == null) {
                 return true;
             }
