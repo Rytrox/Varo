@@ -3,6 +3,7 @@ package de.rytrox.varo.worldborder;
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.database.repository.TeamMemberRepository;
 import de.rytrox.varo.discord.MessageService;
+import de.rytrox.varo.game.events.GameDayEndEvent;
 import de.rytrox.varo.gamestate.GameStateHandler;
 import de.rytrox.varo.resurrection.PlayerResurrectionEvent;
 import org.bukkit.Bukkit;
@@ -123,6 +124,11 @@ public class WorldBorderHandler implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         this.checkSpawnPosition(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onGameDayEnd(GameDayEndEvent event) {
+        this.updateWorldBorder();
     }
 
     /**

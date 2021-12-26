@@ -39,6 +39,14 @@ public class TeamMember {
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "member", targetEntity = SpawnPoint.class, fetch = FetchType.LAZY)
     private SpawnPoint spawnPoint;
 
+    @JoinColumn(name = "player_time")
+    @OneToOne(cascade = CascadeType.ALL, targetEntity = PlayerTimeStatistic.class)
+    private PlayerTimeStatistic playerTimeStatistic;
+
+    public TeamMember() {
+        this.playerTimeStatistic = new PlayerTimeStatistic();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -171,5 +179,24 @@ public class TeamMember {
      */
     public void setSpawnPoint(@Nullable SpawnPoint spawnPoint) {
         this.spawnPoint = spawnPoint;
+    }
+
+    /**
+     * Returns the player statistic of a player
+     *
+     * @return the player statistic of a player
+     */
+    @NotNull
+    public PlayerTimeStatistic getPlayerTimeStatistic() {
+        return playerTimeStatistic;
+    }
+
+    /**
+     * Sets the player's statistic
+     *
+     * @param playerTimeStatistic the new Player-Statisic
+     */
+    public void setPlayerTimeStatistic(@NotNull PlayerTimeStatistic playerTimeStatistic) {
+        this.playerTimeStatistic = playerTimeStatistic;
     }
 }
