@@ -3,6 +3,7 @@ package de.rytrox.varo.game;
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.game.events.GameDayEndEvent;
 import de.rytrox.varo.game.events.GameDayStartEvent;
+import de.rytrox.varo.message.MessageService;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
@@ -85,6 +86,16 @@ public class GameTimeService implements Listener {
 
         // calculate offset in ticks (minutes) * 60 * 20
         return (offset.getHour() * 60 + offset.getMinute()) * 60 * 20L;
+    }
+
+    @EventHandler
+    public void onStart(GameDayStartEvent event) {
+        MessageService.getInstance().writeMessage("Der Spieltag hat begonnen! Der Server kann nun betreten werden!", MessageService.DiscordColor.BLUE, true);
+    }
+
+    @EventHandler
+    public void onEnd(GameDayEndEvent event) {
+        MessageService.getInstance().writeMessage("Der Spieltag ist beendet!", MessageService.DiscordColor.RED, true);
     }
 
     @EventHandler
