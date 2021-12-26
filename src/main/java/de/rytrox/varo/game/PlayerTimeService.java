@@ -29,6 +29,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class PlayerTimeService implements Listener {
 
@@ -125,6 +126,7 @@ public class PlayerTimeService implements Listener {
                 playerDayTime.entrySet()
                         .stream()
                         .filter((entry) -> Bukkit.getPlayer(entry.getKey()) != null)
+                        .collect(Collectors.toList())
                         .forEach((entry) -> {
                             Duration newTime = entry.getValue().minusSeconds(1);
 
