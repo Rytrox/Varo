@@ -1,14 +1,11 @@
 package de.rytrox.varo;
 
-import de.rytrox.varo.database.entity.SpawnPoint;
+import de.rytrox.varo.database.entity.*;
 import de.rytrox.varo.countdown.CountdownCommand;
-import de.rytrox.varo.database.entity.Team;
-import de.rytrox.varo.database.entity.TeamItem;
-import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.moderation.ModeratorManager;
 import de.rytrox.varo.resurrection.PlayerResurrectionListener;
 import de.rytrox.varo.scoreboard.ScoreBoardManager;
-import de.rytrox.varo.teams.GameTimeService;
+import de.rytrox.varo.game.GameTimeService;
 import de.rytrox.varo.teams.MessageCommand;
 import de.rytrox.varo.teams.TeamManager;
 import de.rytrox.varo.gamestate.GamestateCommand;
@@ -82,7 +79,8 @@ public final class Varo extends JavaPlugin {
                 TeamMember.class,
                 TeamItem.class,
                 Team.class,
-                SpawnPoint.class
+                SpawnPoint.class,
+                PlayerTimeStatistic.class
         );
     }
 

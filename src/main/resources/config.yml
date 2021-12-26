@@ -18,6 +18,18 @@ game:
   start: '16:00'
   # The End-Date when all players must leave the server
   end: '22:00'
+  # Settings for Playertimes
+  playertime:
+    # Time in HH:mm how long a game day is
+    day-length: '00:15'
+
+    # Players can collect days if they aren't online.
+    # This setting
+    max-allowed-days: 3
+
+    # Player can skip gamedays.
+    # If the player has reached this minimum amount of days he will be banned until his allowed days are 0
+    min-allowed-days: -3
 
 worldborder:
   # world you play in
