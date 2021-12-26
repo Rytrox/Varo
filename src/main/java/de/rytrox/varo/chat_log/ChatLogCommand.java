@@ -155,8 +155,8 @@ public class ChatLogCommand implements TabExecutor {
         CommandHelper.sendCommandExplanation("/chatlog <all, msg, global>", "Gibt alle Chatlogs des benannten Typs von allen Spielern aus", sender);
         CommandHelper.sendCommandExplanation("/chatlog <all, msg, global> <player>", "Gibt alle Chatlogs des benannten Typs eines Spielers aus", sender);
         CommandHelper.sendCommandExplanation("/chatlog <all, msg, global> <player1> <player2> <player3> ...", "Gibt die Chatlogs mehrerer Spieler aus", sender);
-        CommandHelper.sendCommandExplanation("/chatlog <all, msg, global> <player> *last <number> <days/d, hours/h, minutes/m>", "Gibt alle Chatlogs der letzten <number> Tagen/Stunden/Minuten aus", sender);
-        CommandHelper.sendCommandExplanation("/chatlog <all, msg, global> <player> *between <Datum im Format dd.MM.yyyy-HH:mm> <Datum im Format dd.MM.yyyy-HH:mm>", "Gibt alle Chatlogs der zwischen den angegebenen Daten aus", sender);
+        CommandHelper.sendCommandExplanation("/chatlog <all, msg, global> <player...> *last <number> <days/d, hours/h, minutes/m>", "Gibt alle Chatlogs der letzten <number> Tagen/Stunden/Minuten aus", sender);
+        CommandHelper.sendCommandExplanation("/chatlog <all, msg, global> <player...> *between <Datum im Format dd.MM.yyyy-HH:mm> <Datum im Format dd.MM.yyyy-HH:mm>", "Gibt alle Chatlogs der zwischen den angegebenen Daten aus", sender);
     }
 
     @Override
