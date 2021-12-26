@@ -4,9 +4,9 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
- * Event that will be triggered when the game ends
+ * Event that will be triggered when the game starts
  */
-public class GameDayEndEvent extends Event {
+public class GameDayStartEvent extends Event {
 
     private static final HandlerList HANDLER_LIST = new HandlerList();
 
