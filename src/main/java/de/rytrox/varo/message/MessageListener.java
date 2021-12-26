@@ -1,7 +1,6 @@
 package de.rytrox.varo.message;
 
 import de.rytrox.varo.Varo;
-import de.rytrox.varo.moderation.ModeratorManager;
 import de.rytrox.varo.scoreboard.Tablist;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.event.EventHandler;
@@ -32,7 +31,7 @@ public class MessageListener implements Listener {
                 Tablist.getInstance().getPrefix(event.getPlayer()),
                 event.getPlayer().getName())));
 
-        MessageService.getInstance().writeMessage(event.getJoinMessage(), MessageService.DiscordColor.BLUE);
+        main.getMessageService().writeMessage(event.getJoinMessage(), MessageService.DiscordColor.BLUE);
     }
 
     @EventHandler
@@ -48,6 +47,6 @@ public class MessageListener implements Listener {
                         Tablist.getInstance().getPrefix(event.getPlayer()),
                         event.getPlayer().getName())));
 
-        MessageService.getInstance().writeMessage(event.getQuitMessage(), MessageService.DiscordColor.RED);
+        main.getMessageService().writeMessage(event.getQuitMessage(), MessageService.DiscordColor.RED);
     }
 }

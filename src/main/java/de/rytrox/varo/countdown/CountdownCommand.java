@@ -45,7 +45,7 @@ public class CountdownCommand implements TabExecutor {
             Sound.ORB_PICKUP
     );
 
-    private final GameStateHandler gameStateHandler = GameStateHandler.getInstance();
+    private final GameStateHandler gameStateHandler;
     private final AtomicInteger counter = new AtomicInteger(60);
     private final Varo main;
 
@@ -53,6 +53,7 @@ public class CountdownCommand implements TabExecutor {
 
     public CountdownCommand(@NotNull Varo main) {
         this.main = main;
+        this.gameStateHandler = main.getGameStateHandler();
     }
 
     @Override

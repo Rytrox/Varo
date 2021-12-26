@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 public class WorldBorderHandler implements Listener {
 
     private final Varo main;
+
     private final double intialSize;
     private final double minSize;
     private final double shrinkSpeed;
@@ -85,7 +86,7 @@ public class WorldBorderHandler implements Listener {
     public void updateWorldBorder() {
         double newSize;
 
-        switch(GameStateHandler.getInstance().getCurrentGameState()) {
+        switch(main.getGameStateHandler().getCurrentGameState()) {
             case MAIN: newSize = (alivePlayers / ((double) totalPlayers)) * intialSize; break;
             case POST: newSize = 10; break;
             default: newSize = this.intialSize;
@@ -137,7 +138,7 @@ public class WorldBorderHandler implements Listener {
     private void checkSpawnPosition(Player player) {
         if(!isInsideWorldBorder(player)) {
             player.teleport(center);
-            MessageService.getInstance().leakPlayerCoordinates(player, MessageService.CoordinateLeakReason.SPAWN_OUTSIDE_BORDER);
+            main.getMessageService().leakPlayerCoordinates(player, MessageService.CoordinateLeakReason.SPAWN_OUTSIDE_BORDER);
         }
     }
 
