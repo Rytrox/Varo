@@ -14,7 +14,7 @@ public class PlayerTimeStatistic {
     private Integer id;
 
     @Column(name = "available_days", nullable = false)
-    private Integer availableDays = 1;
+    private Integer availableDays = 0;
 
     @Column(name = "blocked", nullable = false)
     private Boolean blocked = false;
