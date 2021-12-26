@@ -3,6 +3,7 @@ package de.rytrox.varo;
 import de.rytrox.varo.database.entity.*;
 import de.rytrox.varo.countdown.CountdownCommand;
 import de.rytrox.varo.moderation.ModeratorManager;
+import de.rytrox.varo.portal.PortalListener;
 import de.rytrox.varo.resurrection.PlayerResurrectionListener;
 import de.rytrox.varo.scoreboard.ScoreBoardManager;
 import de.rytrox.varo.game.GameTimeService;
@@ -58,6 +59,7 @@ public final class Varo extends JavaPlugin {
         pluginManager.registerEvents(new PlayerSkullDropService(), this);
         pluginManager.registerEvents(new PlayerResurrectionListener(), this);
         pluginManager.registerEvents(new GameTimeService(this), this);
+        pluginManager.registerEvents(new PortalListener(this), this);
 
         this.moderatorManager = new ModeratorManager(this);
 
