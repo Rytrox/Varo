@@ -69,7 +69,7 @@ public class PlayerTimeService implements Listener {
                     event.setCancelled(true);
                     event.setCancelMessage(ChatColor.translateAlternateColorCodes('&',
                             "&8[&6Varo&8] &cDeine Sperre ist noch nicht aufgehoben. \n Versuche es am " +
-                                    LocalDate.now().minusDays(statistic.getAvailableDays() - 1).format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " erneut."));
+                                    LocalDate.now().minusDays(statistic.getAvailableDays()).format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " erneut."));
 
                     return;
                 } else {
