@@ -22,6 +22,11 @@ public class MessageListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
 
+        if(main.getModeratorManager().isModerator(event.getPlayer())) {
+            event.setJoinMessage(null);
+            return;
+        }
+
         event.setJoinMessage(ChatColor.translateAlternateColorCodes('&',
                 String.format(JOIN_MESSAGE,
                 Tablist.getInstance().getPrefix(event.getPlayer()),
@@ -32,6 +37,11 @@ public class MessageListener implements Listener {
 
     @EventHandler
     public void onLeave(PlayerQuitEvent event) {
+
+        if(main.getModeratorManager().isModerator(event.getPlayer())) {
+            event.setQuitMessage(null);
+            return;
+        }
 
         event.setQuitMessage(ChatColor.translateAlternateColorCodes('&',
                 String.format(QUIT_MESSAGE,
