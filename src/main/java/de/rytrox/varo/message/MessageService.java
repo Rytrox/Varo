@@ -108,7 +108,7 @@ public class MessageService {
             OutputStream stream = null;
 
             try {
-                URL url = new URL("https://discord.com/api/webhooks/889044086579937281/KEd3kFA50XFavQCY0-kIp2Welwvb92evBlo4Lh8_Byi0mS92rVLgqwSqfQWq1iC76698");
+                URL url = new URL("https://discord.com/api/webhooks/924652421475606548/WNXz2s3IySk4S8wCKW3MhKEG8Z9v-wb3qkcvhZ02vRod3FwJJLmsIEQ1rNNEEDJEDiYh");
 
                 connection = (HttpsURLConnection) url.openConnection();
                 connection.addRequestProperty("Content-Type", "application/json");
