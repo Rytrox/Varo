@@ -47,7 +47,17 @@ public class GameTimeService implements Listener {
      * This scheduler kicks all players from the server that are online at the end-time
      */
      public void registerEndScheduler() {
-        Bukkit.getPluginManager().callEvent(new GameDayStartEvent());
+
+         if(LocalTime.now().isAfter(startTime)) {
+             Bukkit.getPluginManager().callEvent(new GameDayStartEvent());
+         }
+
+         Bukkit.getScheduler().runTaskLater(main, () ->
+                         Bukkit.getScheduler().runTaskTimer(main, () -> {
+                                     Bukkit.getPluginManager().callEvent(new GameDayStartEvent());
+                                 },
+                                 0, 24 * 60 * 60 * 20L)
+                 , getTimerOffsetStart());
 
         Bukkit.getScheduler().runTaskLater(main, () ->
             Bukkit.getScheduler().runTaskTimer(main, () -> {
@@ -57,8 +67,34 @@ public class GameTimeService implements Listener {
 
                         Bukkit.getPluginManager().callEvent(new GameDayEndEvent());
                         },
-                    0, 24 * 60 * 60 * 20)
-        , getTimerOffset());
+                    0, 24 * 60 * 60 * 20L)
+        , getTimerOffsetEnd());
+    }
+
+    /**
+     * Calculates the Offset between the current time and the next start time in Ticks
+     *
+     * @return the amount of ticks between the current time and the next start time of the day
+     */
+    public long getTimerOffsetStart() {
+        LocalTime offset;
+
+        // Don't use LocalTime#between or LocalTime#until here! Wrong behavior
+        if(startTime.isBefore(LocalTime.now())) {
+            // First calculate the distance between 00:00 and the current time <- Offset of last day
+            offset = LocalTime.MIDNIGHT.minusHours(LocalTime.now().getHour())
+                    .minusMinutes(LocalTime.now().getMinute());
+            // Then add the offset of the last day to the current start date.
+            offset = startTime.plusHours(offset.getHour())
+                    .plusMinutes(offset.getMinute());
+        } else {
+            // Calculate delta time simple
+            offset = LocalTime.now().minusHours(startTime.getHour())
+                    .minusMinutes(LocalTime.now().getMinute());
+        }
+
+        // calculate offset in ticks (minutes) * 60 * 20
+        return (offset.getHour() * 60 + offset.getMinute()) * 60 * 20L;
     }
 
     /**
@@ -66,7 +102,7 @@ public class GameTimeService implements Listener {
      *
      * @return the amount of ticks between the current time and the end time of the day
      */
-    public long getTimerOffset() {
+    public long getTimerOffsetEnd() {
         LocalTime offset;
 
         // Don't use LocalTime#between or LocalTime#until here! Wrong behavior
