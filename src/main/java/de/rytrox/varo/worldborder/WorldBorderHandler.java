@@ -2,7 +2,7 @@ package de.rytrox.varo.worldborder;
 
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.database.repository.TeamMemberRepository;
-import de.rytrox.varo.discord.MessageService;
+import de.rytrox.varo.message.MessageService;
 import de.rytrox.varo.game.events.GameDayEndEvent;
 import de.rytrox.varo.gamestate.GameStateHandler;
 import de.rytrox.varo.resurrection.PlayerResurrectionEvent;
