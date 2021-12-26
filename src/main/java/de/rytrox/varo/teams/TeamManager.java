@@ -1,6 +1,8 @@
 package de.rytrox.varo.teams;
 
 import de.rytrox.varo.Varo;
+import de.rytrox.varo.chat_log.ChatLogType;
+import de.rytrox.varo.database.entity.ChatLog;
 import de.rytrox.varo.database.entity.Team;
 import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.database.repository.TeamMemberRepository;
@@ -91,6 +93,7 @@ public class TeamManager implements Listener {
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
+        main.getChatLogRepository().addChatLog(new ChatLog(event.getPlayer().getName(), ChatLogType.GLOBAL.getName(), event.getMessage()));
         event.setFormat(Tablist.getInstance().getPrefix(event.getPlayer()) + ChatColor.translateAlternateColorCodes('&', "%s &8» &7%s"));
     }
 

@@ -1,7 +1,9 @@
 package de.rytrox.varo;
 
+import de.rytrox.varo.chat_log.ChatLogCommand;
 import de.rytrox.varo.database.entity.*;
 import de.rytrox.varo.countdown.CountdownCommand;
+import de.rytrox.varo.database.repository.ChatLogRepository;
 import de.rytrox.varo.moderation.ModeratorManager;
 import de.rytrox.varo.portal.PortalListener;
 import de.rytrox.varo.resurrection.PlayerResurrectionListener;
@@ -40,6 +42,7 @@ public final class Varo extends JavaPlugin {
 
     private Database database;
 
+    private ChatLogRepository chatLogRepository;
     private WorldBorderHandler worldBorderHandler;
     private TeamManager teamManager;
     private ScoreBoardManager scoreBoardManager;
@@ -47,6 +50,7 @@ public final class Varo extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
         // Plugin startup logic
         installDDL();
         saveDefaultConfig();
@@ -67,6 +71,9 @@ public final class Varo extends JavaPlugin {
         this.getCommand("gamestate").setExecutor(new GamestateCommand());
         this.getCommand("message").setExecutor(new MessageCommand(this));
         this.getCommand("countdown").setExecutor(new CountdownCommand(this));
+
+        this.chatLogRepository = new ChatLogRepository(getDB());
+        this.getCommand("chatlog").setExecutor(new ChatLogCommand(this));
     }
 
     @Override
@@ -83,6 +90,8 @@ public final class Varo extends JavaPlugin {
                 TeamItem.class,
                 Team.class,
                 SpawnPoint.class,
+                ChatLogPrimaryKey.class,
+                ChatLog.class,
                 PlayerTimeStatistic.class
         );
     }
@@ -101,6 +110,10 @@ public final class Varo extends JavaPlugin {
         this.database = DatabaseFactory.create(config);
 
         Thread.currentThread().setContextClassLoader(originalContextClassLoader);
+    }
+
+    public ChatLogRepository getChatLogRepository() {
+        return chatLogRepository;
     }
 
     @NotNull

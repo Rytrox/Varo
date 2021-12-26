@@ -46,6 +46,9 @@ commands:
   countdown:
     description: 'Startet und Stoppt den Countdown'
     usage: '/countdown'
+  chatlog:
+    description: 'Liest den Chatlog eines Spielers/einer Konversation aus'
+    usage: '/chatlog'
 
 permissions:
   varo.*:
