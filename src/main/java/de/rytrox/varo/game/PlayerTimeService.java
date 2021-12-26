@@ -38,6 +38,8 @@ public class PlayerTimeService implements Listener {
     private final Map<UUID, Duration> playerDayTime = new LinkedHashMap<>();
 
     private final Varo main;
+    private final GameStateHandler gameStateHandler;
+
     private BukkitTask playerTimeTask;
 
     private final LocalTime dayLength;
@@ -46,6 +48,7 @@ public class PlayerTimeService implements Listener {
 
     public PlayerTimeService(@NotNull Varo main) {
         this.main = main;
+        this.gameStateHandler = main.getGameStateHandler();
 
         this.allowedSkipDays = main.getConfig().getInt("game.playertime.allowed-skip-days", 2);
         this.maxAllowedDays = main.getConfig().getInt("game.playertime.max-allowed-days", 3);
@@ -56,7 +59,7 @@ public class PlayerTimeService implements Listener {
     @EventHandler
     public void onPlayerConnect(TeamMemberSpawnEvent event) {
         // Do nothing when game has not been started yet
-        if(GameStateHandler.getInstance().getCurrentGameState() != GameStateHandler.GameState.MAIN)
+        if(gameStateHandler.getCurrentGameState() != GameStateHandler.GameState.MAIN)
             return;
 
         // check if the player is not reconnected

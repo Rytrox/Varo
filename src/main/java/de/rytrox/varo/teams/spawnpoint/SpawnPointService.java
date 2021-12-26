@@ -64,7 +64,7 @@ public class SpawnPointService implements Listener {
 
         // Only teleport if the game is running and the player is alive
         if(event.getMember().getStatus() == PlayerStatus.ALIVE &&
-                GameStateHandler.getInstance().getCurrentGameState() == GameStateHandler.GameState.PRE_GAME) {
+                main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.PRE_GAME) {
             Bukkit.getScheduler().runTask(main, () -> {
                 SpawnPoint spawnPoint = event.getMember().getSpawnPoint();
 

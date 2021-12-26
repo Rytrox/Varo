@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -20,16 +21,11 @@ public class MessageService {
 
     private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyy-MM-dd | HH:mm");
     private static final String COORDINATE_TEMPLATE = "[x:%d | y:%d | z:%d]";
-    private static final MessageService instance = new MessageService();
 
-    private MessageService() {}
+    private final GameStateHandler gameStateHandler;
 
-    /**
-     * returns an instance of the discord service
-     * @return an instance of the discord service
-     */
-    public static MessageService getInstance() {
-        return instance;
+    public MessageService(@NotNull GameStateHandler gameStateHandler) {
+        this.gameStateHandler = gameStateHandler;
     }
 
     /**
@@ -86,7 +82,7 @@ public class MessageService {
     public void writeMessage(String message, DiscordColor color, boolean addTimestamp) {
 
         // don't send discord messages, as long as the game is in setup state
-        if(GameStateHandler.getInstance().getCurrentGameState() == GameStateHandler.GameState.SETUP)
+        if(gameStateHandler.getCurrentGameState() == GameStateHandler.GameState.SETUP)
             return;
 
         StringBuilder sb = new StringBuilder();

@@ -15,8 +15,15 @@ import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 public class PlayerResurrectionListener implements Listener {
+
+    private final MessageService messageService;
+
+    public PlayerResurrectionListener(@NotNull MessageService messageService) {
+        this.messageService = messageService;
+    }
 
     @EventHandler
     public void onExplosion(EntityDamageByBlockEvent event) {
@@ -95,7 +102,8 @@ public class PlayerResurrectionListener implements Listener {
                 Bukkit.getOnlinePlayers().forEach(ap -> ap.playSound(ap.getLocation(), Sound.WITHER_DEATH, 1, 1));
 
                 // send Log-Message
-                MessageService.getInstance().writeMessage(String.format("%s - %s hat seinen Teammate %s wiederbelebt",
+
+                messageService.writeMessage(String.format("%s - %s hat seinen Teammate %s wiederbelebt",
                         ChatColor.stripColor(resurrectableTeamMember.getTeam().getDisplayName()),
                         player.getName(),
                         resurrectablePlayer.getName()), MessageService.DiscordColor.RED);

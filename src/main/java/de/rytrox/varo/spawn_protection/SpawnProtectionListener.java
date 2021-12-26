@@ -19,7 +19,7 @@ import java.util.Set;
 
 public class SpawnProtectionListener implements Listener {
 
-    private Set<Player> spawnProtection;
+    private final Set<Player> spawnProtection;
     private final Varo main;
 
     public SpawnProtectionListener(Varo main) {
@@ -29,15 +29,15 @@ public class SpawnProtectionListener implements Listener {
 
     @EventHandler
     public void onDamage(EntityDamageEvent event) {
-        if(spawnProtection.contains(event.getEntity())) {
+        if(event.getEntity() instanceof Player && spawnProtection.contains((Player) event.getEntity())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onDamageByEntity(EntityDamageByEntityEvent event) {
-        if(spawnProtection.contains(event.getEntity())
-        || spawnProtection.contains(event.getDamager())) {
+        if(event.getEntity() instanceof Player && spawnProtection.contains((Player) event.getEntity())
+        || event.getDamager() instanceof Player && spawnProtection.contains((Player) event.getDamager())) {
             event.setCancelled(true);
         }
     }
@@ -50,7 +50,7 @@ public class SpawnProtectionListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         // give players invulnerability and paralysis after spawning
-        GameStateHandler.GameState gameState = GameStateHandler.getInstance().getCurrentGameState();
+        GameStateHandler.GameState gameState = main.getGameStateHandler().getCurrentGameState();
 
         if(gameState == GameStateHandler.GameState.START
                 || gameState == GameStateHandler.GameState.MAIN

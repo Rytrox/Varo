@@ -18,6 +18,12 @@ import java.util.Optional;
  */
 public class GamestateCommand implements CommandExecutor {
 
+    private final GameStateHandler gameStateHandler;
+
+    public GamestateCommand(GameStateHandler gameStateHandler) {
+        this.gameStateHandler = gameStateHandler;
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
@@ -38,8 +44,6 @@ public class GamestateCommand implements CommandExecutor {
                             .findAny();
 
                     if(foundGameState.isPresent()) {
-                        GameStateHandler gameStateHandler = GameStateHandler.getInstance();
-
                         GameStateHandler.GameState oldGameState = gameStateHandler.getCurrentGameState();
                         gameStateHandler.setCurrentGameState(foundGameState.get());
 
@@ -54,9 +58,6 @@ public class GamestateCommand implements CommandExecutor {
                     return true;
                 }
             } else if("next".equalsIgnoreCase(args[0])) {
-
-                GameStateHandler gameStateHandler = GameStateHandler.getInstance();
-
                 GameStateHandler.GameState oldGameState = gameStateHandler.getCurrentGameState();
                 gameStateHandler.nextGameState();
 
@@ -73,7 +74,7 @@ public class GamestateCommand implements CommandExecutor {
                 return true;
             } else if("status".equalsIgnoreCase(args[0])) {
 
-                sender.sendMessage("Aktueller GameState: " + GameStateHandler.getInstance().getCurrentGameState().name());
+                sender.sendMessage("Aktueller GameState: " + gameStateHandler.getCurrentGameState().name());
                 return true;
             }
         }

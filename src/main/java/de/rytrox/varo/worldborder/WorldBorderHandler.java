@@ -4,8 +4,8 @@ import de.rytrox.varo.Varo;
 import de.rytrox.varo.database.repository.TeamMemberRepository;
 import de.rytrox.varo.message.MessageService;
 import de.rytrox.varo.game.events.GameDayEndEvent;
-import de.rytrox.varo.gamestate.GameStateHandler;
 import de.rytrox.varo.resurrection.PlayerResurrectionEvent;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 public class WorldBorderHandler implements Listener {
 
     private final Varo main;
+
     private final double intialSize;
     private final double minSize;
     private final double shrinkSpeed;
@@ -34,7 +35,11 @@ public class WorldBorderHandler implements Listener {
 
         Bukkit.getPluginManager().registerEvents(this, main);
 
-        this.intialSize = main.getConfig().getDouble("worldborder.intialSize", 4000D);
+        this.intialSize = main.getStateStorage().getDouble("borderSize",
+                main.getConfig().getDouble("worldborder.intialSize", 4000D));
+        main.getStateStorage().set("borderSize", this.intialSize);
+        main.saveStateStorage();
+
         this.minSize = main.getConfig().getDouble("worldborder.suddenDeath.minimal", 20D);
         this.shrinkSpeed = main.getConfig().getDouble("worldborder.suddenDeath.speed", 0.5D);
 
@@ -85,7 +90,7 @@ public class WorldBorderHandler implements Listener {
     public void updateWorldBorder() {
         double newSize;
 
-        switch(GameStateHandler.getInstance().getCurrentGameState()) {
+        switch(main.getGameStateHandler().getCurrentGameState()) {
             case MAIN: newSize = (alivePlayers / ((double) totalPlayers)) * intialSize; break;
             case POST: newSize = 10; break;
             default: newSize = this.intialSize;
@@ -99,7 +104,8 @@ public class WorldBorderHandler implements Listener {
      */
     public void setSize(double size, long seconds) {
         this.center.getWorld().getWorldBorder().setSize(size, seconds);
-        // TODO VARO-28 save size in json
+        main.getStateStorage().set("borderSize", size);
+        main.saveStateStorage();
     }
 
     /**
@@ -137,7 +143,7 @@ public class WorldBorderHandler implements Listener {
     private void checkSpawnPosition(Player player) {
         if(!isInsideWorldBorder(player)) {
             player.teleport(center);
-            MessageService.getInstance().leakPlayerCoordinates(player, MessageService.CoordinateLeakReason.SPAWN_OUTSIDE_BORDER);
+            main.getMessageService().leakPlayerCoordinates(player, MessageService.CoordinateLeakReason.SPAWN_OUTSIDE_BORDER);
         }
     }
 

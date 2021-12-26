@@ -1,23 +1,19 @@
 package de.rytrox.varo.gamestate;
 
+import de.rytrox.varo.Varo;
 import de.rytrox.varo.gamestate.events.GamestateChangeEvent;
 import org.bukkit.Bukkit;
+import org.jetbrains.annotations.NotNull;
 
 public class GameStateHandler {
 
-    private static final GameStateHandler instance = new GameStateHandler();
+    private final Varo main;
+
     private GameState currentGameState;
 
-    private GameStateHandler() {
-        this.currentGameState = GameState.SETUP;
-    }
-
-    /**
-     * Returns an instance of the gamestatehandler
-     * @return an instance of the GamestateHandler
-     */
-    public static GameStateHandler getInstance() {
-        return instance;
+    public GameStateHandler(@NotNull Varo main) {
+        this.main = main;
+        this.currentGameState = GameState.valueOf(main.getStateStorage().getString("state", "SETUP"));
     }
 
     /**
@@ -37,6 +33,8 @@ public class GameStateHandler {
         Bukkit.getPluginManager().callEvent(changeEvent);
 
         this.currentGameState = changeEvent.getNext();
+        this.main.getStateStorage().set("state", changeEvent.getNext().name());
+        this.main.saveStateStorage();
     }
 
     /**
