@@ -1,5 +1,8 @@
 package de.rytrox.varo.gamestate;
 
+import de.rytrox.varo.gamestate.events.GamestateChangeEvent;
+import org.bukkit.Bukkit;
+
 public class GameStateHandler {
 
     private static final GameStateHandler instance = new GameStateHandler();
@@ -30,7 +33,10 @@ public class GameStateHandler {
      * @param gameState the new game state
      */
     public void setCurrentGameState(GameState gameState) {
-        this.currentGameState = gameState;
+        GamestateChangeEvent changeEvent = new GamestateChangeEvent(this.currentGameState, gameState);
+        Bukkit.getPluginManager().callEvent(changeEvent);
+
+        this.currentGameState = changeEvent.getNext();
     }
 
     /**

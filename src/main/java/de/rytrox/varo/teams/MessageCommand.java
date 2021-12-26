@@ -46,7 +46,10 @@ public class MessageCommand implements TabExecutor {
                     main.getChatLogRepository().addChatLog(new ChatLog(commandSender.getName(), target.getName(), message));
 
                     Bukkit.getOnlinePlayers().forEach(p -> {
-                        if(main.getModeratorManager().isModerator(p)) {
+                        if(main.getModeratorManager().isModerator(p)
+                            && target != p
+                            && commandSender != p) {
+
                             p.sendMessage(fullMessage);
                         }
                     });

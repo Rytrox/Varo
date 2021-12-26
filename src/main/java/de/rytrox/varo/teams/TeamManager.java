@@ -21,7 +21,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,27 +53,29 @@ public class TeamManager implements Listener {
     }
 
     @EventHandler
-    public void onRegisterPlayerInDatabase(@NotNull PlayerJoinEvent event) {
+    public void onRegisterPlayerInDatabase(@NotNull PlayerLoginEvent event) {
         final Player player = event.getPlayer();
 
         // Only include Players if they are not moderators
         if(!player.hasPermission("varo.admin.moderator")) {
-            Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
-                // get TeamMember-Object
-                TeamMember member = teamMemberRepository.getPlayer(player);
-                if(member == null) {
-                    // create a new member and save it
-                    member = new TeamMember();
-                    member.setTeam(null);
-                    member.setUniqueID(player.getUniqueId());
+            // get TeamMember-Object
+            TeamMember member = teamMemberRepository.getPlayer(player);
+            if(member == null) {
+                // create a new member and save it
+                member = new TeamMember();
+                member.setTeam(null);
+                member.setUniqueID(player.getUniqueId());
 
-                    // save entity in Database
-                    main.getDB().save(member);
-                    main.getLogger().log(Level.INFO, "Saved Player {0} in database. It's his first start", player.getName());
-                }
+                // save entity in Database
+                main.getDB().save(member);
+                main.getLogger().log(Level.INFO, "Saved Player {0} in database. It's his first start", player.getName());
+            }
 
-                Bukkit.getPluginManager().callEvent(new TeamMemberSpawnEvent(player, member));
-            });
+            TeamMemberSpawnEvent spawnEvent = new TeamMemberSpawnEvent(player, member);
+            Bukkit.getPluginManager().callEvent(spawnEvent);
+            if(spawnEvent.isCancelled()) {
+                event.disallow(PlayerLoginEvent.Result.KICK_BANNED, spawnEvent.getCancelMessage());
+            }
         }
 
     }
