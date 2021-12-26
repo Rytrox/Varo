@@ -1,11 +1,18 @@
-package de.rytrox.varo.discord;
+package de.rytrox.varo.message;
 
+import de.rytrox.varo.Varo;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-public class DiscordListener implements Listener {
+public class MessageListener implements Listener {
+
+    private final Varo main;
+
+    public MessageListener(Varo main) {
+        this.main = main;
+    }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {

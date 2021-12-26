@@ -1,4 +1,4 @@
-package de.rytrox.varo.discord;
+package de.rytrox.varo.message;
 
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.gamestate.GameStateHandler;
