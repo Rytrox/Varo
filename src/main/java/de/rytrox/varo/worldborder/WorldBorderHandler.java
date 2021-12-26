@@ -174,6 +174,7 @@ public class WorldBorderHandler implements Listener {
         return playerX <= maxX && playerX >= minX && playerZ <= maxZ && playerZ >= minZ;
     }
 
+    @NotNull
     public Location getCenter() {
         return center;
     }
