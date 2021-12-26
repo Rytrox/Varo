@@ -1,21 +1,20 @@
 package de.rytrox.varo;
 
-import de.rytrox.varo.database.entity.SpawnPoint;
+import de.rytrox.varo.database.entity.*;
 import de.rytrox.varo.countdown.CountdownCommand;
-import de.rytrox.varo.database.entity.Team;
-import de.rytrox.varo.database.entity.TeamItem;
-import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.moderation.ModeratorManager;
+import de.rytrox.varo.portal.PortalListener;
 import de.rytrox.varo.resurrection.PlayerResurrectionListener;
 import de.rytrox.varo.scoreboard.ScoreBoardManager;
+import de.rytrox.varo.game.GameTimeService;
 import de.rytrox.varo.spawn_protection.SpawnProtectionListener;
 import de.rytrox.varo.teams.GameTimeService;
 import de.rytrox.varo.teams.MessageCommand;
 import de.rytrox.varo.teams.TeamManager;
 import de.rytrox.varo.gamestate.GamestateCommand;
-import de.rytrox.varo.discord.DiscordListener;
+import de.rytrox.varo.message.MessageListener;
 import de.rytrox.varo.resurrection.PlayerSkullDropService;
-import de.rytrox.varo.discord.MessageService;
+import de.rytrox.varo.message.MessageService;
 
 import io.ebean.Database;
 import io.ebean.DatabaseFactory;
@@ -58,11 +57,10 @@ public final class Varo extends JavaPlugin {
         MessageService.getInstance().writeMessage("Der Server wurde gestartet!", MessageService.DiscordColor.CYAN);
 
         PluginManager pluginManager = Bukkit.getPluginManager();
-        pluginManager.registerEvents(new DiscordListener(), this);
+        pluginManager.registerEvents(new MessageListener(this), this);
         pluginManager.registerEvents(new PlayerSkullDropService(), this);
         pluginManager.registerEvents(new PlayerResurrectionListener(), this);
         pluginManager.registerEvents(new GameTimeService(this), this);
-        pluginManager.registerEvents(new SpawnProtectionListener(this), this);
 
         this.moderatorManager = new ModeratorManager(this);
 
@@ -84,7 +82,8 @@ public final class Varo extends JavaPlugin {
                 TeamMember.class,
                 TeamItem.class,
                 Team.class,
-                SpawnPoint.class
+                SpawnPoint.class,
+                PlayerTimeStatistic.class
         );
     }
 

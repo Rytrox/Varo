@@ -1,7 +1,7 @@
-package de.rytrox.varo.teams;
+package de.rytrox.varo.game;
 
 import de.rytrox.varo.Varo;
-import de.rytrox.varo.worldborder.WorldBorderHandler;
+import de.rytrox.varo.game.events.GameDayEndEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
@@ -28,6 +28,7 @@ public class GameTimeService implements Listener {
 
     public GameTimeService(@NotNull Varo main) {
         this.main = main;
+        Bukkit.getPluginManager().registerEvents(new PlayerTimeService(main), main);
 
         this.startTime = LocalTime.parse(main.getConfig().getString("game.start", "16:00"));
         this.endTime = LocalTime.parse(main.getConfig().getString("game.end", "22:00"));
@@ -45,15 +46,14 @@ public class GameTimeService implements Listener {
      */
      public void registerEndScheduler() {
         Bukkit.getScheduler().runTaskLater(main, () ->
-            Bukkit.getScheduler().runTaskTimer(main, () ->
-                    {
+            Bukkit.getScheduler().runTaskTimer(main, () -> {
                         Bukkit.getOnlinePlayers().forEach(player ->
                                 player.kickPlayer(this.kickMessage)
                         );
 
-                        main.getWorldBorderHandler().updateWorldBorder();
-                    }
-            , 0, 24 * 60 * 60 * 20)
+                        Bukkit.getPluginManager().callEvent(new GameDayEndEvent());
+                        },
+                    0, 24 * 60 * 60 * 20)
         , getTimerOffset());
     }
 
