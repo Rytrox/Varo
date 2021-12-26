@@ -5,7 +5,6 @@ import de.rytrox.varo.gamestate.GameStateHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,7 +19,7 @@ import java.util.Set;
 
 public class SpawnProtectionListener implements Listener {
 
-    private final Set<Entity> spawnProtection;
+    private final Set<Player> spawnProtection;
     private final Varo main;
 
     public SpawnProtectionListener(Varo main) {
@@ -30,15 +29,15 @@ public class SpawnProtectionListener implements Listener {
 
     @EventHandler
     public void onDamage(EntityDamageEvent event) {
-        if(spawnProtection.contains(event.getEntity())) {
+        if(event.getEntity() instanceof Player && spawnProtection.contains((Player) event.getEntity())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onDamageByEntity(EntityDamageByEntityEvent event) {
-        if(spawnProtection.contains(event.getEntity())
-        || spawnProtection.contains(event.getDamager())) {
+        if(event.getEntity() instanceof Player && spawnProtection.contains((Player) event.getEntity())
+        || event.getDamager() instanceof Player && spawnProtection.contains((Player) event.getDamager())) {
             event.setCancelled(true);
         }
     }
