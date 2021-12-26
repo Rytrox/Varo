@@ -2,6 +2,7 @@ package de.rytrox.varo.game;
 
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.game.events.GameDayEndEvent;
+import de.rytrox.varo.game.events.GameDayStartEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
@@ -45,6 +46,8 @@ public class GameTimeService implements Listener {
      * This scheduler kicks all players from the server that are online at the end-time
      */
      public void registerEndScheduler() {
+        Bukkit.getPluginManager().callEvent(new GameDayStartEvent());
+
         Bukkit.getScheduler().runTaskLater(main, () ->
             Bukkit.getScheduler().runTaskTimer(main, () -> {
                         Bukkit.getOnlinePlayers().forEach(player ->
