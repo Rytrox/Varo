@@ -60,7 +60,9 @@ public class SpawnProtectionListener implements Listener {
 
             spawnProtection.add(player);
 
-            final BukkitTask task = Bukkit.getScheduler().runTaskTimerAsynchronously(main, new Runnable() {
+            final BukkitTask[] task = new BukkitTask[1];
+
+            task[0] = Bukkit.getScheduler().runTaskTimerAsynchronously(main, new Runnable() {
 
                 private int counter = 10;
 
@@ -72,6 +74,7 @@ public class SpawnProtectionListener implements Listener {
                     if (counter == 0) {
                         player.sendMessage(ChatColor.GREEN + "Deine Unverwundbarkeit und Paralyse sind nun aufgehoben!");
                         spawnProtection.remove(player);
+                        task[0].cancel();
                         return;
                     }
 
@@ -80,9 +83,6 @@ public class SpawnProtectionListener implements Listener {
                     counter--;
                 }
             }, 0, 20);
-
-            Bukkit.getScheduler().runTaskLaterAsynchronously(main, task::cancel, 20*11);
-
         }
     }
 
