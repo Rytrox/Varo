@@ -32,37 +32,37 @@ public class GameTimeServiceTest {
 
     @Test
     public void shouldCalculateCorrectOffsetWhenNowBeforeStart() {
-        doCallRealMethod().when(service).getTimerOffset();
+        doCallRealMethod().when(service).getTimerOffsetEnd();
 
         LocalTime now = LocalTime.of(12, 0);
         try(MockedStatic<LocalTime> mockedStatic = mockStatic(LocalTime.class, CALLS_REAL_METHODS)) {
             mockedStatic.when(LocalTime::now).thenAnswer((any) -> now);
 
-            assertEquals(10 * 60 * 60 * 20L, service.getTimerOffset());
+            assertEquals(10 * 60 * 60 * 20L, service.getTimerOffsetEnd());
         }
     }
 
     @Test
     public void shouldCalculateCorrectOffsetWhenNowAfterEnd() {
-        doCallRealMethod().when(service).getTimerOffset();
+        doCallRealMethod().when(service).getTimerOffsetEnd();
 
         LocalTime now = LocalTime.of(23, 0);
         try(MockedStatic<LocalTime> mockedStatic = mockStatic(LocalTime.class, CALLS_REAL_METHODS)) {
             mockedStatic.when(LocalTime::now).thenAnswer((any) -> now);
 
-            assertEquals(23 * 60 * 60 * 20L, service.getTimerOffset());
+            assertEquals(23 * 60 * 60 * 20L, service.getTimerOffsetEnd());
         }
     }
 
     @Test
     public void shouldCalculateCorrectOffsetWhenNowEqualsEnd() {
-        doCallRealMethod().when(service).getTimerOffset();
+        doCallRealMethod().when(service).getTimerOffsetEnd();
 
         LocalTime now = LocalTime.of(22, 0);
         try(MockedStatic<LocalTime> mockedStatic = mockStatic(LocalTime.class, CALLS_REAL_METHODS)) {
             mockedStatic.when(LocalTime::now).thenAnswer((any) -> now);
 
-            assertEquals(0, service.getTimerOffset());
+            assertEquals(0, service.getTimerOffsetEnd());
         }
     }
 
