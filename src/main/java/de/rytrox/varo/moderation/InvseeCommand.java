@@ -23,9 +23,7 @@ public class InvseeCommand implements TabExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        System.out.println("COMMAND");
         if(sender instanceof Player && main.getModeratorManager().isModerator(sender)) {
-            System.out.println("PERMISSION");
             if(args.length > 0) {
                 Player target = Bukkit.getPlayer(args[0]);
 
