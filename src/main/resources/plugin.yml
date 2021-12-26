@@ -46,6 +46,9 @@ commands:
   countdown:
     description: 'Startet und Stoppt den Countdown'
     usage: '/countdown'
+  chatlog:
+    description: 'Liest den Chatlog eines Spielers/einer Konversation aus'
+    usage: '/chatlog'
 
 permissions:
   varo.*:
@@ -90,29 +93,8 @@ permissions:
   varo.teams.spawnpoint.set:
     description: Permission zum Setzen des SpawnPoints von Spielern
     default: op
-  varo.gamestate.*:
-    default: op
-    description: 'Super-Permission für das GameStateManagement in Varo'
-    children:
-      - 'varo.gamestate.list'
-      - 'varo.gamestate.status'
-      - 'varo.gamestate.next'
-      - 'varo.gamestate.set'
-  varo.worldborder:
-    default: op
-    description: Permission für den WorldBorder Befehl
-  varo.gamestate.list:
-    default: op
-    description: 'Listet alle GameStates auf'
-  varo.gamestate.status:
-    default: op
-    description: 'Gibt den aktuellen GameState aus'
-  varo.gamestate.next:
-    default: op
-    description: 'Wechselt zum nächsten GameState'
-  varo.gamestate.set:
-    default: op
-    description: 'Setzt einen spezifischen GameState'
+  varo.gamestate:
+    description: Permission für den GameState Befehl
   varo.admin.*:
     default: op
     description: 'Managerpermission für Varo'
