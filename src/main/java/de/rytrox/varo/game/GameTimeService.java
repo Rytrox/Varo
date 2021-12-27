@@ -126,12 +126,12 @@ public class GameTimeService implements Listener {
 
     @EventHandler
     public void onStart(GameDayStartEvent event) {
-        MessageService.getInstance().writeMessage("Der Spieltag hat begonnen! Der Server kann nun betreten werden!", MessageService.DiscordColor.BLUE, true);
+        main.getMessageService().writeMessage("Der Spieltag hat begonnen! Der Server kann nun betreten werden!", MessageService.DiscordColor.BLUE, true);
     }
 
     @EventHandler
     public void onEnd(GameDayEndEvent event) {
-        MessageService.getInstance().writeMessage("Der Spieltag ist beendet!", MessageService.DiscordColor.RED, true);
+        main.getMessageService().writeMessage("Der Spieltag ist beendet!", MessageService.DiscordColor.RED, true);
     }
 
     @EventHandler
