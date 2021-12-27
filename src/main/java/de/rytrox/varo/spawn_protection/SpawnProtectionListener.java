@@ -52,8 +52,7 @@ public class SpawnProtectionListener implements Listener {
         // give players invulnerability and paralysis after spawning
         GameStateHandler.GameState gameState = main.getGameStateHandler().getCurrentGameState();
 
-        if(gameState == GameStateHandler.GameState.START
-                || gameState == GameStateHandler.GameState.MAIN
+        if(gameState == GameStateHandler.GameState.MAIN
                 || gameState == GameStateHandler.GameState.FINAL) {
             Player player = event.getPlayer();
             Location spawnPoint = event.getPlayer().getLocation();
