@@ -47,4 +47,14 @@ public class TeamRepository {
                 .select("name")
                 .findIds();
     }
+
+    /**
+     * Returns a list containing all valid teams
+     *
+     * @return the list containing all teams
+     */
+    @NotNull
+    public List<Team> getAllTeams() {
+        return this.database.find(Team.class).findList();
+    }
 }
