@@ -4,11 +4,11 @@ import de.rytrox.varo.chat_log.ChatLogCommand;
 import de.rytrox.varo.database.entity.*;
 import de.rytrox.varo.countdown.CountdownCommand;
 import de.rytrox.varo.database.repository.ChatLogRepository;
+import de.rytrox.varo.game.GameService;
 import de.rytrox.varo.gamestate.GameStateHandler;
 import de.rytrox.varo.moderation.ModeratorManager;
 import de.rytrox.varo.resurrection.PlayerResurrectionListener;
 import de.rytrox.varo.scoreboard.ScoreBoardManager;
-import de.rytrox.varo.game.GameTimeService;
 import de.rytrox.varo.teams.MessageCommand;
 import de.rytrox.varo.teams.TeamManager;
 import de.rytrox.varo.gamestate.GamestateCommand;
@@ -73,7 +73,7 @@ public final class Varo extends JavaPlugin {
         pluginManager.registerEvents(new MessageListener(this), this);
         pluginManager.registerEvents(new PlayerSkullDropService(), this);
         pluginManager.registerEvents(new PlayerResurrectionListener(messageService), this);
-        pluginManager.registerEvents(new GameTimeService(this), this);
+        pluginManager.registerEvents(new GameService(this), this);
 
         this.moderatorManager = new ModeratorManager(this);
 
