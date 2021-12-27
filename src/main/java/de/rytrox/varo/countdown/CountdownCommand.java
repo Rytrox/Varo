@@ -109,7 +109,6 @@ public class CountdownCommand implements TabExecutor {
             } else if(current < 10 || current % 5 == 0) {
                 Bukkit.getOnlinePlayers()
                         .forEach((player) -> sendCountdown(player, current));
-
             }
         }, 0, 20L);
     }
