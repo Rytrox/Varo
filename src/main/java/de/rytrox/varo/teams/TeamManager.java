@@ -26,6 +26,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 
 public class TeamManager implements Listener {
@@ -147,8 +148,11 @@ public class TeamManager implements Listener {
     public void setDisplayName(CommandSender commandSender, String teamname, String teamDisplayName) {
         Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
             // check if team does not exist...
-            Team team = teamRepository.findByName(teamname);
-            if(team != null) {
+            Optional<Team> teamOptional = teamRepository.findByName(teamname);
+            if(teamOptional.isPresent()) {
+
+                Team team = teamOptional.get();
+
                 team.setDisplayName(teamDisplayName);
 
                 TeamModifyEvent event = new TeamModifyEvent(team);
@@ -178,8 +182,10 @@ public class TeamManager implements Listener {
      */
     public void addMember(CommandSender commandSender, String teamname, String playerName) {
         Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
-            Team team = teamRepository.findByName(teamname);
-            if(team != null) {
+            Optional<Team> teamOptional = teamRepository.findByName(teamname);
+            if(teamOptional.isPresent()) {
+
+                Team team = teamOptional.get();
                 TeamMember member = teamMemberRepository.getPlayer(Bukkit.getOfflinePlayer(playerName));
                 if(member != null) {
                     if(!team.equals(member.getTeam())) {
@@ -213,8 +219,10 @@ public class TeamManager implements Listener {
 
     public void removeMember(CommandSender executor, String teamname, String playerName) {
         Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
-            Team team = teamRepository.findByName(teamname);
-            if(team != null) {
+            Optional<Team> teamOptional = teamRepository.findByName(teamname);
+            if(teamOptional.isPresent()) {
+
+                Team team = teamOptional.get();
                 TeamMember member = teamMemberRepository.getPlayer(Bukkit.getOfflinePlayer(playerName));
                 if(member != null) {
                     if(team.equals(member.getTeam())) {
@@ -246,8 +254,10 @@ public class TeamManager implements Listener {
     public void setPrefix(CommandSender commandSender, String teamname, String prefix) {
         Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
             // check if team does not exist...
-            Team team = teamRepository.findByName(teamname);
-            if(team != null) {
+            Optional<Team> teamOptional = teamRepository.findByName(teamname);
+            if(teamOptional.isPresent()) {
+
+                Team team = teamOptional.get();
                 if(prefix.length() < 8) {
                     team.setPrefix(ChatColor.translateAlternateColorCodes('&',
                             String.format("&8[%s&8]&7 ", prefix))
