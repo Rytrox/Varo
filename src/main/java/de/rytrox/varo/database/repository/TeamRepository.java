@@ -2,6 +2,8 @@ package de.rytrox.varo.database.repository;
 
 import de.rytrox.varo.database.entity.Team;
 
+import de.rytrox.varo.database.entity.TeamMember;
+import de.rytrox.varo.database.enums.PlayerStatus;
 import io.ebean.Database;
 
 import org.jetbrains.annotations.NotNull;
@@ -49,12 +51,18 @@ public class TeamRepository {
     }
 
     /**
-     * Returns a list containing all valid teams
-     *
-     * @return the list containing all teams
+     * Returns all Teams with alive members
+     * @return all teams with alive members
      */
-    @NotNull
-    public List<Team> getAllTeams() {
-        return this.database.find(Team.class).findList();
+    public List<Team> getAllTeamsWithAliveMembers() {
+        return this.database.find(Team.class)
+                .where()
+                .idIn(
+                        this.database.find(TeamMember.class)
+                                .setDistinct(true)
+                                .select("team")
+                                .where()
+                                .eq("status", PlayerStatus.ALIVE)
+                ).findList();
     }
 }

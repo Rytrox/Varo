@@ -64,7 +64,7 @@ public class PlayerDeathListener implements Listener {
                 );
 
                 // check if final or game over
-                List<Team> runningTeams = teamRepository.getAllTeams().stream().filter(team -> team.getMembers().stream().anyMatch(m -> m.getStatus() == PlayerStatus.ALIVE)).collect(Collectors.toList());
+                List<Team> runningTeams = teamRepository.getAllTeamsWithAliveMembers();
 
                 // check for final
                 if(runningTeams.size() == 2) {
