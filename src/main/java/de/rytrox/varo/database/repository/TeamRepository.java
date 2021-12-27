@@ -5,9 +5,9 @@ import de.rytrox.varo.database.entity.Team;
 import io.ebean.Database;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository-Class for Teams
@@ -26,14 +26,13 @@ public class TeamRepository {
      * Searches a Team based on its name
      *
      * @param teamname the name of the Team
-     * @return the found team. null if the Team cannot be found
+     * @return the found team
      */
-    @Nullable
-    public Team findByName(@NotNull String teamname) {
+    public Optional<Team> findByName(@NotNull String teamname) {
         return this.database.find(Team.class)
                 .where()
                 .eq("name", teamname)
-                .findOne();
+                .findOneOrEmpty();
     }
 
     /**
