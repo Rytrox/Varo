@@ -1,4 +1,4 @@
-package de.rytrox.varo.resurrection;
+package de.rytrox.varo.game.resurrection;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

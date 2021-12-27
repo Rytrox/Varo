@@ -1,14 +1,14 @@
 package de.rytrox.varo.teams;
 
 import de.rytrox.varo.Varo;
-import de.rytrox.varo.chat_log.ChatLogType;
+import de.rytrox.varo.message.chatlog.ChatLogType;
 import de.rytrox.varo.database.entity.ChatLog;
 import de.rytrox.varo.database.entity.Team;
 import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.database.repository.TeamMemberRepository;
 import de.rytrox.varo.database.repository.TeamRepository;
 
-import de.rytrox.varo.scoreboard.Tablist;
+import de.rytrox.varo.teams.scoreboard.Tablist;
 import de.rytrox.varo.teams.events.*;
 import de.rytrox.varo.teams.inventory.TeamInventoryManager;
 import de.rytrox.varo.teams.spawnpoint.SpawnpointCommand;

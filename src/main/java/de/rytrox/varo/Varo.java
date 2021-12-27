@@ -1,23 +1,24 @@
 package de.rytrox.varo;
 
-import de.rytrox.varo.chat_log.ChatLogCommand;
+import de.rytrox.varo.message.chatlog.ChatLogCommand;
 import de.rytrox.varo.database.entity.*;
-import de.rytrox.varo.countdown.CountdownCommand;
+import de.rytrox.varo.game.countdown.CountdownCommand;
 import de.rytrox.varo.database.repository.ChatLogRepository;
 import de.rytrox.varo.game.GameService;
 import de.rytrox.varo.gamestate.GameStateHandler;
-import de.rytrox.varo.moderation.ModeratorManager;
-import de.rytrox.varo.resurrection.PlayerResurrectionListener;
-import de.rytrox.varo.scoreboard.ScoreBoardManager;
+import de.rytrox.varo.game.moderation.ModeratorManager;
+import de.rytrox.varo.game.resurrection.PlayerResurrectionListener;
+import de.rytrox.varo.teams.scoreboard.ScoreBoardManager;
+import de.rytrox.varo.game.GameTimeService;
 import de.rytrox.varo.teams.MessageCommand;
 import de.rytrox.varo.teams.TeamManager;
 import de.rytrox.varo.gamestate.GamestateCommand;
 import de.rytrox.varo.message.MessageListener;
-import de.rytrox.varo.resurrection.PlayerSkullDropService;
+import de.rytrox.varo.game.resurrection.PlayerSkullDropService;
 import de.rytrox.varo.message.MessageService;
 import de.rytrox.varo.utils.ConfigCreator;
 import de.rytrox.varo.utils.JsonConfig;
-import de.rytrox.varo.worldborder.WorldBorderHandler;
+import de.rytrox.varo.world.worldborder.WorldBorderHandler;
 
 import io.ebean.Database;
 import io.ebean.DatabaseFactory;

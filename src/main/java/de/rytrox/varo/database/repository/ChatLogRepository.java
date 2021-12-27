@@ -1,6 +1,6 @@
 package de.rytrox.varo.database.repository;
 
-import de.rytrox.varo.chat_log.ChatLogType;
+import de.rytrox.varo.message.chatlog.ChatLogType;
 import de.rytrox.varo.database.entity.ChatLog;
 import io.ebean.Database;
 import io.ebean.Expr;

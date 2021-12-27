@@ -1,4 +1,4 @@
-package de.rytrox.varo.countdown;
+package de.rytrox.varo.game.countdown;
 
 import com.google.gson.JsonObject;
 

@@ -1,4 +1,4 @@
-package de.rytrox.varo.chat_log;
+package de.rytrox.varo.message.chatlog;
 
 import java.util.Arrays;
 import java.util.Optional;

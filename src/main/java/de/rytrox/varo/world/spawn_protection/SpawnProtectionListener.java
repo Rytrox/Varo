@@ -1,4 +1,4 @@
-package de.rytrox.varo.spawn_protection;
+package de.rytrox.varo.world.spawn_protection;
 
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.gamestate.GameStateHandler;

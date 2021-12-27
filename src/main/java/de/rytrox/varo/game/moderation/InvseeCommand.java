@@ -1,4 +1,4 @@
-package de.rytrox.varo.moderation;
+package de.rytrox.varo.game.moderation;
 
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.utils.CommandHelper;
