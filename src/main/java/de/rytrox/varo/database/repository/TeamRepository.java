@@ -28,6 +28,7 @@ public class TeamRepository {
      * @param teamname the name of the Team
      * @return the found team
      */
+    @NotNull
     public Optional<Team> findByName(@NotNull String teamname) {
         return this.database.find(Team.class)
                 .where()
