@@ -1,4 +1,4 @@
-package de.rytrox.varo.pvp;
+package de.rytrox.varo.game;
 
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.database.entity.Team;
