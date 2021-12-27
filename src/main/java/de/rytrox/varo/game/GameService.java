@@ -21,6 +21,9 @@ public class GameService implements Listener {
 
     public GameService(@NotNull Varo main) {
         this.main = main;
+
+        Bukkit.getPluginManager().registerEvents(new GameTimeService(main), main);
+        Bukkit.getPluginManager().registerEvents(new PlayerDeathListener(main), main);
     }
 
     @EventHandler
@@ -30,7 +33,7 @@ public class GameService implements Listener {
                     .stream()
                     .filter((player) -> !main.getModeratorManager().isModerator(player)) // ignore moderators!
                     .forEach(player -> player.setGameMode(GameMode.SURVIVAL));
-        } else if (event.getNext() != GameStateHandler.GameState.FINAL) {
+        } else {
             Bukkit.getOnlinePlayers()
                     .stream()
                     .filter((player) -> !main.getModeratorManager().isModerator(player)) // ignore moderators!
@@ -45,7 +48,6 @@ public class GameService implements Listener {
 
             // Force Gamemode to survival when game is running and player is not in correct gamemode. Ignore Moderators!
             if (!main.getModeratorManager().isModerator(player) &&
-                    (player.getGameMode() != GameMode.SURVIVAL) &&
                     (main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.MAIN ||
                             main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.FINAL)) {
                 player.setGameMode(GameMode.SURVIVAL);
