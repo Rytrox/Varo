@@ -48,7 +48,6 @@ public class GameStateHandler {
 
         SETUP,
         PRE_GAME,
-        START,
         MAIN,
         FINAL,
         POST
