@@ -102,6 +102,11 @@ public class CountdownCommand implements TabExecutor {
             int current = this.counter.getAndDecrement();
 
             if(current == 0) {
+
+                // set time
+                Bukkit.getWorld(main.getConfig().getString("worldborder.world", "world")).setTime(1000L);
+
+                // start game
                 gameStateHandler.nextGameState();
                 stop();
 
