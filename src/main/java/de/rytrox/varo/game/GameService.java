@@ -42,6 +42,15 @@ public class GameService implements Listener {
     }
 
     @EventHandler
+    public void onTeleportSpawn(TeamMemberSpawnEvent event) {
+        if(!event.isCancelled() &&
+                main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.PRE_GAME &&
+                event.getMember().getSpawnPoint() != null) {
+            event.getPlayer().teleport(event.getMember().getSpawnPoint().getLocation());
+        }
+    }
+
+    @EventHandler
     public void onJoin(TeamMemberSpawnEvent event) {
         if(!event.isCancelled()) {
             Player player = event.getPlayer();
