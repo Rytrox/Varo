@@ -144,9 +144,9 @@ public class SpawnPoint {
     public void setLocation(@NotNull Location location) {
         this.world = location.getWorld().getName();
 
-        this.x = location.getX();
+        this.x = location.getBlockX() + 0.5D;
         this.y = location.getY();
-        this.z = location.getZ();
+        this.z = location.getBlockZ() + 0.5D;
 
         this.yaw = location.getYaw();
         this.pitch = location.getPitch();
