@@ -1,7 +1,7 @@
 name: Varo
 version: '${project.version}'
 main: de.rytrox.varo.Varo
-load: STARTUP
+load: POSTWORLD
 description: Ein Varo-Plugin
 
 commands:
