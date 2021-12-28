@@ -34,6 +34,12 @@ public class PlayerDeathListener implements Listener {
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
 
+        GameStateHandler.GameState gameState = main.getGameStateHandler().getCurrentGameState();
+
+        if(gameState != GameStateHandler.GameState.MAIN && gameState != GameStateHandler.GameState.FINAL) {
+            return;
+        }
+
         Optional<TeamMember> teamMemberOptional = this.teamMemberRepository.findPlayerByUUID(event.getEntity().getUniqueId());
 
         if(teamMemberOptional.isPresent()) {
