@@ -15,7 +15,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class PlayerDeathListener implements Listener {
 
@@ -42,6 +41,10 @@ public class PlayerDeathListener implements Listener {
             // update player status
             member.setStatus(PlayerStatus.DEAD);
             main.getDB().update(member);
+
+            // kick player
+            event.getEntity().kickPlayer(ChatColor.translateAlternateColorCodes('&',
+                    "&cDu bist ausgeschieden!"));
 
             // announce death
             messageService.writeMessage(
