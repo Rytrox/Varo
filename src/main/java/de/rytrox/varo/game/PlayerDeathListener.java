@@ -9,6 +9,7 @@ import de.rytrox.varo.database.repository.TeamRepository;
 import de.rytrox.varo.gamestate.GameStateHandler;
 import de.rytrox.varo.message.MessageService;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -33,6 +34,9 @@ public class PlayerDeathListener implements Listener {
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
 
+        // remove default death message
+        event.setDeathMessage(null);
+
         GameStateHandler.GameState gameState = main.getGameStateHandler().getCurrentGameState();
 
         if(gameState != GameStateHandler.GameState.MAIN && gameState != GameStateHandler.GameState.FINAL) {
@@ -52,14 +56,39 @@ public class PlayerDeathListener implements Listener {
             event.getEntity().kickPlayer(ChatColor.translateAlternateColorCodes('&',
                     "&cDu bist ausgeschieden!"));
 
-            // announce death
-            messageService.writeMessage(
-                    ChatColor.translateAlternateColorCodes('&',
-                        String.format("&eDer Spieler &4%s &e aus dem Team %s &eist gestorben!",
-                            event.getEntity().getName(),
-                            member.getTeam().getDisplayName())),
-                    MessageService.DiscordColor.YELLOW,
-                    true);
+            // check if there is a killer
+            Player killer = event.getEntity().getKiller();
+
+            boolean validKiller = false;
+            if(killer != null) {
+                Optional<TeamMember> killerMember = this.teamMemberRepository.findPlayerByUUID(event.getEntity().getKiller().getUniqueId());
+
+                if(killerMember.isPresent()) {
+
+                    messageService.writeMessage(
+                            ChatColor.translateAlternateColorCodes('&',
+                                    String.format("&eDer Spieler &4%s &eaus dem Team %s &eist wurde vom Spieler &c%s &eaus dem Team %s &egetötet!",
+                                            event.getEntity().getName(),
+                                            member.getTeam().getDisplayName(),
+                                            event.getEntity().getKiller().getName(),
+                                            killerMember.get().getTeam().getDisplayName())),
+                            MessageService.DiscordColor.YELLOW,
+                            true);
+
+                    validKiller = true;
+                }
+            }
+
+            if(!validKiller) {
+                // announce death
+                messageService.writeMessage(
+                        ChatColor.translateAlternateColorCodes('&',
+                                String.format("&eDer Spieler &4%s &e aus dem Team %s &eist gestorben!",
+                                        event.getEntity().getName(),
+                                        member.getTeam().getDisplayName())),
+                        MessageService.DiscordColor.YELLOW,
+                        true);
+            }
 
             // check if team has members left
             if(member.getTeam().getMembers().stream().noneMatch(m -> m.getStatus() == PlayerStatus.ALIVE)) {
