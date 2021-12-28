@@ -111,7 +111,7 @@ public class CountdownCommand implements TabExecutor {
                 world.setThundering(false);
 
                 // start game
-                gameStateHandler.nextGameState();
+                gameStateHandler.setCurrentGameState(GameStateHandler.GameState.MAIN);
                 stop();
 
                 sendStartMessage();

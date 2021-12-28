@@ -5,7 +5,7 @@ import de.rytrox.varo.database.entity.Team;
 import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.database.enums.PlayerStatus;
 import de.rytrox.varo.teams.events.TeamMemberDisconnectEvent;
-import de.rytrox.varo.teams.events.TeamMemberSpawnEvent;
+import de.rytrox.varo.teams.events.TeamMemberLoginEvent;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -32,7 +32,7 @@ public class TeamMemberGhostService implements Listener {
     }
 
     @EventHandler
-    public void onTeamMemberSpawn(TeamMemberSpawnEvent event) {
+    public void onTeamMemberSpawn(TeamMemberLoginEvent event) {
         TeamMember member = event.getMember();
         Player player = member.getPlayer();
 

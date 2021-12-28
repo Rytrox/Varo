@@ -17,11 +17,9 @@ import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -46,39 +44,12 @@ public class TeamManager implements Listener {
         this.maxPlayersPerTeam = main.getConfig().getInt("teams.maxMembers", 2);
 
         Bukkit.getPluginManager().registerEvents(this, main);
+        Bukkit.getPluginManager().registerEvents(new TeamEventManager(main), main);
         Bukkit.getPluginManager().registerEvents(new TeamInventoryManager(main, teamMemberRepository), main);
         Bukkit.getPluginManager().registerEvents(new TeamMemberGhostService(main), main);
 
         main.getCommand("teams").setExecutor(new TeamsCommand(this));
         main.getCommand("spawnpoint").setExecutor(new SpawnpointCommand(main, this.teamMemberRepository));
-    }
-
-    @EventHandler
-    public void onRegisterPlayerInDatabase(@NotNull PlayerLoginEvent event) {
-        final Player player = event.getPlayer();
-
-        // Only include Players if they are not moderators
-        if(!player.hasPermission("varo.admin.moderator")) {
-            // get TeamMember-Object
-            TeamMember member = teamMemberRepository.getPlayer(player);
-            if(member == null) {
-                // create a new member and save it
-                member = new TeamMember();
-                member.setTeam(null);
-                member.setUniqueID(player.getUniqueId());
-
-                // save entity in Database
-                main.getDB().save(member);
-                main.getLogger().log(Level.INFO, "Saved Player {0} in database. It's his first start", player.getName());
-            }
-
-            TeamMemberSpawnEvent spawnEvent = new TeamMemberSpawnEvent(player, member);
-            Bukkit.getPluginManager().callEvent(spawnEvent);
-            if(spawnEvent.isCancelled()) {
-                event.disallow(PlayerLoginEvent.Result.KICK_BANNED, spawnEvent.getCancelMessage());
-            }
-        }
-
     }
 
     @EventHandler
