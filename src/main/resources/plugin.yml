@@ -32,6 +32,11 @@ commands:
     usage: '/message'
     aliases:
       - msg
+  reply:
+    description: 'Antwortet auf eine msg Nachricht'
+    usage: '/reply <message>'
+    aliases:
+      - r
   spawnpoint:
     description: 'Setzt Spawnpoints von Spieler'
     usage: '/spawnpoint'
