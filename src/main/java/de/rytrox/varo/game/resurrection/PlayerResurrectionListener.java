@@ -1,4 +1,4 @@
-package de.rytrox.varo.resurrection;
+package de.rytrox.varo.game.resurrection;
 
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.database.entity.TeamMember;

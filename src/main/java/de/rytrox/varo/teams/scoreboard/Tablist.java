@@ -1,4 +1,4 @@
-package de.rytrox.varo.scoreboard;
+package de.rytrox.varo.teams.scoreboard;
 
 import de.rytrox.varo.database.entity.Team;
 import de.rytrox.varo.database.entity.TeamMember;

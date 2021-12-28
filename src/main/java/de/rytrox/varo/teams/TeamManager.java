@@ -1,14 +1,14 @@
 package de.rytrox.varo.teams;
 
 import de.rytrox.varo.Varo;
-import de.rytrox.varo.chat_log.ChatLogType;
+import de.rytrox.varo.message.chatlog.ChatLogType;
 import de.rytrox.varo.database.entity.ChatLog;
 import de.rytrox.varo.database.entity.Team;
 import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.database.repository.TeamMemberRepository;
 import de.rytrox.varo.database.repository.TeamRepository;
 
-import de.rytrox.varo.scoreboard.Tablist;
+import de.rytrox.varo.teams.scoreboard.Tablist;
 import de.rytrox.varo.teams.events.*;
 import de.rytrox.varo.teams.inventory.TeamInventoryManager;
 import de.rytrox.varo.teams.spawnpoint.SpawnpointCommand;
@@ -26,6 +26,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 
 public class TeamManager implements Listener {
@@ -117,7 +118,7 @@ public class TeamManager implements Listener {
     public void createTeam(CommandSender executor, String name) {
         Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
             // check if team does not exist...
-            if(teamRepository.findByName(name) == null) {
+            if(!teamRepository.findByName(name).isPresent()) {
                 // create a new Team
                 Team team = new Team();
                 team.setName(name);
@@ -147,8 +148,10 @@ public class TeamManager implements Listener {
     public void setDisplayName(CommandSender commandSender, String teamname, String teamDisplayName) {
         Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
             // check if team does not exist...
-            Team team = teamRepository.findByName(teamname);
-            if(team != null) {
+            Optional<Team> teamOptional = teamRepository.findByName(teamname);
+            if(teamOptional.isPresent()) {
+                Team team = teamOptional.get();
+
                 team.setDisplayName(teamDisplayName);
 
                 TeamModifyEvent event = new TeamModifyEvent(team);
@@ -178,8 +181,10 @@ public class TeamManager implements Listener {
      */
     public void addMember(CommandSender commandSender, String teamname, String playerName) {
         Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
-            Team team = teamRepository.findByName(teamname);
-            if(team != null) {
+            Optional<Team> teamOptional = teamRepository.findByName(teamname);
+            if(teamOptional.isPresent()) {
+
+                Team team = teamOptional.get();
                 TeamMember member = teamMemberRepository.getPlayer(Bukkit.getOfflinePlayer(playerName));
                 if(member != null) {
                     if(!team.equals(member.getTeam())) {
@@ -213,8 +218,10 @@ public class TeamManager implements Listener {
 
     public void removeMember(CommandSender executor, String teamname, String playerName) {
         Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
-            Team team = teamRepository.findByName(teamname);
-            if(team != null) {
+            Optional<Team> teamOptional = teamRepository.findByName(teamname);
+            if(teamOptional.isPresent()) {
+
+                Team team = teamOptional.get();
                 TeamMember member = teamMemberRepository.getPlayer(Bukkit.getOfflinePlayer(playerName));
                 if(member != null) {
                     if(team.equals(member.getTeam())) {
@@ -246,8 +253,10 @@ public class TeamManager implements Listener {
     public void setPrefix(CommandSender commandSender, String teamname, String prefix) {
         Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
             // check if team does not exist...
-            Team team = teamRepository.findByName(teamname);
-            if(team != null) {
+            Optional<Team> teamOptional = teamRepository.findByName(teamname);
+            if(teamOptional.isPresent()) {
+
+                Team team = teamOptional.get();
                 if(prefix.length() < 8) {
                     team.setPrefix(ChatColor.translateAlternateColorCodes('&',
                             String.format("&8[%s&8]&7 ", prefix))

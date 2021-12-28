@@ -1,10 +1,10 @@
-package de.rytrox.varo.worldborder;
+package de.rytrox.varo.world.worldborder;
 
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.database.repository.TeamMemberRepository;
 import de.rytrox.varo.message.MessageService;
 import de.rytrox.varo.game.events.GameDayEndEvent;
-import de.rytrox.varo.resurrection.PlayerResurrectionEvent;
+import de.rytrox.varo.game.resurrection.PlayerResurrectionEvent;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -20,7 +20,7 @@ public class WorldBorderHandler implements Listener {
 
     private final Varo main;
 
-    private final double intialSize;
+    private final double initialSize;
     private final double minSize;
     private final double shrinkSpeed;
 
@@ -35,9 +35,9 @@ public class WorldBorderHandler implements Listener {
 
         Bukkit.getPluginManager().registerEvents(this, main);
 
-        this.intialSize = main.getStateStorage().getDouble("borderSize",
+        this.initialSize = main.getStateStorage().getDouble("borderSize",
                 main.getConfig().getDouble("worldborder.intialSize", 4000D));
-        main.getStateStorage().set("borderSize", this.intialSize);
+        main.getStateStorage().set("borderSize", this.initialSize);
         main.saveStateStorage();
 
         this.minSize = main.getConfig().getDouble("worldborder.suddenDeath.minimal", 20D);
@@ -55,7 +55,7 @@ public class WorldBorderHandler implements Listener {
         this.center = new Location(world, centerX, centerY, centerZ);
 
         world.getWorldBorder().setCenter(center);
-        world.getWorldBorder().setSize(this.intialSize);
+        world.getWorldBorder().setSize(this.initialSize);
         world.getWorldBorder().setDamageAmount(0.1D);
 
         // register worldborder command
@@ -91,9 +91,9 @@ public class WorldBorderHandler implements Listener {
         double newSize;
 
         switch(main.getGameStateHandler().getCurrentGameState()) {
-            case MAIN: newSize = (alivePlayers / ((double) totalPlayers)) * intialSize; break;
+            case MAIN: newSize = (alivePlayers / ((double) totalPlayers)) * initialSize; break;
             case POST: newSize = 10; break;
-            default: newSize = this.intialSize;
+            default: newSize = this.initialSize;
         }
 
         setSize(newSize, 1);
@@ -171,8 +171,8 @@ public class WorldBorderHandler implements Listener {
 
         double maxX = center.getX() + worldBorderSize/2;
         double maxZ = center.getZ() + worldBorderSize/2;
-        double minX = center.getX() + worldBorderSize/2;
-        double minZ = center.getZ() + worldBorderSize/2;
+        double minX = center.getX() - worldBorderSize/2;
+        double minZ = center.getZ() - worldBorderSize/2;
 
         double playerX = playerLocation.getX();
         double playerZ = playerLocation.getZ();

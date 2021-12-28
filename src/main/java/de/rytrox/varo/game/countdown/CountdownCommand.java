@@ -1,4 +1,4 @@
-package de.rytrox.varo.countdown;
+package de.rytrox.varo.game.countdown;
 
 import com.google.gson.JsonObject;
 
@@ -109,7 +109,6 @@ public class CountdownCommand implements TabExecutor {
             } else if(current < 10 || current % 5 == 0) {
                 Bukkit.getOnlinePlayers()
                         .forEach((player) -> sendCountdown(player, current));
-
             }
         }, 0, 20L);
     }

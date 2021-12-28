@@ -1,4 +1,4 @@
-package de.rytrox.varo.worldborder;
+package de.rytrox.varo.world.worldborder;
 
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.utils.CommandHelper;

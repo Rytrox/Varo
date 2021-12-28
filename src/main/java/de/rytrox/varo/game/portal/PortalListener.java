@@ -1,4 +1,4 @@
-package de.rytrox.varo.portal;
+package de.rytrox.varo.game.portal;
 
 import de.rytrox.varo.Varo;
 import org.bukkit.TravelAgent;

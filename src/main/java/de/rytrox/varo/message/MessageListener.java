@@ -1,7 +1,7 @@
 package de.rytrox.varo.message;
 
 import de.rytrox.varo.Varo;
-import de.rytrox.varo.scoreboard.Tablist;
+import de.rytrox.varo.teams.scoreboard.Tablist;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

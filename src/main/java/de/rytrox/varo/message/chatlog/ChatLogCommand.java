@@ -1,4 +1,4 @@
-package de.rytrox.varo.chat_log;
+package de.rytrox.varo.message.chatlog;
 
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.database.entity.ChatLog;
@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;

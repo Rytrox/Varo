@@ -2,12 +2,14 @@ package de.rytrox.varo.database.repository;
 
 import de.rytrox.varo.database.entity.Team;
 
+import de.rytrox.varo.database.entity.TeamMember;
+import de.rytrox.varo.database.enums.PlayerStatus;
 import io.ebean.Database;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository-Class for Teams
@@ -26,14 +28,14 @@ public class TeamRepository {
      * Searches a Team based on its name
      *
      * @param teamname the name of the Team
-     * @return the found team. null if the Team cannot be found
+     * @return the found team
      */
-    @Nullable
-    public Team findByName(@NotNull String teamname) {
+    @NotNull
+    public Optional<Team> findByName(@NotNull String teamname) {
         return this.database.find(Team.class)
                 .where()
                 .eq("name", teamname)
-                .findOne();
+                .findOneOrEmpty();
     }
 
     /**
@@ -46,5 +48,22 @@ public class TeamRepository {
         return this.database.find(Team.class)
                 .select("name")
                 .findIds();
+    }
+
+    /**
+     * Returns all Teams with alive members
+     * @return all teams with alive members
+     */
+    public List<Team> getAllTeamsWithAliveMembers() {
+        return this.database.find(Team.class)
+                .where()
+                .idIn(
+                        this.database.find(TeamMember.class)
+                                .setDistinct(true)
+                                .select("team")
+                                .where()
+                                .eq("status", PlayerStatus.ALIVE)
+                                .findSingleAttributeList()
+                ).findList();
     }
 }
