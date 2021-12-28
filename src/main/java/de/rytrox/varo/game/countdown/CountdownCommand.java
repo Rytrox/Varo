@@ -102,7 +102,7 @@ public class CountdownCommand implements TabExecutor {
             int current = this.counter.getAndDecrement();
 
             if(current == 0) {
-                gameStateHandler.nextGameState();
+                gameStateHandler.setCurrentGameState(GameStateHandler.GameState.MAIN);
                 stop();
 
                 sendStartMessage();
