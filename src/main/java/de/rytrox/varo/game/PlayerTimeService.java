@@ -8,7 +8,7 @@ import de.rytrox.varo.database.repository.PlayerTimeStatisticRepository;
 import de.rytrox.varo.game.events.GameDayEndEvent;
 import de.rytrox.varo.gamestate.GameStateHandler;
 import de.rytrox.varo.gamestate.events.GamestateChangeEvent;
-import de.rytrox.varo.teams.events.TeamMemberSpawnEvent;
+import de.rytrox.varo.teams.events.TeamMemberLoginEvent;
 
 import net.minecraft.server.v1_8_R3.IChatBaseComponent;
 import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
@@ -57,7 +57,7 @@ public class PlayerTimeService implements Listener {
     }
 
     @EventHandler
-    public void onPlayerConnect(TeamMemberSpawnEvent event) {
+    public void onPlayerConnect(TeamMemberLoginEvent event) {
         // Do nothing when game has not been started yet
         if(gameStateHandler.getCurrentGameState() != GameStateHandler.GameState.MAIN)
             return;

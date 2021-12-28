@@ -9,18 +9,18 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Event that will be triggered when a TeamMember joins the game
+ * Event that will be triggered when a TeamMember login on the server
  *
  * @author Timeout
  */
-public class TeamMemberSpawnEvent extends TeamMemberEvent implements Cancellable {
+public class TeamMemberLoginEvent extends TeamMemberEvent implements Cancellable {
 
     private static final HandlerList HANDLER_LIST = new HandlerList();
 
     private boolean cancel;
     private String cancelMessage;
 
-    public TeamMemberSpawnEvent(@NotNull Player player, @NotNull TeamMember member) {
+    public TeamMemberLoginEvent(@NotNull Player player, @NotNull TeamMember member) {
         super(player, member);
     }
 
