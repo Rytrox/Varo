@@ -36,10 +36,9 @@ public class PlayerTimeStatistic {
     /**
      * Increases the amount of available days
      */
-    public void increaseDays() {
-        this.availableDays++;
+    public void increaseDays(@NotNull Integer maxDays) {
+        this.availableDays = Math.min(maxDays, this.availableDays + 1);
     }
-
     /**
      * Decreases the amount of available days
      */

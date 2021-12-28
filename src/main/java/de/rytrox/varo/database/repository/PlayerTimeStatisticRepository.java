@@ -6,6 +6,7 @@ import io.ebean.Database;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class PlayerTimeStatisticRepository {
 
@@ -19,12 +20,16 @@ public class PlayerTimeStatisticRepository {
      * Increases the PlayerTime of all players by one. <br>
      * If the Player has reached the max limit it won't increase anything.
      *
-     * @param maxDays
+     * @param maxDays the maximum amount of days a player can have
      */
     public void increaseDays(int maxDays) {
-        this.database.find(PlayerTimeStatistic.class)
-                .asUpdate()
-                .setRaw("available_days = MIN(available_days + 1, " + maxDays + ")")
-                .update();
+        // Ebean does not support this functionality...
+        this.database.updateAll(
+                this.database.find(PlayerTimeStatistic.class)
+                        .findList()
+                        .stream()
+                        .peek((statistic) -> statistic.increaseDays(Math.min(maxDays, statistic.getAvailableDays() + 1)))
+                        .collect(Collectors.toList())
+        );
     }
 }
