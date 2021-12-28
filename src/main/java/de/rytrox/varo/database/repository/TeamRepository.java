@@ -63,6 +63,7 @@ public class TeamRepository {
                                 .select("team")
                                 .where()
                                 .eq("status", PlayerStatus.ALIVE)
+                                .findSingleAttributeList()
                 ).findList();
     }
 }
