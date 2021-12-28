@@ -6,7 +6,7 @@ import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.database.enums.PlayerStatus;
 import de.rytrox.varo.database.repository.TeamMemberRepository;
 import de.rytrox.varo.gamestate.GameStateHandler;
-import de.rytrox.varo.teams.events.TeamMemberSpawnEvent;
+import de.rytrox.varo.teams.events.TeamMemberLoginEvent;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -59,7 +59,7 @@ public class SpawnPointService implements Listener {
      * @param event the TeamMemberSpawnEvent
      */
     @EventHandler
-    public void onSpawn(TeamMemberSpawnEvent event) {
+    public void onSpawn(TeamMemberLoginEvent event) {
         Player player = event.getPlayer();
 
         // Only teleport if the game is running and the player is alive

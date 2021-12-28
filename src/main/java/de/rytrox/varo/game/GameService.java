@@ -3,7 +3,7 @@ package de.rytrox.varo.game;
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.gamestate.GameStateHandler;
 import de.rytrox.varo.gamestate.events.GamestateChangeEvent;
-import de.rytrox.varo.teams.events.TeamMemberSpawnEvent;
+import de.rytrox.varo.teams.events.TeamMemberLoginEvent;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -42,7 +42,7 @@ public class GameService implements Listener {
     }
 
     @EventHandler
-    public void onTeleportSpawn(TeamMemberSpawnEvent event) {
+    public void onTeleportSpawn(TeamMemberLoginEvent event) {
         if(!event.isCancelled() &&
                 main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.PRE_GAME &&
                 event.getMember().getSpawnPoint() != null) {
@@ -51,7 +51,7 @@ public class GameService implements Listener {
     }
 
     @EventHandler
-    public void onJoin(TeamMemberSpawnEvent event) {
+    public void onJoin(TeamMemberLoginEvent event) {
         if(!event.isCancelled()) {
             Player player = event.getPlayer();
 
