@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.gamestate.GameStateHandler;
+import de.rytrox.varo.message.MessageService;
 import de.rytrox.varo.utils.CommandHelper;
 
 import net.md_5.bungee.api.ChatColor;
@@ -114,6 +115,8 @@ public class CountdownCommand implements TabExecutor {
                 gameStateHandler.setCurrentGameState(GameStateHandler.GameState.MAIN);
                 stop();
 
+                // announce start
+                main.getMessageService().writeMessage("&aDas Spiel hat begonnen!", MessageService.DiscordColor.CYAN);
                 sendStartMessage();
             } else if(current < 10 || current % 5 == 0) {
                 Bukkit.getOnlinePlayers()
