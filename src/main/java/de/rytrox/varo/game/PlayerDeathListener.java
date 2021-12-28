@@ -33,6 +33,9 @@ public class PlayerDeathListener implements Listener {
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
 
+        // remove default death message
+        event.setDeathMessage(null);
+
         GameStateHandler.GameState gameState = main.getGameStateHandler().getCurrentGameState();
 
         if(gameState != GameStateHandler.GameState.MAIN && gameState != GameStateHandler.GameState.FINAL) {
