@@ -1,7 +1,6 @@
 package de.rytrox.varo.game;
 
 import de.rytrox.varo.Varo;
-import de.rytrox.varo.database.repository.TeamMemberRepository;
 import de.rytrox.varo.gamestate.GameStateHandler;
 import de.rytrox.varo.gamestate.events.GamestateChangeEvent;
 import de.rytrox.varo.teams.events.TeamMemberSpawnEvent;
@@ -13,9 +12,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-import java.util.Optional;
-
 /**
  * Service for managing Ingame-Stuff
  */
@@ -23,12 +19,8 @@ public class GameService implements Listener {
 
     private final Varo main;
 
-    private final TeamMemberRepository teamMemberRepository;
-
     public GameService(@NotNull Varo main) {
         this.main = main;
-
-        this.teamMemberRepository = new TeamMemberRepository(main.getDB());
 
         Bukkit.getPluginManager().registerEvents(new GameTimeService(main), main);
         Bukkit.getPluginManager().registerEvents(new PlayerDeathListener(main), main);
@@ -50,18 +42,11 @@ public class GameService implements Listener {
     }
 
     @EventHandler
-    public void onTeleportSpawn(GamestateChangeEvent event) {
-        if(event.getNext() == GameStateHandler.GameState.PRE_GAME) {
-            Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
-                teamMemberRepository.getOnlineMembers()
-                        .forEach((member) ->
-                            Optional.ofNullable(member.getSpawnPoint())
-                                .ifPresent((spawn) ->
-                                    Objects.requireNonNull(member.getPlayer())
-                                           .teleport(member.getSpawnPoint().getLocation())
-                                )
-                        );
-            });
+    public void onTeleportSpawn(TeamMemberSpawnEvent event) {
+        if(!event.isCancelled() &&
+                main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.PRE_GAME &&
+                event.getMember().getSpawnPoint() != null) {
+            event.getPlayer().teleport(event.getMember().getSpawnPoint().getLocation());
         }
     }
 
