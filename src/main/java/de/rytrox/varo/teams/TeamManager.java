@@ -118,7 +118,7 @@ public class TeamManager implements Listener {
     public void createTeam(CommandSender executor, String name) {
         Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
             // check if team does not exist...
-            if(teamRepository.findByName(name) == null) {
+            if(!teamRepository.findByName(name).isPresent()) {
                 // create a new Team
                 Team team = new Team();
                 team.setName(name);
@@ -150,7 +150,6 @@ public class TeamManager implements Listener {
             // check if team does not exist...
             Optional<Team> teamOptional = teamRepository.findByName(teamname);
             if(teamOptional.isPresent()) {
-
                 Team team = teamOptional.get();
 
                 team.setDisplayName(teamDisplayName);
