@@ -171,8 +171,8 @@ public class WorldBorderHandler implements Listener {
 
         double maxX = center.getX() + worldBorderSize/2;
         double maxZ = center.getZ() + worldBorderSize/2;
-        double minX = center.getX() + worldBorderSize/2;
-        double minZ = center.getZ() + worldBorderSize/2;
+        double minX = center.getX() - worldBorderSize/2;
+        double minZ = center.getZ() - worldBorderSize/2;
 
         double playerX = playerLocation.getX();
         double playerZ = playerLocation.getZ();
