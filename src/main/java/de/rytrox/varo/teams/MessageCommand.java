@@ -43,6 +43,8 @@ public class MessageCommand implements TabExecutor {
 
                     commandSender.sendMessage(fullMessage);
                     target.sendMessage(fullMessage);
+
+                    ConversationService.setLastConversationPartner(target, commandSender);
                     main.getChatLogRepository().addChatLog(new ChatLog(commandSender.getName(), target.getName(), message));
 
                     Bukkit.getOnlinePlayers().forEach(p -> {

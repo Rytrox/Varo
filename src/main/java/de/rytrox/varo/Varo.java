@@ -8,6 +8,7 @@ import de.rytrox.varo.game.GameService;
 import de.rytrox.varo.gamestate.GameStateHandler;
 import de.rytrox.varo.game.moderation.ModeratorManager;
 import de.rytrox.varo.game.resurrection.PlayerResurrectionListener;
+import de.rytrox.varo.teams.ReplyCommand;
 import de.rytrox.varo.teams.scoreboard.ScoreBoardManager;
 import de.rytrox.varo.game.GameTimeService;
 import de.rytrox.varo.teams.MessageCommand;
@@ -80,6 +81,7 @@ public final class Varo extends JavaPlugin {
 
         this.getCommand("gamestate").setExecutor(new GamestateCommand(gameStateHandler));
         this.getCommand("message").setExecutor(new MessageCommand(this));
+        this.getCommand("reply").setExecutor(new ReplyCommand());
         this.getCommand("countdown").setExecutor(new CountdownCommand(this));
 
         this.chatLogRepository = new ChatLogRepository(getDB());
