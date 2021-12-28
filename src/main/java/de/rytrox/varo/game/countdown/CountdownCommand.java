@@ -12,6 +12,7 @@ import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -103,8 +104,11 @@ public class CountdownCommand implements TabExecutor {
 
             if(current == 0) {
 
-                // set time
-                Bukkit.getWorld(main.getConfig().getString("worldborder.world", "world")).setTime(1000L);
+                // set time and clear weather
+                World world = Bukkit.getWorld(main.getConfig().getString("worldborder.world", "world"));
+                world.setTime(1000L);
+                world.setStorm(false);
+                world.setThundering(false);
 
                 // start game
                 gameStateHandler.nextGameState();
