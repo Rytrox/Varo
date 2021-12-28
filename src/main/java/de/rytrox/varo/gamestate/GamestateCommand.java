@@ -5,9 +5,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Executes commands of form
@@ -16,7 +19,7 @@ import java.util.Optional;
  *      /gamestate list
  *      /gamestate status
  */
-public class GamestateCommand implements CommandExecutor {
+public class GamestateCommand implements TabExecutor {
 
     private final GameStateHandler gameStateHandler;
 
@@ -83,6 +86,15 @@ public class GamestateCommand implements CommandExecutor {
         return true;
     }
 
+    @Override
+    public List<String> onTabComplete(CommandSender commandSender, Command command, String label, String[] args) {
+        if(args.length > 0 && "set".equalsIgnoreCase(args[0])) {
+            return Arrays.stream(GameStateHandler.GameState.values()).map(Enum::name).collect(Collectors.toList());
+        }
+
+        return null;
+    }
+
     private void sendHelp(CommandSender sender) {
         sender.sendMessage(CommandHelper.formatCommandHeader("/gamestate"));
         sender.sendMessage(CommandHelper.formatCommandExplanation("/gamestate list", "Listet alle GameStates auf"));
@@ -90,4 +102,5 @@ public class GamestateCommand implements CommandExecutor {
         sender.sendMessage(CommandHelper.formatCommandExplanation("/gamestate next", "Wechselt zum nächsten GameState"));
         sender.sendMessage(CommandHelper.formatCommandExplanation("/gamestate set <gamestate>", "Setzt einen spezifischen GameState"));
     }
+
 }
