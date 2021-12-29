@@ -8,7 +8,6 @@ import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.database.repository.TeamMemberRepository;
 import de.rytrox.varo.database.repository.TeamRepository;
 
-import de.rytrox.varo.teams.scoreboard.Tablist;
 import de.rytrox.varo.teams.events.*;
 import de.rytrox.varo.teams.inventory.TeamInventoryManager;
 import de.rytrox.varo.teams.spawnpoint.SpawnpointCommand;
