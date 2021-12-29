@@ -85,6 +85,11 @@ public class MessageService {
         if(gameStateHandler.getCurrentGameState() == GameStateHandler.GameState.SETUP)
             return;
 
+        // broadcast message to minecraft server
+        Bukkit.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', message));
+
+        // do the discord related stuff
+
         StringBuilder sb = new StringBuilder();
         if(addTimestamp) {
             sb.append("Tag X : ");
@@ -97,8 +102,6 @@ public class MessageService {
         sb.append("\n```");
 
         final String modifiedMessage = sb.toString();
-
-        Bukkit.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', message));
 
         Bukkit.getScheduler().runTaskAsynchronously(JavaPlugin.getPlugin(Varo.class), () -> {
 
