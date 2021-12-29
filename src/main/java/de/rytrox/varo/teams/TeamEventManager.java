@@ -3,7 +3,6 @@ package de.rytrox.varo.teams;
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.database.repository.TeamMemberRepository;
-import de.rytrox.varo.gamestate.GameStateHandler;
 import de.rytrox.varo.teams.events.TeamMemberJoinEvent;
 import de.rytrox.varo.teams.events.TeamMemberLoginEvent;
 
@@ -19,8 +18,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.logging.Level;
 
 public class TeamEventManager implements Listener {
 
@@ -40,19 +39,10 @@ public class TeamEventManager implements Listener {
 
         // Only include Players if they are not moderators
         if(!player.hasPermission("varo.admin.moderator")) {
-            TeamMember member = teamMemberRepository.getPlayer(player);
-            // get TeamMember-Object
-            if(member == null && main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.SETUP ||
-                        main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.PRE_GAME) {
-                    // create a new member and save it
-                    member = new TeamMember();
-                    member.setTeam(null);
-                    member.setUniqueID(player.getUniqueId());
+            Optional<TeamMember> member = teamMemberRepository.findPlayer(player);
 
-                    // save entity in Database
-                    main.getDB().save(member);
-                    main.getLogger().log(Level.INFO, "Saved Player {0} in database. It's his first start", player.getName());
-            } else {
+            // get TeamMember-Object
+            if(!member.isPresent()) {
                 event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST,
                         ChatColor.translateAlternateColorCodes('&',
                                 "&8[&6Varo&8] &cEs ist nicht erlaubt, dass neue Spieler während eines Spiels den Server betreten um sich zu registrieren.")
@@ -61,12 +51,12 @@ public class TeamEventManager implements Listener {
                 return;
             }
 
-            TeamMemberLoginEvent spawnEvent = new TeamMemberLoginEvent(player, member);
+            TeamMemberLoginEvent spawnEvent = new TeamMemberLoginEvent(player, member.get());
             Bukkit.getPluginManager().callEvent(spawnEvent);
             if(spawnEvent.isCancelled()) {
                 event.disallow(PlayerLoginEvent.Result.KICK_BANNED, spawnEvent.getCancelMessage());
             } else {
-                this.loadedTeamMember.put(event.getPlayer().getUniqueId(), member);
+                this.loadedTeamMember.put(event.getPlayer().getUniqueId(), member.get());
             }
         }
     }

@@ -13,6 +13,7 @@ import de.rytrox.varo.teams.events.*;
 import de.rytrox.varo.teams.inventory.TeamInventoryManager;
 import de.rytrox.varo.teams.spawnpoint.SpawnpointCommand;
 
+import de.rytrox.varo.utils.MojangAPI;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Bukkit;
@@ -156,29 +157,33 @@ public class TeamManager implements Listener {
             if(teamOptional.isPresent()) {
 
                 Team team = teamOptional.get();
-                TeamMember member = teamMemberRepository.getPlayer(Bukkit.getOfflinePlayer(playerName));
-                if(member != null) {
-                    if(!team.equals(member.getTeam())) {
-                        if(team.getMembers().size() < this.maxPlayersPerTeam) {
-                            PlayerTeamJoinEvent event = new PlayerTeamJoinEvent(team, member);
-                            Bukkit.getPluginManager().callEvent(event);
+                MojangAPI.getOfflinePlayer(playerName)
+                        .thenApply((player) -> {
+                            TeamMember member = teamMemberRepository.getPlayer());
+                            if(member != null) {
+                                if(!team.equals(member.getTeam())) {
+                                    if(team.getMembers().size() < this.maxPlayersPerTeam) {
+                                        PlayerTeamJoinEvent event = new PlayerTeamJoinEvent(team, member);
+                                        Bukkit.getPluginManager().callEvent(event);
 
-                            member.setTeam(team);
-                            if(!event.isCancelled()) {
-                                main.getDB().save(member);
-                                main.getLogger().log(Level.INFO, String.format("%s adds %s to Team %s", commandSender.getName(), playerName, team.getName()));
-                                commandSender.sendMessage(
-                                        ChatColor.translateAlternateColorCodes('&', String.format(
-                                                "&7Der Spieler &a%s &7wurde zum &5Team &d%s &ahinzugefügt", playerName, team.getName()
-                                        ))
-                                );
-                            }
-                        } else
-                            commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                                    "&cDieses Team ist bereits voll!"));
-                    } else
-                        commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                                "&cDieser Spieler ist bereits in diesem Team"));
+                                        member.setTeam(team);
+                                        if(!event.isCancelled()) {
+                                            main.getDB().save(member);
+                                            main.getLogger().log(Level.INFO, String.format("%s adds %s to Team %s", commandSender.getName(), playerName, team.getName()));
+                                            commandSender.sendMessage(
+                                                    ChatColor.translateAlternateColorCodes('&', String.format(
+                                                            "&7Der Spieler &a%s &7wurde zum &5Team &d%s &ahinzugefügt", playerName, team.getName()
+                                                    ))
+                                            );
+                                        }
+                                    } else
+                                        commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                                                "&cDieses Team ist bereits voll!"));
+                                } else
+                                    commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                                            "&cDieser Spieler ist bereits in diesem Team"));
+                        });
+
                 } else
                     commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format(
                             "&cDer Spieler %s konnte nicht gefunden werden. Prozess wurde abgebrochen", playerName)));
