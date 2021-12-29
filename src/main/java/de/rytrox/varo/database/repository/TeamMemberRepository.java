@@ -39,6 +39,17 @@ public class TeamMemberRepository {
     }
 
     /**
+     * Searches for a player in Database. Returns an empty optional if the player could not be found
+     *
+     * @param player the player you want to search
+     * @return the uuid of the player
+     */
+    @NotNull
+    public Optional<TeamMember> findPlayer(@NotNull OfflinePlayer player) {
+        return findPlayerByUUID(player.getUniqueId());
+    }
+
+    /**
      * Returns the Member by its UUID
      *
      * @param uuid the UUID of the Player
