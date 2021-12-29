@@ -37,27 +37,33 @@ public class TeamMemberGhostService implements Listener {
         Player player = member.getPlayer();
 
         if(member.getStatus() == PlayerStatus.DEAD && player != null) {
-            Bukkit.getScheduler().runTask(main, () -> {
-                if(member.getTeam() != null) {
-                    player.setGameMode(GameMode.SPECTATOR);
-                    List<TeamMember> alivePartner = findAliveTeamMember(member.getTeam(), false);
+            if(member.getTeam() != null) {
+                player.setGameMode(GameMode.SPECTATOR);
+                List<TeamMember> alivePartner = findAliveTeamMember(member.getTeam(), false);
 
-                    if(!alivePartner.isEmpty()) {
-                        // get online member
-                        Optional<TeamMember> onlinePartner = alivePartner.stream()
-                                .filter((other) -> other.getPlayer() != null)
-                                .findAny();
+                if(!alivePartner.isEmpty()) {
+                    // get online member
+                    Optional<TeamMember> onlinePartner = alivePartner.stream()
+                            .filter((other) -> other.getPlayer() != null)
+                            .findAny();
 
-                        if(onlinePartner.isPresent()) {
-                            Player target = onlinePartner.get().getPlayer();
+                    if(onlinePartner.isPresent()) {
+                        Player target = onlinePartner.get().getPlayer();
 
-                            player.setSpectatorTarget(target);
-                            spectatorTarget.put(player, target);
-                        } else player.kickPlayer(ChatColor.translateAlternateColorCodes('&', "&8[&6Varo&8] &cDu kannst nur zuschauen, wenn dein Team online ist."));
-                    } else player.kickPlayer(ChatColor.translateAlternateColorCodes('&', "&8[&6Varo&8] &cDein Team ist ausgeschieden"));
-                } else player.kickPlayer(ChatColor.translateAlternateColorCodes('&', "&8[&6Varo&8] &cTote Spieler ohne Team sind direkt ausgeschieden"));
-
-            });
+                        player.setSpectatorTarget(target);
+                        spectatorTarget.put(player, target);
+                    } else {
+                        event.setCancelled(true);
+                        event.setCancelMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6Varo&8] &cDu kannst nur zuschauen, wenn dein Team online ist."));
+                    }
+                } else {
+                    event.setCancelled(true);
+                    event.setCancelMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6Varo&8] &cDein Team ist ausgeschieden"));
+                }
+            } else {
+                event.setCancelled(true);
+                event.setCancelMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6Varo&8] &cTote Spieler ohne Team sind direkt ausgeschieden"));
+            }
         }
     }
 
