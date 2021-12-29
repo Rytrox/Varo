@@ -9,12 +9,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.h2.util.IOUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import javax.net.ssl.HttpsURLConnection;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
@@ -114,30 +116,34 @@ public class MessageService {
             }
             sb.append("```");
             sb.append(color.getKey());
-            sb.append(message.replaceAll(ChatColor.COLOR_CHAR + "[0-9|a-f]", ""));
+            sb.append(ChatColor.stripColor(message));
             sb.append("\n```");
 
             final String modifiedMessage = sb.toString();
 
             Bukkit.getScheduler().runTaskAsynchronously(JavaPlugin.getPlugin(Varo.class), () -> {
                 try {
-                    HttpURLConnection connection = (HttpURLConnection) new URL(discordWebhookURL).openConnection();
+                    HttpsURLConnection connection = (HttpsURLConnection) new URL(discordWebhookURL).openConnection();
 
                     connection.addRequestProperty("Content-Type", "application/json");
                     connection.addRequestProperty("User-Agent", "MinecraftServer");
                     connection.setDoOutput(true);
                     connection.setRequestMethod("POST");
 
+                    JsonObject object = new JsonObject();
+                    object.addProperty("content", modifiedMessage);
 
-                    try (AutoCloseable _closeable = connection::disconnect;
-                         OutputStream stream = connection.getOutputStream()) {
-                        JsonObject object = new JsonObject();
-                        object.addProperty("content", modifiedMessage);
-
-                        stream.write(object.toString().getBytes());
-                    } catch (Exception ex) {
-                        main.getLogger().log(Level.WARNING, "Discord-Nachricht konnte nicht gesendet werden");
-                    }
+                    connection.connect();
+                   try (AutoCloseable closeable = () -> {
+                            connection.getOutputStream().close();
+                            connection.getInputStream().close();
+                            connection.disconnect();
+                        };
+                        DataOutputStream stream = new DataOutputStream(connection.getOutputStream())) {
+                       stream.write(object.toString().getBytes(StandardCharsets.UTF_8));
+                   } catch (Exception ex) {
+                        main.getLogger().log(Level.WARNING, "Discord-Nachricht konnte nicht gesendet werden", ex);
+                   }
                 } catch (IOException e) {
                     main.getLogger().log(Level.WARNING, "Unable to connect to discord-hook. Please check your URL and reload this plugin");
                 }

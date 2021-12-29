@@ -2,6 +2,7 @@ package de.rytrox.varo.game.moderation;
 
 import de.rytrox.varo.Varo;
 
+import de.rytrox.varo.gamestate.GameStateHandler;
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
 
 import org.bukkit.Bukkit;
@@ -122,14 +123,14 @@ public class ModeratorManager implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        if(isModerator(event.getPlayer())) {
+        if(isModerator(event.getPlayer()) && main.getGameStateHandler().getCurrentGameState() != GameStateHandler.GameState.SETUP) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-        if(isModerator(event.getPlayer())) {
+        if(isModerator(event.getPlayer()) && main.getGameStateHandler().getCurrentGameState() != GameStateHandler.GameState.SETUP) {
             event.setCancelled(true);
         }
     }

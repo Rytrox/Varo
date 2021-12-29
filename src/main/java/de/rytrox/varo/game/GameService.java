@@ -3,6 +3,7 @@ package de.rytrox.varo.game;
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.gamestate.GameStateHandler;
 import de.rytrox.varo.gamestate.events.GamestateChangeEvent;
+import de.rytrox.varo.teams.events.TeamMemberJoinEvent;
 import de.rytrox.varo.teams.events.TeamMemberLoginEvent;
 
 import org.bukkit.Bukkit;
@@ -29,7 +30,7 @@ public class GameService implements Listener {
 
     @EventHandler
     public void onGameStart(GamestateChangeEvent event) {
-        if (event.getNext() == GameStateHandler.GameState.MAIN || event.getNext() == GameStateHandler.GameState.FINAL) {
+        if(event.getNext() == GameStateHandler.GameState.MAIN || event.getNext() == GameStateHandler.GameState.FINAL) {
 
             // set time and clear weather
             World world = Bukkit.getWorld(main.getConfig().getString("worldborder.world", "world"));
@@ -71,22 +72,20 @@ public class GameService implements Listener {
     }
 
     @EventHandler
-    public void onJoin(TeamMemberLoginEvent event) {
-        if(!event.isCancelled()) {
-            Player player = event.getPlayer();
+    public void onJoin(TeamMemberJoinEvent event) {
+        Player player = event.getPlayer();
 
-            // Force Gamemode to survival when game is running and player is not in correct gamemode. Ignore Moderators!
-            if (!main.getModeratorManager().isModerator(player)) {
+        // Force Gamemode to survival when game is running and player is not in correct gamemode. Ignore Moderators!
+        if(!main.getModeratorManager().isModerator(player)) {
+            GameStateHandler.GameState gameState = main.getGameStateHandler().getCurrentGameState();
 
-                GameStateHandler.GameState gameState = main.getGameStateHandler().getCurrentGameState();
-
-                if((gameState == GameStateHandler.GameState.MAIN
-                        || gameState == GameStateHandler.GameState.FINAL)) {
-                    player.setGameMode(GameMode.SURVIVAL);
-                } else {
-                    player.setGameMode(GameMode.ADVENTURE);
-                }
+            if((gameState == GameStateHandler.GameState.MAIN
+                    || gameState == GameStateHandler.GameState.FINAL)) {
+                player.setGameMode(GameMode.SURVIVAL);
+            } else {
+                player.setGameMode(GameMode.ADVENTURE);
             }
+
         }
     }
 }
