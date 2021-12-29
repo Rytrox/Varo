@@ -31,6 +31,11 @@ public class MessageService {
         this.discordWebhookURL = main.getConfig().getString("discord.webhook", "");
         boolean discordEnabled = main.getConfig().getBoolean("discord.enabled", true);
 
+        // warn if discord support is enabled, but no webhook url is given
+        if(discordEnabled && discordWebhookURL.isEmpty()) {
+            main.getLogger().log(Level.WARNING, "Du hast Discord in deiner Konfiguration aktiviert, aber keine Webhook-URL angegeben!");
+        }
+
         this.discordEnabled = discordEnabled && !discordWebhookURL.isEmpty();
     }
 
