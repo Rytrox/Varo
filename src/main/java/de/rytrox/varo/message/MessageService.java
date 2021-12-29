@@ -1,5 +1,7 @@
 package de.rytrox.varo.message;
 
+import com.google.gson.JsonObject;
+
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.gamestate.GameStateHandler;
 import de.rytrox.varo.teams.scoreboard.Tablist;
@@ -8,11 +10,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-import org.json.simple.JSONObject;
 
-import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -23,12 +24,23 @@ public class MessageService {
     private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyy-MM-dd | HH:mm");
     private static final String COORDINATE_TEMPLATE = "[x:%d | y:%d | z:%d]";
 
+    private final boolean discordEnabled;
     private final Varo main;
+    private final String discordWebhookURL;
     private final GameStateHandler gameStateHandler;
 
-    public MessageService(@NotNull Varo main, @NotNull GameStateHandler gameStateHandler) {
+    public MessageService(@NotNull Varo main) {
         this.main = main;
-        this.gameStateHandler = gameStateHandler;
+        this.gameStateHandler = main.getGameStateHandler();
+        this.discordWebhookURL = main.getConfig().getString("discord.webhook", "");
+        boolean discordEnabled = main.getConfig().getBoolean("discord.enabled", true);
+
+        // warn if discord support is enabled, but no webhook url is given
+        if(discordEnabled && discordWebhookURL.isEmpty()) {
+            main.getLogger().log(Level.WARNING, "Du hast Discord in deiner Konfiguration aktiviert, aber keine Webhook-URL angegeben!");
+        }
+
+        this.discordEnabled = discordEnabled && !discordWebhookURL.isEmpty();
     }
 
     /**
@@ -88,63 +100,49 @@ public class MessageService {
         if(gameStateHandler.getCurrentGameState() == GameStateHandler.GameState.SETUP)
             return;
 
-        // broadcast message to minecraft server
+        // broadcast message on minecraft server
         Bukkit.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', message));
 
-        // do the discord related stuff
+        // if discord option is enabled, do the discord related stuff
+        if(discordEnabled) {
 
-        StringBuilder sb = new StringBuilder();
-        if(addTimestamp) {
-            sb.append("Tag ").append(main.getStateStorage().getInt("day", 0)).append(": ");
-            sb.append(TIMESTAMP_FORMAT.format(new Date()));
-            sb.append("\n");
-        }
-        sb.append("```");
-        sb.append(color.getKey());
-        sb.append(message.replaceAll(ChatColor.COLOR_CHAR + "[0-9|a-f]", ""));
-        sb.append("\n```");
-
-        final String modifiedMessage = sb.toString();
-
-        Bukkit.getScheduler().runTaskAsynchronously(JavaPlugin.getPlugin(Varo.class), () -> {
-
-            HttpsURLConnection connection = null;
-            OutputStream stream = null;
-
-            try {
-                URL url = new URL("https://discord.com/api/webhooks/925724164013326376/yNtTNG0LPAUudC63yAIXsIyTnfiZJRQh3tmz6lTLgZ2tRsYSgprfVr-TA831X58IXKZl");
-
-                connection = (HttpsURLConnection) url.openConnection();
-                connection.addRequestProperty("Content-Type", "application/json");
-                connection.addRequestProperty("User-Agent", "MinecraftServer");
-                connection.setDoOutput(true);
-                connection.setRequestMethod("POST");
-
-                stream = connection.getOutputStream();
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("content", modifiedMessage);
-
-                stream.write(jsonObject.toJSONString().getBytes());
-                stream.flush();
-
-            } catch (IOException ex) {
-                JavaPlugin.getPlugin(Varo.class).getLogger().log(Level.WARNING, "Discord-Nachricht konnte nicht gesendet werden");
-                ex.printStackTrace();
-            } finally {
-                if(stream != null) {
-                    try {
-                        stream.close();
-                    } catch (IOException ignored) {}
-                }
-                if(connection != null) {
-                    try {
-                        connection.getInputStream().close();
-                    } catch (IOException ignored) {}
-
-                    connection.disconnect();
-                }
+            StringBuilder sb = new StringBuilder();
+            if(addTimestamp) {
+                sb.append("Tag X : ");
+                sb.append(TIMESTAMP_FORMAT.format(new Date()));
+                sb.append("\n");
             }
-        });
+            sb.append("```");
+            sb.append(color.getKey());
+            sb.append(message.replaceAll(ChatColor.COLOR_CHAR + "[0-9|a-f]", ""));
+            sb.append("\n```");
+
+            final String modifiedMessage = sb.toString();
+
+            Bukkit.getScheduler().runTaskAsynchronously(JavaPlugin.getPlugin(Varo.class), () -> {
+                try {
+                    HttpURLConnection connection = (HttpURLConnection) new URL(discordWebhookURL).openConnection();
+
+                    connection.addRequestProperty("Content-Type", "application/json");
+                    connection.addRequestProperty("User-Agent", "MinecraftServer");
+                    connection.setDoOutput(true);
+                    connection.setRequestMethod("POST");
+
+
+                    try (AutoCloseable _closeable = connection::disconnect;
+                         OutputStream stream = connection.getOutputStream()) {
+                        JsonObject object = new JsonObject();
+                        object.addProperty("content", modifiedMessage);
+
+                        stream.write(object.toString().getBytes());
+                    } catch (Exception ex) {
+                        main.getLogger().log(Level.WARNING, "Discord-Nachricht konnte nicht gesendet werden");
+                    }
+                } catch (IOException e) {
+                    main.getLogger().log(Level.WARNING, "Unable to connect to discord-hook. Please check your URL and reload this plugin");
+                }
+            });
+        }
     }
 
     public enum DiscordColor {
