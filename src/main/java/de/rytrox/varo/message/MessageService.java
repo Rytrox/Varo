@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.gamestate.GameStateHandler;
-
+import de.rytrox.varo.teams.scoreboard.Tablist;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -52,7 +52,7 @@ public class MessageService {
      */
     public void leakPlayerCoordinates(Player player, CoordinateLeakReason reason) {
 
-        String messageBuilder = String.format("Koordinaten des Spielers %s:%n", player.getName()) +
+        String messageBuilder = String.format("&4Koordinaten des Spielers %s&4:%n", Tablist.getInstance().getPrefix(player) + player.getName()) +
                 String.format(
                         COORDINATE_TEMPLATE,
                         player.getLocation().getBlockX(),
@@ -148,28 +148,23 @@ public class MessageService {
     }
 
     public enum DiscordColor {
-        NONE("", ' '),
-        BLACK("tex\n$ ", '0'),
-        YELLOW("fix\n", 'e'),
-        CYAN("yaml\n", 'b'),
-        BLUE("md\n# ", '9'),
-        RED("diff\n- ", 'c');
+        NONE(""),
+        BLACK("tex\n$ "),
+        YELLOW("fix\n"),
+        CYAN("yaml\n"),
+        BLUE("md\n# "),
+        RED("diff\n- ");
 
         private final String key;
-        private final char chatColorEquivalent;
 
-        DiscordColor(String key, char chatColorEquivalent) {
+        DiscordColor(String key) {
             this.key = key;
-            this.chatColorEquivalent = chatColorEquivalent;
         }
 
         public String getKey() {
             return key;
         }
 
-        public char getChatColorEquivalent() {
-            return chatColorEquivalent;
-        }
     }
 
 

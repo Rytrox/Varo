@@ -105,12 +105,6 @@ public class CountdownCommand implements TabExecutor {
 
             if(current == 0) {
 
-                // set time and clear weather
-                World world = Bukkit.getWorld(main.getConfig().getString("worldborder.world", "world"));
-                world.setTime(1000L);
-                world.setStorm(false);
-                world.setThundering(false);
-
                 // start game
                 gameStateHandler.setCurrentGameState(GameStateHandler.GameState.MAIN);
                 stop();

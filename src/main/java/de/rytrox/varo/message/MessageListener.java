@@ -1,6 +1,7 @@
 package de.rytrox.varo.message;
 
 import de.rytrox.varo.Varo;
+import de.rytrox.varo.gamestate.GameStateHandler;
 import de.rytrox.varo.teams.scoreboard.Tablist;
 
 import net.md_5.bungee.api.ChatColor;
@@ -26,13 +27,16 @@ public class MessageListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         event.setJoinMessage(null);
 
-        if(!main.getModeratorManager().isModerator(event.getPlayer())) {
+        GameStateHandler.GameState gameState = main.getGameStateHandler().getCurrentGameState();
+
+        if(!main.getModeratorManager().isModerator(event.getPlayer())
+            && gameState != GameStateHandler.GameState.POST) {
+
             main.getMessageService()
-                    .writeMessage(ChatColor.translateAlternateColorCodes('&',
-                                    String.format(JOIN_MESSAGE,
+                    .writeMessage(String.format(JOIN_MESSAGE,
                                             Tablist.getInstance().getPrefix(event.getPlayer()),
-                                            event.getPlayer().getName())),
-                            MessageService.DiscordColor.RED
+                                            event.getPlayer().getName()),
+                            MessageService.DiscordColor.CYAN
                     );
         }
     }
@@ -41,12 +45,15 @@ public class MessageListener implements Listener {
     public void onLeave(PlayerQuitEvent event) {
         event.setQuitMessage(null);
 
-        if(!main.getModeratorManager().isModerator(event.getPlayer())) {
+        GameStateHandler.GameState gameState = main.getGameStateHandler().getCurrentGameState();
+
+        if(!main.getModeratorManager().isModerator(event.getPlayer())
+            && gameState != GameStateHandler.GameState.POST) {
             main.getMessageService()
-                    .writeMessage(ChatColor.translateAlternateColorCodes('&',
+                    .writeMessage(
                         String.format(QUIT_MESSAGE,
                                 Tablist.getInstance().getPrefix(event.getPlayer()),
-                                event.getPlayer().getName())),
+                                event.getPlayer().getName()),
                         MessageService.DiscordColor.RED
                     );
         }
