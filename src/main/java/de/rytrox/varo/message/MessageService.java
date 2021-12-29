@@ -108,13 +108,15 @@ public class MessageService {
 
             StringBuilder sb = new StringBuilder();
             if(addTimestamp) {
-                sb.append("Tag X : ");
+                sb.append("Tag ");
+                sb.append(main.getStateStorage().getInt("day", 1));
+                sb.append(": ");
                 sb.append(TIMESTAMP_FORMAT.format(new Date()));
                 sb.append("\n");
             }
             sb.append("```");
             sb.append(color.getKey());
-            sb.append(message.replaceAll(ChatColor.COLOR_CHAR + "[0-9|a-f]", ""));
+            sb.append(message.replaceAll(ChatColor.COLOR_CHAR + "[0-9a-f]", ""));
             sb.append("\n```");
 
             final String modifiedMessage = sb.toString();
