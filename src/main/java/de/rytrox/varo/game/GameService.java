@@ -76,10 +76,15 @@ public class GameService implements Listener {
             Player player = event.getPlayer();
 
             // Force Gamemode to survival when game is running and player is not in correct gamemode. Ignore Moderators!
-            if (!main.getModeratorManager().isModerator(player) &&
-                    (main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.MAIN ||
-                            main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.FINAL)) {
-                player.setGameMode(GameMode.SURVIVAL);
+            if (!main.getModeratorManager().isModerator(player)) {
+
+                GameStateHandler.GameState gameState = main.getGameStateHandler().getCurrentGameState();
+
+                if((gameState == GameStateHandler.GameState.MAIN
+                        || gameState == GameStateHandler.GameState.FINAL)) {
+                } else {
+                    player.setGameMode(GameMode.ADVENTURE);
+                }
             }
         }
     }
