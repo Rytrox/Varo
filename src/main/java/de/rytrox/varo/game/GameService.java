@@ -39,8 +39,13 @@ public class GameService implements Listener {
 
             Bukkit.getOnlinePlayers()
                     .stream()
-                    .filter((player) -> !main.getModeratorManager().isModerator(player)) // ignore moderators!
-                    .forEach(player -> player.setGameMode(GameMode.SURVIVAL));
+                    .filter(player -> !main.getModeratorManager().isModerator(player)) // ignore moderators!
+                    .forEach(player -> {
+                        player.setGameMode(GameMode.SURVIVAL);
+                        player.getInventory().clear();
+                        player.setHealth(20);
+                        player.setFoodLevel(20);
+                    });
         } else {
             Bukkit.getOnlinePlayers()
                     .stream()
