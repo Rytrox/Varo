@@ -2,6 +2,7 @@ package de.rytrox.varo.message;
 
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.gamestate.GameStateHandler;
+import de.rytrox.varo.teams.scoreboard.Tablist;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -22,9 +23,11 @@ public class MessageService {
     private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyy-MM-dd | HH:mm");
     private static final String COORDINATE_TEMPLATE = "[x:%d | y:%d | z:%d]";
 
+    private final Varo main;
     private final GameStateHandler gameStateHandler;
 
-    public MessageService(@NotNull GameStateHandler gameStateHandler) {
+    public MessageService(@NotNull Varo main, @NotNull GameStateHandler gameStateHandler) {
+        this.main = main;
         this.gameStateHandler = gameStateHandler;
     }
 
@@ -35,7 +38,7 @@ public class MessageService {
      */
     public void leakPlayerCoordinates(Player player, CoordinateLeakReason reason) {
 
-        String messageBuilder = String.format("Koordinaten des Spielers %s:%n", player.getName()) +
+        String messageBuilder = String.format("&4Koordinaten des Spielers %s&4:%n", Tablist.getInstance().getPrefix(player) + player.getName()) +
                 String.format(
                         COORDINATE_TEMPLATE,
                         player.getLocation().getBlockX(),
@@ -92,7 +95,7 @@ public class MessageService {
 
         StringBuilder sb = new StringBuilder();
         if(addTimestamp) {
-            sb.append("Tag X : ");
+            sb.append("Tag ").append(main.getStateStorage().getInt("day", 0)).append(": ");
             sb.append(TIMESTAMP_FORMAT.format(new Date()));
             sb.append("\n");
         }
@@ -109,7 +112,7 @@ public class MessageService {
             OutputStream stream = null;
 
             try {
-                URL url = new URL("https://discord.com/api/webhooks/924652421475606548/WNXz2s3IySk4S8wCKW3MhKEG8Z9v-wb3qkcvhZ02vRod3FwJJLmsIEQ1rNNEEDJEDiYh");
+                URL url = new URL("https://discord.com/api/webhooks/925724164013326376/yNtTNG0LPAUudC63yAIXsIyTnfiZJRQh3tmz6lTLgZ2tRsYSgprfVr-TA831X58IXKZl");
 
                 connection = (HttpsURLConnection) url.openConnection();
                 connection.addRequestProperty("Content-Type", "application/json");

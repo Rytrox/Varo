@@ -7,6 +7,7 @@ import de.rytrox.varo.teams.events.TeamMemberLoginEvent;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -29,10 +30,29 @@ public class GameService implements Listener {
     @EventHandler
     public void onGameStart(GamestateChangeEvent event) {
         if (event.getNext() == GameStateHandler.GameState.MAIN || event.getNext() == GameStateHandler.GameState.FINAL) {
+
+            // set time and clear weather
+            World world = Bukkit.getWorld(main.getConfig().getString("worldborder.world", "world"));
+            world.setTime(1000L);
+            world.setStorm(false);
+            world.setThundering(false);
+
             Bukkit.getOnlinePlayers()
                     .stream()
-                    .filter((player) -> !main.getModeratorManager().isModerator(player)) // ignore moderators!
-                    .forEach(player -> player.setGameMode(GameMode.SURVIVAL));
+                    .filter(player -> !main.getModeratorManager().isModerator(player)) // ignore moderators!
+                    .forEach(player -> {
+                        player.setGameMode(GameMode.SURVIVAL);
+                        player.getInventory().clear();
+                        player.setHealth(20);
+                        player.setFoodLevel(20);
+                    });
+        } else if(event.getNext() == GameStateHandler.GameState.POST) {
+            Bukkit.getOnlinePlayers()
+                    .stream()
+                    .filter(player -> !main.getModeratorManager().isModerator(player)) // ignore moderators!
+                    .forEach(player -> {
+                        player.setGameMode(GameMode.ADVENTURE);
+                    });
         } else {
             Bukkit.getOnlinePlayers()
                     .stream()
@@ -56,10 +76,15 @@ public class GameService implements Listener {
             Player player = event.getPlayer();
 
             // Force Gamemode to survival when game is running and player is not in correct gamemode. Ignore Moderators!
-            if (!main.getModeratorManager().isModerator(player) &&
-                    (main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.MAIN ||
-                            main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.FINAL)) {
-                player.setGameMode(GameMode.SURVIVAL);
+            if (!main.getModeratorManager().isModerator(player)) {
+
+                GameStateHandler.GameState gameState = main.getGameStateHandler().getCurrentGameState();
+
+                if((gameState == GameStateHandler.GameState.MAIN
+                        || gameState == GameStateHandler.GameState.FINAL)) {
+                } else {
+                    player.setGameMode(GameMode.ADVENTURE);
+                }
             }
         }
     }
