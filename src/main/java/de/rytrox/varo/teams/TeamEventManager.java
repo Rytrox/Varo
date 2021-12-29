@@ -40,11 +40,10 @@ public class TeamEventManager implements Listener {
 
         // Only include Players if they are not moderators
         if(!player.hasPermission("varo.admin.moderator")) {
-            if(main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.SETUP ||
-                    main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.PRE_GAME) {
-                // get TeamMember-Object
-                TeamMember member = teamMemberRepository.getPlayer(player);
-                if(member == null) {
+            TeamMember member = teamMemberRepository.getPlayer(player);
+            // get TeamMember-Object
+            if(member == null && main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.SETUP ||
+                        main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.PRE_GAME) {
                     // create a new member and save it
                     member = new TeamMember();
                     member.setTeam(null);
@@ -53,19 +52,22 @@ public class TeamEventManager implements Listener {
                     // save entity in Database
                     main.getDB().save(member);
                     main.getLogger().log(Level.INFO, "Saved Player {0} in database. It's his first start", player.getName());
-                }
+            } else {
+                event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST,
+                        ChatColor.translateAlternateColorCodes('&',
+                                "&8[&6Varo&8] &cEs ist nicht erlaubt, dass neue Spieler während eines Spiels den Server betreten um sich zu registrieren.")
+                );
 
-                TeamMemberLoginEvent spawnEvent = new TeamMemberLoginEvent(player, member);
-                Bukkit.getPluginManager().callEvent(spawnEvent);
-                if(spawnEvent.isCancelled()) {
-                    event.disallow(PlayerLoginEvent.Result.KICK_BANNED, spawnEvent.getCancelMessage());
-                } else {
-                    this.loadedTeamMember.put(event.getPlayer().getUniqueId(), member);
-                }
-            } else event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST,
-                    ChatColor.translateAlternateColorCodes('&',
-                            "&8[&6Varo&8] &cEs ist nicht erlaubt, dass neue Spieler während eines Spiels den Server betreten um sich zu registrieren.")
-                    );
+                return;
+            }
+
+            TeamMemberLoginEvent spawnEvent = new TeamMemberLoginEvent(player, member);
+            Bukkit.getPluginManager().callEvent(spawnEvent);
+            if(spawnEvent.isCancelled()) {
+                event.disallow(PlayerLoginEvent.Result.KICK_BANNED, spawnEvent.getCancelMessage());
+            } else {
+                this.loadedTeamMember.put(event.getPlayer().getUniqueId(), member);
+            }
         }
     }
 

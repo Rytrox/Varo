@@ -145,7 +145,8 @@ public class ModeratorManager implements Listener {
 
     @EventHandler
     public void onInvSeeClick(InventoryClickEvent event) {
-        if(!event.getInventory().getHolder().equals(event.getWhoClicked())) {
+        if(isModerator(event.getWhoClicked()) && event.getInventory() != null &&
+                !event.getWhoClicked().equals(event.getInventory().getHolder())) {
             event.setCancelled(true);
         }
     }
