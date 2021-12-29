@@ -116,7 +116,7 @@ public class MessageService {
             }
             sb.append("```");
             sb.append(color.getKey());
-            sb.append(message.replaceAll(ChatColor.COLOR_CHAR + "[0-9a-f]", ""));
+            sb.append(message.replaceAll("[" + ChatColor.COLOR_CHAR + "&][0-9a-f]", ""));
             sb.append("\n```");
 
             final String modifiedMessage = sb.toString();
