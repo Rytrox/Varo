@@ -14,8 +14,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -103,7 +101,7 @@ public class MessageService {
             return;
 
         // broadcast message on minecraft server
-        Bukkit.getServer().broadcastMessage(color == DiscordColor.NONE ? message : ChatColor.translateAlternateColorCodes('&', "&" + color.chatColorEquivalent + message));
+        Bukkit.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', message));
 
         // if discord option is enabled, do the discord related stuff
         if(discordEnabled) {
