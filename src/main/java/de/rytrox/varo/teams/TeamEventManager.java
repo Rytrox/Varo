@@ -3,8 +3,12 @@ package de.rytrox.varo.teams;
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.database.repository.TeamMemberRepository;
+import de.rytrox.varo.gamestate.GameStateHandler;
 import de.rytrox.varo.teams.events.TeamMemberJoinEvent;
 import de.rytrox.varo.teams.events.TeamMemberLoginEvent;
+
+import net.md_5.bungee.api.ChatColor;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -36,26 +40,32 @@ public class TeamEventManager implements Listener {
 
         // Only include Players if they are not moderators
         if(!player.hasPermission("varo.admin.moderator")) {
-            // get TeamMember-Object
-            TeamMember member = teamMemberRepository.getPlayer(player);
-            if(member == null) {
-                // create a new member and save it
-                member = new TeamMember();
-                member.setTeam(null);
-                member.setUniqueID(player.getUniqueId());
+            if(main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.SETUP ||
+                    main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.PRE_GAME) {
+                // get TeamMember-Object
+                TeamMember member = teamMemberRepository.getPlayer(player);
+                if(member == null) {
+                    // create a new member and save it
+                    member = new TeamMember();
+                    member.setTeam(null);
+                    member.setUniqueID(player.getUniqueId());
 
-                // save entity in Database
-                main.getDB().save(member);
-                main.getLogger().log(Level.INFO, "Saved Player {0} in database. It's his first start", player.getName());
-            }
+                    // save entity in Database
+                    main.getDB().save(member);
+                    main.getLogger().log(Level.INFO, "Saved Player {0} in database. It's his first start", player.getName());
+                }
 
-            TeamMemberLoginEvent spawnEvent = new TeamMemberLoginEvent(player, member);
-            Bukkit.getPluginManager().callEvent(spawnEvent);
-            if(spawnEvent.isCancelled()) {
-                event.disallow(PlayerLoginEvent.Result.KICK_BANNED, spawnEvent.getCancelMessage());
-            } else {
-                this.loadedTeamMember.put(event.getPlayer().getUniqueId(), member);
-            }
+                TeamMemberLoginEvent spawnEvent = new TeamMemberLoginEvent(player, member);
+                Bukkit.getPluginManager().callEvent(spawnEvent);
+                if(spawnEvent.isCancelled()) {
+                    event.disallow(PlayerLoginEvent.Result.KICK_BANNED, spawnEvent.getCancelMessage());
+                } else {
+                    this.loadedTeamMember.put(event.getPlayer().getUniqueId(), member);
+                }
+            } else event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST,
+                    ChatColor.translateAlternateColorCodes('&',
+                            "&8[&6Varo&8] &cEs ist nicht erlaubt, dass neue Spieler während eines Spiels den Server betreten um sich zu registrieren.")
+                    );
         }
     }
 
