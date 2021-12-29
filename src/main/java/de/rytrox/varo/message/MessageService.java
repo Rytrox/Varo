@@ -29,8 +29,9 @@ public class MessageService {
     public MessageService(@NotNull Varo main, @NotNull GameStateHandler gameStateHandler) {
         this.gameStateHandler = gameStateHandler;
         this.discordWebhookURL = main.getConfig().getString("discord.webhook", "");
-        this.discordEnabled = !discordWebhookURL.isEmpty() && main.getConfig().getBoolean("discord.enabled", false);
+        boolean discordEnabled = main.getConfig().getBoolean("discord.enabled", true);
 
+        this.discordEnabled = discordEnabled && !discordWebhookURL.isEmpty();
     }
 
     /**

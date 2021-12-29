@@ -5,7 +5,7 @@
 # +––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––+
 
 discord:
-  enabled: false
+  enabled: true
   # webhook of the channel you want to post the logs at
   webhook: ''
 
