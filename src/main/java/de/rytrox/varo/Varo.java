@@ -10,7 +10,6 @@ import de.rytrox.varo.game.moderation.ModeratorManager;
 import de.rytrox.varo.game.resurrection.PlayerResurrectionListener;
 import de.rytrox.varo.teams.ReplyCommand;
 import de.rytrox.varo.teams.scoreboard.ScoreBoardManager;
-import de.rytrox.varo.game.GameTimeService;
 import de.rytrox.varo.teams.MessageCommand;
 import de.rytrox.varo.teams.TeamManager;
 import de.rytrox.varo.gamestate.GamestateCommand;
@@ -69,7 +68,7 @@ public final class Varo extends JavaPlugin {
         this.teamManager = new TeamManager(this);
         this.scoreBoardManager = new ScoreBoardManager(this);
         this.messageService = new MessageService(this);
-        this.messageService.writeMessage("Der Server wurde gestartet!", MessageService.DiscordColor.CYAN);
+        this.messageService.writeMessage("&3Der Server wurde gestartet!", MessageService.DiscordColor.CYAN);
 
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new MessageListener(this), this);
