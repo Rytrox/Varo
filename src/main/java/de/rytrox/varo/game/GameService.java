@@ -7,6 +7,7 @@ import de.rytrox.varo.teams.events.TeamMemberLoginEvent;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -29,6 +30,13 @@ public class GameService implements Listener {
     @EventHandler
     public void onGameStart(GamestateChangeEvent event) {
         if (event.getNext() == GameStateHandler.GameState.MAIN || event.getNext() == GameStateHandler.GameState.FINAL) {
+
+            // set time and clear weather
+            World world = Bukkit.getWorld(main.getConfig().getString("worldborder.world", "world"));
+            world.setTime(1000L);
+            world.setStorm(false);
+            world.setThundering(false);
+
             Bukkit.getOnlinePlayers()
                     .stream()
                     .filter((player) -> !main.getModeratorManager().isModerator(player)) // ignore moderators!
