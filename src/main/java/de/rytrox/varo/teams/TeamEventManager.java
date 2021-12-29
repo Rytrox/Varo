@@ -3,6 +3,7 @@ package de.rytrox.varo.teams;
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.database.repository.TeamMemberRepository;
+import de.rytrox.varo.gamestate.GameStateHandler;
 import de.rytrox.varo.teams.events.TeamMemberJoinEvent;
 import de.rytrox.varo.teams.events.TeamMemberLoginEvent;
 
@@ -25,17 +26,26 @@ public class TeamEventManager implements Listener {
 
     private final TeamMemberRepository teamMemberRepository;
     private final Map<UUID, TeamMember> loadedTeamMember = new HashMap<>();
+    private final Varo main;
 
     public TeamEventManager(@NotNull Varo main) {
+        this.main = main;
         this.teamMemberRepository = new TeamMemberRepository(main.getDB());
     }
 
     @EventHandler
-    public void onRegisterPlayerInDatabase(@NotNull PlayerLoginEvent event) {
+    public void onPlayerLogin(@NotNull PlayerLoginEvent event) {
         final Player player = event.getPlayer();
 
         // Only include Players if they are not moderators
-        if(!player.hasPermission("varo.admin.moderator")) {
+        if(!main.getModeratorManager().isModerator(player)) {
+
+            if(main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.SETUP) {
+                event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, ChatColor.RED + "Der Server befindet sich in der Setup-Phase\nNur Moderatoren dürfen joinen!");
+                return;
+            }
+
+
             Optional<TeamMember> member = teamMemberRepository.findPlayer(player);
 
             // get TeamMember-Object
