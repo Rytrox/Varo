@@ -68,7 +68,18 @@ public class TeamManager implements Listener {
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
         main.getChatLogRepository().addChatLog(new ChatLog(event.getPlayer().getName(), ChatLogType.GLOBAL.getName(), event.getMessage()));
-        event.setFormat(Tablist.getInstance().getPrefix(event.getPlayer()) + ChatColor.translateAlternateColorCodes('&', "%s &8» &7%s"));
+
+        String prefix;
+        if(!main.getModeratorManager().isModerator(event.getPlayer())) {
+            TeamMember member = teamMemberRepository.getPlayer(event.getPlayer());
+
+            if(member != null && member.getTeam() != null) {
+                prefix = Optional.ofNullable(member.getTeam().getPrefix())
+                        .orElse(ChatColor.translateAlternateColorCodes('&', "&7Kein Prefix"));
+            } else prefix = ChatColor.translateAlternateColorCodes('&', "&7Kein Team");
+        } else prefix = ChatColor.translateAlternateColorCodes('&', "&9Moderator");
+
+        event.setFormat(prefix + ChatColor.translateAlternateColorCodes('&', "&8 | &7%s &8» &7%s"));
     }
 
     /**
