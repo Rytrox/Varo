@@ -4,6 +4,11 @@
 # |                                                                                                                  |
 # +––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––+
 
+discord:
+  enabled: false
+  # webhook of the channel you want to post the logs at
+  webhook: ''
+
 teams:
   # Decides the max amount of team members in a team
   maxMembers: 2

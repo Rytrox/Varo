@@ -22,10 +22,15 @@ public class MessageService {
     private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyy-MM-dd | HH:mm");
     private static final String COORDINATE_TEMPLATE = "[x:%d | y:%d | z:%d]";
 
+    private final boolean discordEnabled;
+    private final String discordWebhookURL;
     private final GameStateHandler gameStateHandler;
 
-    public MessageService(@NotNull GameStateHandler gameStateHandler) {
+    public MessageService(@NotNull Varo main, @NotNull GameStateHandler gameStateHandler) {
         this.gameStateHandler = gameStateHandler;
+        this.discordWebhookURL = main.getConfig().getString("discord.webhook", "");
+        this.discordEnabled = !discordWebhookURL.isEmpty() && main.getConfig().getBoolean("discord.enabled", false);
+
     }
 
     /**
@@ -98,47 +103,49 @@ public class MessageService {
 
         final String modifiedMessage = sb.toString();
 
-        Bukkit.getScheduler().runTaskAsynchronously(JavaPlugin.getPlugin(Varo.class), () -> {
+        Bukkit.getServer().broadcastMessage(color == DiscordColor.NONE ? message : ChatColor.translateAlternateColorCodes('&', "&" + color.chatColorEquivalent + message));
 
-            HttpsURLConnection connection = null;
-            OutputStream stream = null;
+        if(discordEnabled) {
+            Bukkit.getScheduler().runTaskAsynchronously(JavaPlugin.getPlugin(Varo.class), () -> {
 
-            try {
-                URL url = new URL("https://discord.com/api/webhooks/924652421475606548/WNXz2s3IySk4S8wCKW3MhKEG8Z9v-wb3qkcvhZ02vRod3FwJJLmsIEQ1rNNEEDJEDiYh");
+                HttpsURLConnection connection = null;
+                OutputStream stream = null;
 
-                connection = (HttpsURLConnection) url.openConnection();
-                connection.addRequestProperty("Content-Type", "application/json");
-                connection.addRequestProperty("User-Agent", "MinecraftServer");
-                connection.setDoOutput(true);
-                connection.setRequestMethod("POST");
+                try {
+                    URL url = new URL(discordWebhookURL);
 
-                stream = connection.getOutputStream();
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("content", modifiedMessage);
+                    connection = (HttpsURLConnection) url.openConnection();
+                    connection.addRequestProperty("Content-Type", "application/json");
+                    connection.addRequestProperty("User-Agent", "MinecraftServer");
+                    connection.setDoOutput(true);
+                    connection.setRequestMethod("POST");
 
-                stream.write(jsonObject.toJSONString().getBytes());
-                stream.flush();
+                    stream = connection.getOutputStream();
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("content", modifiedMessage);
 
-                Bukkit.getServer().broadcastMessage(color == DiscordColor.NONE ? message : ChatColor.translateAlternateColorCodes('&', "&" + color.chatColorEquivalent + message));
+                    stream.write(jsonObject.toJSONString().getBytes());
+                    stream.flush();
 
-            } catch (IOException ex) {
-                JavaPlugin.getPlugin(Varo.class).getLogger().log(Level.WARNING, "Discord-Nachricht konnte nicht gesendet werden");
-                ex.printStackTrace();
-            } finally {
-                if(stream != null) {
-                    try {
-                        stream.close();
-                    } catch (IOException ignored) {}
+                } catch (IOException ex) {
+                    JavaPlugin.getPlugin(Varo.class).getLogger().log(Level.WARNING, "Discord-Nachricht konnte nicht gesendet werden");
+                    ex.printStackTrace();
+                } finally {
+                    if(stream != null) {
+                        try {
+                            stream.close();
+                        } catch (IOException ignored) {}
+                    }
+                    if(connection != null) {
+                        try {
+                            connection.getInputStream().close();
+                        } catch (IOException ignored) {}
+
+                        connection.disconnect();
+                    }
                 }
-                if(connection != null) {
-                    try {
-                        connection.getInputStream().close();
-                    } catch (IOException ignored) {}
-
-                    connection.disconnect();
-                }
-            }
-        });
+            });
+        }
     }
 
     public enum DiscordColor {
