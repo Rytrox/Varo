@@ -1,17 +1,16 @@
 package de.rytrox.varo.message;
 
-import com.ibm.jvm.dtfjview.Output;
+import com.google.gson.JsonObject;
+
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.gamestate.GameStateHandler;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-import org.json.simple.JSONObject;
 
-import javax.net.ssl.HttpsURLConnection;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -25,11 +24,13 @@ public class MessageService {
     private static final String COORDINATE_TEMPLATE = "[x:%d | y:%d | z:%d]";
 
     private final boolean discordEnabled;
+    private final Varo main;
     private final String discordWebhookURL;
     private final GameStateHandler gameStateHandler;
 
-    public MessageService(@NotNull Varo main, @NotNull GameStateHandler gameStateHandler) {
-        this.gameStateHandler = gameStateHandler;
+    public MessageService(@NotNull Varo main) {
+        this.main = main;
+        this.gameStateHandler = main.getGameStateHandler();
         this.discordWebhookURL = main.getConfig().getString("discord.webhook", "");
         boolean discordEnabled = main.getConfig().getBoolean("discord.enabled", true);
 
@@ -117,41 +118,27 @@ public class MessageService {
 
             final String modifiedMessage = sb.toString();
 
-
             Bukkit.getScheduler().runTaskAsynchronously(JavaPlugin.getPlugin(Varo.class), () -> {
+                try {
+                    HttpURLConnection connection = (HttpURLConnection) new URL(discordWebhookURL).openConnection();
 
-                OutputStream[] stream = new OutputStream[] {null};
-                HttpURLConnection connection[] = new HttpURLConnection[] {null};
+                    connection.addRequestProperty("Content-Type", "application/json");
+                    connection.addRequestProperty("User-Agent", "MinecraftServer");
+                    connection.setDoOutput(true);
+                    connection.setRequestMethod("POST");
 
-                try (AutoCloseable closeable = () -> {
-                    if(connection[0] != null) {
-                        if(connection[0].getInputStream() != null){
-                            connection[0].getInputStream().close();
-                        }
-                        connection[0].disconnect();
+
+                    try (AutoCloseable _closeable = connection::disconnect;
+                         OutputStream stream = connection.getOutputStream()) {
+                        JsonObject object = new JsonObject();
+                        object.addProperty("content", modifiedMessage);
+
+                        stream.write(object.toString().getBytes());
+                    } catch (Exception ex) {
+                        main.getLogger().log(Level.WARNING, "Discord-Nachricht konnte nicht gesendet werden");
                     }
-                    if(stream[0] != null) {
-                        stream[0].close();
-                    }
-                }) {
-
-                    connection[0] = (HttpURLConnection) new URL(discordWebhookURL).openConnection();
-
-                    connection[0].addRequestProperty("Content-Type", "application/json");
-                    connection[0].addRequestProperty("User-Agent", "MinecraftServer");
-                    connection[0].setDoOutput(true);
-                    connection[0].setRequestMethod("POST");
-
-                    stream[0] = connection[0].getOutputStream();
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("content", modifiedMessage);
-
-                    stream[0].write(jsonObject.toJSONString().getBytes());
-                    stream[0].flush();
-
-                } catch (Exception ex) {
-                    JavaPlugin.getPlugin(Varo.class).getLogger().log(Level.WARNING, "Discord-Nachricht konnte nicht gesendet werden");
-                    ex.printStackTrace();
+                } catch (Exception e) {
+                    main.getLogger().log(Level.WARNING, "Unable to connect to discord-hook. Please check your URL and reload this plugin");
                 }
             });
         }

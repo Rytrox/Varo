@@ -68,7 +68,7 @@ public final class Varo extends JavaPlugin {
         this.worldBorderHandler = new WorldBorderHandler(this);
         this.teamManager = new TeamManager(this);
         this.scoreBoardManager = new ScoreBoardManager(this);
-        this.messageService = new MessageService(this, gameStateHandler);
+        this.messageService = new MessageService(this);
         this.messageService.writeMessage("Der Server wurde gestartet!", MessageService.DiscordColor.CYAN);
 
         PluginManager pluginManager = Bukkit.getPluginManager();
