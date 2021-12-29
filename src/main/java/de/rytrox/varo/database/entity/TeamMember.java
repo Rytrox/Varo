@@ -34,7 +34,7 @@ public class TeamMember {
 
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "status")
-    private PlayerStatus status = PlayerStatus.NOT_REGISTERED;
+    private PlayerStatus status = PlayerStatus.ALIVE;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "member", targetEntity = SpawnPoint.class, fetch = FetchType.LAZY)
     private SpawnPoint spawnPoint;

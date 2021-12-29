@@ -1,6 +1,7 @@
 package de.rytrox.varo.teams;
 
 import de.rytrox.varo.Varo;
+import de.rytrox.varo.game.TeamMemberGhostService;
 import de.rytrox.varo.message.chatlog.ChatLogType;
 import de.rytrox.varo.database.entity.ChatLog;
 import de.rytrox.varo.database.entity.Team;
