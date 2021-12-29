@@ -1,10 +1,11 @@
-package de.rytrox.varo.teams;
+package de.rytrox.varo.game;
 
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.database.entity.Team;
 import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.database.enums.PlayerStatus;
 import de.rytrox.varo.teams.events.TeamMemberDisconnectEvent;
+import de.rytrox.varo.teams.events.TeamMemberJoinEvent;
 import de.rytrox.varo.teams.events.TeamMemberLoginEvent;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -32,13 +33,10 @@ public class TeamMemberGhostService implements Listener {
     }
 
     @EventHandler
-    public void onTeamMemberSpawn(TeamMemberLoginEvent event) {
+    public void onDenyGhosting(TeamMemberLoginEvent event) {
         TeamMember member = event.getMember();
-        Player player = member.getPlayer();
-
-        if(member.getStatus() == PlayerStatus.DEAD && player != null) {
+        if(member.getStatus() == PlayerStatus.DEAD) {
             if(member.getTeam() != null) {
-                player.setGameMode(GameMode.SPECTATOR);
                 List<TeamMember> alivePartner = findAliveTeamMember(member.getTeam(), false);
 
                 if(!alivePartner.isEmpty()) {
@@ -50,8 +48,7 @@ public class TeamMemberGhostService implements Listener {
                     if(onlinePartner.isPresent()) {
                         Player target = onlinePartner.get().getPlayer();
 
-                        player.setSpectatorTarget(target);
-                        spectatorTarget.put(player, target);
+                        spectatorTarget.put(event.getPlayer(), target);
                     } else {
                         event.setCancelled(true);
                         event.setCancelMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6Varo&8] &cDu kannst nur zuschauen, wenn dein Team online ist."));
@@ -64,6 +61,16 @@ public class TeamMemberGhostService implements Listener {
                 event.setCancelled(true);
                 event.setCancelMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6Varo&8] &cTote Spieler ohne Team sind direkt ausgeschieden"));
             }
+        }
+    }
+
+    @EventHandler
+    public void onTeamMemberSpawn(TeamMemberJoinEvent event) {
+        Entity target = spectatorTarget.get(event.getPlayer());
+
+        if(target != null) {
+            event.getPlayer().setGameMode(GameMode.SPECTATOR);
+            Bukkit.getScheduler().runTaskLater(main, () -> event.getPlayer().setSpectatorTarget(target), 10L);
         }
     }
 

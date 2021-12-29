@@ -41,10 +41,6 @@ public class SpawnPointService implements Listener {
                 point.setLocation(executor.getLocation());
                 member.setSpawnPoint(point);
 
-                // If a player has a spawnpoint, it is registered
-                if(member.getStatus() == PlayerStatus.NOT_REGISTERED)
-                    member.setStatus(PlayerStatus.ALIVE);
-
                 main.getDB().update(member);
                 executor.sendMessage(ChatColor.translateAlternateColorCodes('&',
                         String.format("&8[&6Varo&8] &7Du hast den Spawnpoint von %s erfolgreich gesetzt!", member.getOfflinePlayer().getName())));

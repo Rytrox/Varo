@@ -1,6 +1,7 @@
 package de.rytrox.varo.game;
 
 import de.rytrox.varo.Varo;
+import de.rytrox.varo.database.enums.PlayerStatus;
 import de.rytrox.varo.gamestate.GameStateHandler;
 import de.rytrox.varo.gamestate.events.GamestateChangeEvent;
 import de.rytrox.varo.teams.events.TeamMemberJoinEvent;
@@ -75,8 +76,8 @@ public class GameService implements Listener {
     public void onJoin(TeamMemberJoinEvent event) {
         Player player = event.getPlayer();
 
-        // Force Gamemode to survival when game is running and player is not in correct gamemode. Ignore Moderators!
-        if(!main.getModeratorManager().isModerator(player)) {
+        // Force Gamemode to survival when game is running and player is not in correct gamemode. Ignore Moderators and dead players!
+        if(!main.getModeratorManager().isModerator(player) && event.getMember().getStatus() == PlayerStatus.ALIVE) {
             GameStateHandler.GameState gameState = main.getGameStateHandler().getCurrentGameState();
 
             if((gameState == GameStateHandler.GameState.MAIN
