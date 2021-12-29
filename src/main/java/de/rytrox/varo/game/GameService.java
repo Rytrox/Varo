@@ -82,6 +82,7 @@ public class GameService implements Listener {
 
                 if((gameState == GameStateHandler.GameState.MAIN
                         || gameState == GameStateHandler.GameState.FINAL)) {
+                    player.setGameMode(GameMode.SURVIVAL);
                 } else {
                     player.setGameMode(GameMode.ADVENTURE);
                 }
