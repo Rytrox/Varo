@@ -90,22 +90,26 @@ public class MessageService {
         if(gameStateHandler.getCurrentGameState() == GameStateHandler.GameState.SETUP)
             return;
 
-        StringBuilder sb = new StringBuilder();
-        if(addTimestamp) {
-            sb.append("Tag X : ");
-            sb.append(TIMESTAMP_FORMAT.format(new Date()));
-            sb.append("\n");
-        }
-        sb.append("```");
-        sb.append(color.getKey());
-        sb.append(message.replaceAll(ChatColor.COLOR_CHAR + "[0-9|a-f]", ""));
-        sb.append("\n```");
-
-        final String modifiedMessage = sb.toString();
-
+        // broadcast message on minecraft server
         Bukkit.getServer().broadcastMessage(color == DiscordColor.NONE ? message : ChatColor.translateAlternateColorCodes('&', "&" + color.chatColorEquivalent + message));
 
+        // if discord option is enabled, do the discord related stuff
         if(discordEnabled) {
+
+            StringBuilder sb = new StringBuilder();
+            if(addTimestamp) {
+                sb.append("Tag X : ");
+                sb.append(TIMESTAMP_FORMAT.format(new Date()));
+                sb.append("\n");
+            }
+            sb.append("```");
+            sb.append(color.getKey());
+            sb.append(message.replaceAll(ChatColor.COLOR_CHAR + "[0-9|a-f]", ""));
+            sb.append("\n```");
+
+            final String modifiedMessage = sb.toString();
+
+
             Bukkit.getScheduler().runTaskAsynchronously(JavaPlugin.getPlugin(Varo.class), () -> {
 
                 HttpsURLConnection connection = null;
