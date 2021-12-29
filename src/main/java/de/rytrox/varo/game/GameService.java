@@ -46,6 +46,13 @@ public class GameService implements Listener {
                         player.setHealth(20);
                         player.setFoodLevel(20);
                     });
+        } else if(event.getNext() == GameStateHandler.GameState.POST) {
+            Bukkit.getOnlinePlayers()
+                    .stream()
+                    .filter(player -> !main.getModeratorManager().isModerator(player)) // ignore moderators!
+                    .forEach(player -> {
+                        player.setGameMode(GameMode.ADVENTURE);
+                    });
         } else {
             Bukkit.getOnlinePlayers()
                     .stream()
