@@ -136,7 +136,7 @@ public class GameTimeService implements Listener {
     public void onEnd(GameDayEndEvent event) {
         main.getMessageService().writeMessage("&cDer Spieltag ist beendet!", MessageService.DiscordColor.RED, true);
 
-        main.getStateStorage().set("gameday", main.getStateStorage().getInt("gameday") + 1);
+        main.getStateStorage().set("gameday", main.getStateStorage().getInt("day", 0) + 1);
         main.saveStateStorage();
     }
 
