@@ -73,12 +73,12 @@ public class TeamManager implements Listener {
             TeamMember member = teamMemberRepository.getPlayer(event.getPlayer());
 
             if(member != null && member.getTeam() != null) {
-                prefix = Optional.ofNullable(member.getTeam().getPrefix())
+                prefix = Optional.ofNullable(member.getTeam().getDisplayName())
                         .orElse(ChatColor.translateAlternateColorCodes('&', "&7Kein Prefix"));
             } else prefix = ChatColor.translateAlternateColorCodes('&', "&7Kein Team");
         } else prefix = ChatColor.translateAlternateColorCodes('&', "&9Moderator");
 
-        event.setFormat(prefix + ChatColor.translateAlternateColorCodes('&', "&8 | &7%s &8» &7%s"));
+        event.setFormat(prefix + ChatColor.translateAlternateColorCodes('&', "&8 ┃ &7%s &8» &7%s"));
     }
 
     /**
