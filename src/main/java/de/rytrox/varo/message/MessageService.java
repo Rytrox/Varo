@@ -1,5 +1,6 @@
 package de.rytrox.varo.message;
 
+import com.ibm.jvm.dtfjview.Output;
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.gamestate.GameStateHandler;
 import org.bukkit.Bukkit;
@@ -12,6 +13,7 @@ import org.json.simple.JSONObject;
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -118,41 +120,38 @@ public class MessageService {
 
             Bukkit.getScheduler().runTaskAsynchronously(JavaPlugin.getPlugin(Varo.class), () -> {
 
-                HttpsURLConnection connection = null;
-                OutputStream stream = null;
+                OutputStream[] stream = new OutputStream[] {null};
+                HttpURLConnection connection[] = new HttpURLConnection[] {null};
 
-                try {
-                    URL url = new URL(discordWebhookURL);
+                try (AutoCloseable closeable = () -> {
+                    if(connection[0] != null) {
+                        if(connection[0].getInputStream() != null){
+                            connection[0].getInputStream().close();
+                        }
+                        connection[0].disconnect();
+                    }
+                    if(stream[0] != null) {
+                        stream[0].close();
+                    }
+                }) {
 
-                    connection = (HttpsURLConnection) url.openConnection();
-                    connection.addRequestProperty("Content-Type", "application/json");
-                    connection.addRequestProperty("User-Agent", "MinecraftServer");
-                    connection.setDoOutput(true);
-                    connection.setRequestMethod("POST");
+                    connection[0] = (HttpURLConnection) new URL(discordWebhookURL).openConnection();
 
-                    stream = connection.getOutputStream();
+                    connection[0].addRequestProperty("Content-Type", "application/json");
+                    connection[0].addRequestProperty("User-Agent", "MinecraftServer");
+                    connection[0].setDoOutput(true);
+                    connection[0].setRequestMethod("POST");
+
+                    stream[0] = connection[0].getOutputStream();
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("content", modifiedMessage);
 
-                    stream.write(jsonObject.toJSONString().getBytes());
-                    stream.flush();
+                    stream[0].write(jsonObject.toJSONString().getBytes());
+                    stream[0].flush();
 
-                } catch (IOException ex) {
+                } catch (Exception ex) {
                     JavaPlugin.getPlugin(Varo.class).getLogger().log(Level.WARNING, "Discord-Nachricht konnte nicht gesendet werden");
                     ex.printStackTrace();
-                } finally {
-                    if(stream != null) {
-                        try {
-                            stream.close();
-                        } catch (IOException ignored) {}
-                    }
-                    if(connection != null) {
-                        try {
-                            connection.getInputStream().close();
-                        } catch (IOException ignored) {}
-
-                        connection.disconnect();
-                    }
                 }
             });
         }
