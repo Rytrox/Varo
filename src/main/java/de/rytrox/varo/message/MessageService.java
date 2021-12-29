@@ -98,6 +98,8 @@ public class MessageService {
 
         final String modifiedMessage = sb.toString();
 
+        Bukkit.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', message));
+
         Bukkit.getScheduler().runTaskAsynchronously(JavaPlugin.getPlugin(Varo.class), () -> {
 
             HttpsURLConnection connection = null;
@@ -118,8 +120,6 @@ public class MessageService {
 
                 stream.write(jsonObject.toJSONString().getBytes());
                 stream.flush();
-
-                Bukkit.getServer().broadcastMessage(color == DiscordColor.NONE ? message : ChatColor.translateAlternateColorCodes('&', "&" + color.chatColorEquivalent + message));
 
             } catch (IOException ex) {
                 JavaPlugin.getPlugin(Varo.class).getLogger().log(Level.WARNING, "Discord-Nachricht konnte nicht gesendet werden");
@@ -142,28 +142,23 @@ public class MessageService {
     }
 
     public enum DiscordColor {
-        NONE("", ' '),
-        BLACK("tex\n$ ", '0'),
-        YELLOW("fix\n", 'e'),
-        CYAN("yaml\n", 'b'),
-        BLUE("md\n# ", '9'),
-        RED("diff\n- ", 'c');
+        NONE(""),
+        BLACK("tex\n$ "),
+        YELLOW("fix\n"),
+        CYAN("yaml\n"),
+        BLUE("md\n# "),
+        RED("diff\n- ");
 
         private final String key;
-        private final char chatColorEquivalent;
 
-        DiscordColor(String key, char chatColorEquivalent) {
+        DiscordColor(String key) {
             this.key = key;
-            this.chatColorEquivalent = chatColorEquivalent;
         }
 
         public String getKey() {
             return key;
         }
 
-        public char getChatColorEquivalent() {
-            return chatColorEquivalent;
-        }
     }
 
 
