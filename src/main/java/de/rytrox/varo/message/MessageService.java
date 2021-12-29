@@ -22,9 +22,11 @@ public class MessageService {
     private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyy-MM-dd | HH:mm");
     private static final String COORDINATE_TEMPLATE = "[x:%d | y:%d | z:%d]";
 
+    private final Varo main;
     private final GameStateHandler gameStateHandler;
 
-    public MessageService(@NotNull GameStateHandler gameStateHandler) {
+    public MessageService(@NotNull Varo main, @NotNull GameStateHandler gameStateHandler) {
+        this.main = main;
         this.gameStateHandler = gameStateHandler;
     }
 
@@ -87,7 +89,7 @@ public class MessageService {
 
         StringBuilder sb = new StringBuilder();
         if(addTimestamp) {
-            sb.append("Tag X : ");
+            sb.append("Tag ").append(main.getStateStorage().getInt("day", 0)).append(": ");
             sb.append(TIMESTAMP_FORMAT.format(new Date()));
             sb.append("\n");
         }
