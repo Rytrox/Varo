@@ -73,16 +73,14 @@ public class ModeratorManager implements Listener {
                 PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER,
                 ((CraftPlayer) player).getHandle());
 
-        Bukkit.getScheduler().runTaskLater(main, () -> {
-            Bukkit.getOnlinePlayers()
-                    .stream()
-                    .filter((p) -> !this.isModerator(p))
-                    .forEach((p) -> {
-                        p.hidePlayer(player);
+        Bukkit.getScheduler().runTaskLater(main, () -> Bukkit.getOnlinePlayers()
+                .stream()
+                .filter((p) -> !this.isModerator(p))
+                .forEach((p) -> {
+                    p.hidePlayer(player);
 
-                        ((CraftPlayer) p).getHandle().playerConnection.sendPacket(despawnPacket);
-                    });
-        }, 2);
+                    ((CraftPlayer) p).getHandle().playerConnection.sendPacket(despawnPacket);
+                }), 2);
     }
 
     @EventHandler

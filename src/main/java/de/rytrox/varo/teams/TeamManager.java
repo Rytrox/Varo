@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
 public class TeamManager implements Listener {
@@ -58,7 +59,7 @@ public class TeamManager implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
             TeamMember member = teamMemberRepository.getPlayer(event.getPlayer());
 
-            if(member != null) {
+            if (member != null) {
                 Bukkit.getPluginManager().callEvent(new TeamMemberDisconnectEvent(event.getPlayer(), member));
             }
         });
@@ -85,19 +86,19 @@ public class TeamManager implements Listener {
      * Attention: This Method runs async
      *
      * @param executor the executor of the creation process
-     * @param name the name of the Team
+     * @param name     the name of the Team
      */
     public void createTeam(CommandSender executor, String name) {
         Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
             // check if team does not exist...
-            if(!teamRepository.findByName(name).isPresent()) {
+            if (!teamRepository.findByName(name).isPresent()) {
                 // create a new Team
                 Team team = new Team();
                 team.setName(name);
 
                 TeamCreateEvent event = new TeamCreateEvent(team);
                 Bukkit.getPluginManager().callEvent(event);
-                if(!event.isCancelled()) {
+                if (!event.isCancelled()) {
                     // and save it in database
                     main.getDB().save(team);
                     main.getLogger().log(Level.INFO, String.format("%s creates a new Team called %s", executor.getName(), name));
@@ -113,24 +114,24 @@ public class TeamManager implements Listener {
     /**
      * Sets the displayname of a team and save it asynchronously
      *
-     * @param commandSender the executor of the modification
-     * @param teamname the name of the team
+     * @param commandSender   the executor of the modification
+     * @param teamname        the name of the team
      * @param teamDisplayName the Displayname of the team (ColorCodes in '&')
      */
     public void setDisplayName(CommandSender commandSender, String teamname, String teamDisplayName) {
         Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
             // check if team does not exist...
             Optional<Team> teamOptional = teamRepository.findByName(teamname);
-            if(teamOptional.isPresent()) {
+            if (teamOptional.isPresent()) {
                 Team team = teamOptional.get();
 
                 team.setDisplayName(teamDisplayName);
 
                 TeamModifyEvent event = new TeamModifyEvent(team);
                 Bukkit.getPluginManager().callEvent(event);
-                if(!event.isCancelled()) {
+                if (!event.isCancelled()) {
                     // save it in database
-                    main.getDB().save(team);
+                    main.getDB().update(team);
                     main.getLogger().log(Level.INFO, String.format("%s modfied displayname of %s to %s",
                             commandSender.getName(), team.getName(), team.getDisplayName()));
                     commandSender.sendMessage(
@@ -148,45 +149,39 @@ public class TeamManager implements Listener {
      * Adds a member to a team
      *
      * @param commandSender the executor of the Process
-     * @param teamname the name of the Team
-     * @param playerName the name of the player
+     * @param teamname      the name of the Team
+     * @param playerName    the name of the player
      */
     public void addMember(CommandSender commandSender, String teamname, String playerName) {
         Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
             Optional<Team> teamOptional = teamRepository.findByName(teamname);
-            if(teamOptional.isPresent()) {
+            if (teamOptional.isPresent()) {
 
                 Team team = teamOptional.get();
-                MojangAPI.getOfflinePlayer(playerName)
-                        .thenApply((player) -> {
-                            TeamMember member = teamMemberRepository.getPlayer());
-                            if(member != null) {
-                                if(!team.equals(member.getTeam())) {
-                                    if(team.getMembers().size() < this.maxPlayersPerTeam) {
-                                        PlayerTeamJoinEvent event = new PlayerTeamJoinEvent(team, member);
-                                        Bukkit.getPluginManager().callEvent(event);
+                this.getOrCreateTeamMember(playerName)
+                        .thenAccept((member) -> {
+                            if (!team.equals(member.getTeam())) {
+                                if (team.getMembers().size() < this.maxPlayersPerTeam) {
+                                    PlayerTeamJoinEvent event = new PlayerTeamJoinEvent(team, member);
+                                    Bukkit.getPluginManager().callEvent(event);
 
-                                        member.setTeam(team);
-                                        if(!event.isCancelled()) {
-                                            main.getDB().save(member);
-                                            main.getLogger().log(Level.INFO, String.format("%s adds %s to Team %s", commandSender.getName(), playerName, team.getName()));
-                                            commandSender.sendMessage(
-                                                    ChatColor.translateAlternateColorCodes('&', String.format(
-                                                            "&7Der Spieler &a%s &7wurde zum &5Team &d%s &ahinzugefügt", playerName, team.getName()
-                                                    ))
-                                            );
-                                        }
-                                    } else
-                                        commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                                                "&cDieses Team ist bereits voll!"));
+                                    member.setTeam(team);
+                                    if (!event.isCancelled()) {
+                                        main.getDB().update(member);
+                                        main.getLogger().log(Level.INFO, String.format("%s adds %s to Team %s", commandSender.getName(), playerName, team.getName()));
+                                        commandSender.sendMessage(
+                                                ChatColor.translateAlternateColorCodes('&', String.format(
+                                                        "&7Der Spieler &a%s &7wurde zum &5Team &d%s &ahinzugefügt", playerName, team.getName()
+                                                ))
+                                        );
+                                    }
                                 } else
                                     commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                                            "&cDieser Spieler ist bereits in diesem Team"));
+                                            "&cDieses Team ist bereits voll!"));
+                            } else
+                                commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                                        "&cDieser Spieler ist bereits in diesem Team"));
                         });
-
-                } else
-                    commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format(
-                            "&cDer Spieler %s konnte nicht gefunden werden. Prozess wurde abgebrochen", playerName)));
             } else commandSender.sendMessage(
                     ChatColor.translateAlternateColorCodes('&', "&cDieses Team existiert nicht"));
         });
@@ -195,32 +190,36 @@ public class TeamManager implements Listener {
     public void removeMember(CommandSender executor, String teamname, String playerName) {
         Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
             Optional<Team> teamOptional = teamRepository.findByName(teamname);
-            if(teamOptional.isPresent()) {
-
+            if (teamOptional.isPresent()) {
                 Team team = teamOptional.get();
-                TeamMember member = teamMemberRepository.getPlayer(Bukkit.getOfflinePlayer(playerName));
-                if(member != null) {
-                    if(team.equals(member.getTeam())) {
-                        PlayerTeamKickEvent event = new PlayerTeamKickEvent(team, member);
-                        Bukkit.getPluginManager().callEvent(event);
 
-                        member.setTeam(null);
-                        if(!event.isCancelled()) {
-                            main.getDB().save(member);
-                            main.getLogger().log(Level.INFO,
-                                    String.format("%s removes %s of Team %s", executor.getName(), playerName, team.getName()));
-                            executor.sendMessage(
-                                    ChatColor.translateAlternateColorCodes('&', String.format(
-                                            "&7Der Spieler &a%s &7wurde vom &5Team &d%s &centfernt", playerName, team.getName()
-                                    ))
-                            );
-                        }
-                    } else
-                        executor.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                                "&cDieser Spieler ist nicht in diesem Team"));
-                } else
-                    executor.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format(
-                            "&cDer Spieler %s konnte nicht gefunden werden. Prozess wurde abgebrochen", playerName)));
+                MojangAPI.getOfflinePlayer(playerName)
+                        .thenAccept((offlinePlayer) -> {
+                            TeamMember member = teamMemberRepository.getPlayer(offlinePlayer);
+                            if (member != null) {
+                                if (team.equals(member.getTeam())) {
+                                    PlayerTeamKickEvent event = new PlayerTeamKickEvent(team, member);
+                                    Bukkit.getPluginManager().callEvent(event);
+
+                                    member.setTeam(null);
+                                    if (!event.isCancelled()) {
+                                        main.getDB().update(member);
+                                        main.getLogger().log(Level.INFO,
+                                                String.format("%s removes %s of Team %s", executor.getName(), playerName, team.getName()));
+                                        executor.sendMessage(
+                                                ChatColor.translateAlternateColorCodes('&', String.format(
+                                                        "&7Der Spieler &a%s &7wurde vom &5Team &d%s &centfernt", playerName, team.getName()
+                                                ))
+                                        );
+                                    }
+                                } else
+                                    executor.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                                            "&cDieser Spieler ist nicht in diesem Team"));
+                            } else
+                                executor.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format(
+                                        "&cDer Spieler %s konnte nicht gefunden werden. Prozess wurde abgebrochen", playerName)));
+
+                        });
             } else executor.sendMessage(
                     ChatColor.translateAlternateColorCodes('&', "&cDieses Team existiert nicht"));
         });
@@ -230,19 +229,19 @@ public class TeamManager implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
             // check if team does not exist...
             Optional<Team> teamOptional = teamRepository.findByName(teamname);
-            if(teamOptional.isPresent()) {
+            if (teamOptional.isPresent()) {
 
                 Team team = teamOptional.get();
-                if(prefix.length() < 8) {
+                if (prefix.length() < 8) {
                     team.setPrefix(ChatColor.translateAlternateColorCodes('&',
                             String.format("&8[%s&8]&7 ", prefix))
                     );
 
                     TeamModifyEvent event = new TeamModifyEvent(team);
                     Bukkit.getPluginManager().callEvent(event);
-                    if(!event.isCancelled()) {
+                    if (!event.isCancelled()) {
                         // save it in database
-                        main.getDB().save(team);
+                        main.getDB().update(team);
                         main.getLogger().log(Level.INFO, String.format("%s modfied prefix of %s to %s",
                                 commandSender.getName(), team.getName(), team.getPrefix()));
                         commandSender.sendMessage(
@@ -251,9 +250,30 @@ public class TeamManager implements Listener {
                                 )
                         );
                     }
-                } else commandSender.sendMessage(ChatColor.RED + "Der Prefix ist zu lang und kann nicht gespeichert werden");
+                } else
+                    commandSender.sendMessage(ChatColor.RED + "Der Prefix ist zu lang und kann nicht gespeichert werden");
             } else commandSender.sendMessage(
                     ChatColor.translateAlternateColorCodes('&', "&cDieses Team existiert nicht"));
         });
+    }
+
+    /**
+     * Uses the MojangAPI to get the correct OfflinePlayer and searches in the database if the Profile exists. <br>
+     * Otherwise, it creates a new TeamMember object and saves it
+     *
+     * @param username the username of the player
+     * @return a Future containing the correct TeamMember
+     */
+    public CompletableFuture<TeamMember> getOrCreateTeamMember(@NotNull String username) {
+        return MojangAPI.getOfflinePlayer(username)
+                .thenApply((player) -> teamMemberRepository.findPlayer(player)
+                        .orElseGet(() -> {
+                            TeamMember teamMember = new TeamMember();
+                            teamMember.setUniqueID(player.getUniqueId());
+
+                            this.main.getDB().save(teamMember);
+                            return teamMember;
+                        })
+                );
     }
 }

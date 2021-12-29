@@ -23,13 +23,10 @@ import java.util.UUID;
 
 public class TeamEventManager implements Listener {
 
-    private final Varo main;
-
     private final TeamMemberRepository teamMemberRepository;
     private final Map<UUID, TeamMember> loadedTeamMember = new HashMap<>();
 
     public TeamEventManager(@NotNull Varo main) {
-        this.main = main;
         this.teamMemberRepository = new TeamMemberRepository(main.getDB());
     }
 
@@ -45,7 +42,7 @@ public class TeamEventManager implements Listener {
             if(!member.isPresent()) {
                 event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST,
                         ChatColor.translateAlternateColorCodes('&',
-                                "&8[&6Varo&8] &cEs ist nicht erlaubt, dass neue Spieler während eines Spiels den Server betreten um sich zu registrieren.")
+                                "&8[&6Varo&8] &cDu wurdest weder von einem Moderator freigeschaltet, noch bist du ein Moderator")
                 );
 
                 return;
