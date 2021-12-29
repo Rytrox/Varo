@@ -28,10 +28,9 @@ public class MessageListener implements Listener {
 
         if(!main.getModeratorManager().isModerator(event.getPlayer())) {
             main.getMessageService()
-                    .writeMessage(ChatColor.translateAlternateColorCodes('&',
-                                    String.format(JOIN_MESSAGE,
-                                            Tablist.getInstance().getPrefix(event.getPlayer()),
-                                            event.getPlayer().getName())),
+                    .writeMessage(String.format(JOIN_MESSAGE,
+                                Tablist.getInstance().getPrefix(event.getPlayer()),
+                                event.getPlayer().getName()),
                             MessageService.DiscordColor.RED
                     );
         }
@@ -43,10 +42,9 @@ public class MessageListener implements Listener {
 
         if(!main.getModeratorManager().isModerator(event.getPlayer())) {
             main.getMessageService()
-                    .writeMessage(ChatColor.translateAlternateColorCodes('&',
-                        String.format(QUIT_MESSAGE,
-                                Tablist.getInstance().getPrefix(event.getPlayer()),
-                                event.getPlayer().getName())),
+                    .writeMessage(String.format(QUIT_MESSAGE,
+                            Tablist.getInstance().getPrefix(event.getPlayer()),
+                            event.getPlayer().getName()),
                         MessageService.DiscordColor.RED
                     );
         }
