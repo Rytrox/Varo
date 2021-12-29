@@ -11,8 +11,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -137,7 +140,7 @@ public class MessageService {
                     } catch (Exception ex) {
                         main.getLogger().log(Level.WARNING, "Discord-Nachricht konnte nicht gesendet werden");
                     }
-                } catch (Exception e) {
+                } catch (IOException e) {
                     main.getLogger().log(Level.WARNING, "Unable to connect to discord-hook. Please check your URL and reload this plugin");
                 }
             });
