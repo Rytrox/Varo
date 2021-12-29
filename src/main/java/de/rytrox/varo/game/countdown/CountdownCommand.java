@@ -128,7 +128,7 @@ public class CountdownCommand implements TabExecutor {
 
     private void sendStartMessage() {
         JsonObject json = new JsonObject();
-        json.addProperty("text", ChatColor.GREEN + "Möget die Spiele beginnen!");
+        json.addProperty("text", ChatColor.GREEN + "Mögen die Spiele beginnen!");
 
         IChatBaseComponent message = IChatBaseComponent.ChatSerializer.a(json.toString());
         PacketPlayOutTitle packet = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, message, 4, 12, 4);

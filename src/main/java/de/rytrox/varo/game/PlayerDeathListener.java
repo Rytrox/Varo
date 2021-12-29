@@ -66,7 +66,7 @@ public class PlayerDeathListener implements Listener {
                 if(killerMember.isPresent()) {
 
                     messageService.writeMessage(
-                            String.format("&eDer Spieler &4%s &eaus dem Team %s &eist wurde vom Spieler &c%s &eaus dem Team %s &egetötet!",
+                            String.format("&eDer Spieler &4%s &eaus dem Team %s &ewurde vom Spieler &c%s &eaus dem Team %s &egetötet!",
                                 event.getEntity().getName(),
                                 member.getTeam().getDisplayName(),
                                 event.getEntity().getKiller().getName(),
