@@ -2,6 +2,7 @@ package de.rytrox.varo.message;
 
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.gamestate.GameStateHandler;
+import de.rytrox.varo.teams.scoreboard.Tablist;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -35,7 +36,7 @@ public class MessageService {
      */
     public void leakPlayerCoordinates(Player player, CoordinateLeakReason reason) {
 
-        String messageBuilder = String.format("Koordinaten des Spielers %s:%n", player.getName()) +
+        String messageBuilder = String.format("&4Koordinaten des Spielers %s&4:%n", Tablist.getInstance().getPrefix(player) + player.getName()) +
                 String.format(
                         COORDINATE_TEMPLATE,
                         player.getLocation().getBlockX(),
