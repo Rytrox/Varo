@@ -8,7 +8,6 @@ import de.rytrox.varo.gamestate.events.GamestateChangeEvent;
 import de.rytrox.varo.message.MessageService;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -31,6 +30,11 @@ public class GameTimeService implements Listener {
     private final LocalTime startTime;
     private final LocalTime endTime;
 
+    private BukkitTask startDelayTask;
+    private BukkitTask startTask;
+    private BukkitTask endDelayTask;
+    private BukkitTask endTask;
+
     private final String kickMessage;
 
     public GameTimeService(@NotNull Varo main) {
@@ -42,37 +46,59 @@ public class GameTimeService implements Listener {
 
         kickMessage = ChatColor.translateAlternateColorCodes('&',
                 "&8[&6Varo&8] &cDer aktuelle Spieltag ist zu Ende!\n" +
-                        String.format("&cDas Spiel wird morgen um %s fortgesetzt", startTime.format(DateTimeFormatter.ofPattern("HH:mm"))));
+                        String.format("&cDer nächste Spieltag beginnt um %s.", startTime.format(DateTimeFormatter.ofPattern("HH:mm"))));
+
+        if(main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.MAIN ||
+                main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.FINAL) {
+            startScheduler();
+        }
     }
 
     /**
      * Creates and starts the End-Scheduler.
      * This scheduler kicks all players from the server that are online at the end-time
      */
-    public void registerEndScheduler() {
+    public void startScheduler() {
+        if(!isRunning()) {
+            if(LocalTime.now().isAfter(startTime)) {
+                Bukkit.getPluginManager().callEvent(new GameDayStartEvent());
+            }
 
-        if(LocalTime.now().isAfter(startTime)) {
-            Bukkit.getPluginManager().callEvent(new GameDayStartEvent());
+            this.startDelayTask = Bukkit.getScheduler().runTaskLater(main, () -> {
+                this.startDelayTask = null;
+
+                this.startTask = Bukkit.getScheduler().runTaskTimer(main, () ->
+                                Bukkit.getPluginManager().callEvent(new GameDayStartEvent())
+                        , 0, 24 * 60 * 60 * 20L);
+            }, getTimerOffsetStart());
+
+            this.endDelayTask = Bukkit.getScheduler().runTaskLater(main, () -> {
+                this.endDelayTask = null;
+
+                this.endTask = Bukkit.getScheduler().runTaskTimer(main, () -> {
+                    Bukkit.getOnlinePlayers().forEach(player -> player.kickPlayer(this.kickMessage));
+                    Bukkit.getPluginManager().callEvent(new GameDayEndEvent());
+                }, 0, 24 * 60 * 60 * 20L);
+            }, getTimerOffsetEnd());
         }
+    }
 
-        Bukkit.getScheduler().runTaskLater(main, () -> Bukkit.getScheduler().runTaskTimer(main, () -> {
-                    if(main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.MAIN
-                            || main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.FINAL) {
-                        Bukkit.getPluginManager().callEvent(new GameDayStartEvent());
+    public void stopScheduler() {
+        if(isRunning()) {
+            Optional.ofNullable(this.startDelayTask)
+                    .ifPresent(BukkitTask::cancel);
+            Optional.ofNullable(this.startTask)
+                    .ifPresent(BukkitTask::cancel);
+            Optional.ofNullable(this.endDelayTask)
+                    .ifPresent(BukkitTask::cancel);
+            Optional.ofNullable(this.endTask)
+                    .ifPresent(BukkitTask::cancel);
 
-                    }
-                },
-                0, 24 * 60 * 60 * 20L), getTimerOffsetStart());
-
-        Bukkit.getScheduler().runTaskLater(main, () ->
-                        Bukkit.getScheduler().runTaskTimer(main, () -> {
-                            if(main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.MAIN
-                                    || main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.FINAL) {
-                                Bukkit.getOnlinePlayers().forEach(player -> player.kickPlayer(this.kickMessage));
-                                Bukkit.getPluginManager().callEvent(new GameDayEndEvent());
-                            }
-                        }, 0, 24 * 60 * 60 * 20L)
-                , getTimerOffsetEnd());
+            this.startDelayTask = null;
+            this.startTask = null;
+            this.endDelayTask = null;
+            this.endTask = null;
+        }
     }
 
     /**
@@ -148,6 +174,21 @@ public class GameTimeService implements Listener {
                 main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.FINAL) &&
                 LocalTime.now().isBefore(startTime) || LocalTime.now().isAfter(endTime)) {
             event.disallow(PlayerLoginEvent.Result.KICK_OTHER, this.kickMessage);
+        }
+    }
+
+    private boolean isRunning() {
+        return this.endDelayTask != null || this.endTask != null || this.startTask != null || this.startDelayTask != null;
+    }
+
+    @EventHandler
+    public void onGamePhaseSwitch(GamestateChangeEvent event) {
+        if(event.getNext() == GameStateHandler.GameState.MAIN || event.getNext() == GameStateHandler.GameState.FINAL) {
+            if(!isRunning()) {
+                startScheduler();
+            }
+        } else {
+            stopScheduler();
         }
     }
 }
