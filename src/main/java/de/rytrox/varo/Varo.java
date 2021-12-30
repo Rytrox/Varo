@@ -1,5 +1,6 @@
 package de.rytrox.varo;
 
+import de.rytrox.varo.game.ResetCommand;
 import de.rytrox.varo.message.chatlog.ChatLogCommand;
 import de.rytrox.varo.database.entity.*;
 import de.rytrox.varo.game.countdown.CountdownCommand;
@@ -88,6 +89,8 @@ public final class Varo extends JavaPlugin {
 
         this.chatLogRepository = new ChatLogRepository(getDB());
         this.getCommand("chatlog").setExecutor(new ChatLogCommand(this));
+
+        this.getCommand("reset").setExecutor(new ResetCommand(this));
     }
 
     @Override
