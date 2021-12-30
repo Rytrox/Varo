@@ -54,7 +54,7 @@ public class PortalListener implements Listener {
     public void onPortalBreak(BlockBreakEvent event) {
         // protect portal-frames in Overworld
         if(isOverWorld(event.getBlock().getWorld()) && isNetherPortalBlock(event.getBlock()) &&
-            main.getGameStateHandler().getCurrentGameState() != GameStateHandler.GameState.MAIN) {
+            main.getGameStateHandler().getCurrentGameState() != GameStateHandler.GameState.SETUP) {
             event.setCancelled(true);
         }
     }
@@ -79,7 +79,7 @@ public class PortalListener implements Listener {
     private boolean isNetherPortalBlock(@NotNull Block obsidian) {
         World world = obsidian.getWorld();
 
-        // check x direction
+        // check all three axes
         return obsidian.getType() == Material.OBSIDIAN && (
                 world.getBlockAt(obsidian.getLocation().add(1, 0, 0)).getType() == Material.PORTAL ||
                 world.getBlockAt(obsidian.getLocation().add(-1, 0, 0)).getType() == Material.PORTAL ||
