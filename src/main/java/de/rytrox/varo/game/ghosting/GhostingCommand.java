@@ -13,14 +13,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class GhostingCommand implements TabExecutor {
 
+    public static final Map<Player, Player> allowedTeleports = new HashMap<>();
     private final TeamMemberRepository teamMemberRepository;
 
     public GhostingCommand(Varo main) {
@@ -49,6 +47,7 @@ public class GhostingCommand implements TabExecutor {
                                     && targetMember.get().getTeam().equals(teamMember.get().getTeam())) {
                                 if(targetPlayer.isOnline()) {
                                     if(targetMember.get().getStatus() == PlayerStatus.ALIVE) {
+                                        allowedTeleports.put(player, targetPlayer.getPlayer());
                                         player.setSpectatorTarget(targetPlayer.getPlayer());
                                     } else {
                                         player.sendMessage(ChatColor.RED + "Dein angegebenes Teammitglied ist nicht mehr am Leben");
