@@ -1,6 +1,8 @@
 package de.rytrox.varo.teams;
 
+import de.rytrox.varo.Varo;
 import de.rytrox.varo.game.GameTimeService;
+import de.rytrox.varo.gamestate.GameStateHandler;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,9 +25,16 @@ public class GameTimeServiceTest {
     @Mock
     GameTimeService service;
 
+    @Mock
+    GameStateHandler gameStateHandler;
+
+    @Mock
+    Varo main;
+
     @BeforeEach
     void init() throws IllegalAccessException {
         FieldUtils.writeField(service, "startTime", startTime, true);
+        FieldUtils.writeField(service, "main", main, true);
         FieldUtils.writeField(service, "endTime", endTime, true);
         FieldUtils.writeField(service, "kickMessage", "Du wurdest gekickt", true);
     }
@@ -70,6 +79,9 @@ public class GameTimeServiceTest {
     public void shouldKickPlayerWhenSystemTimeIsBeforeStart() {
         PlayerLoginEvent event = mock(PlayerLoginEvent.class);
         doCallRealMethod().when(service).onInvalidJoin(eq(event));
+        doReturn(gameStateHandler).when(main).getGameStateHandler();
+        doAnswer((invocationOnMock) -> GameStateHandler.GameState.MAIN)
+                .when(gameStateHandler).getCurrentGameState();
 
         LocalTime now = LocalTime.of(14, 0);
         try(MockedStatic<LocalTime> mockedStatic = mockStatic(LocalTime.class, CALLS_REAL_METHODS)) {
@@ -85,6 +97,9 @@ public class GameTimeServiceTest {
     public void shouldNotKickPlayerWhenSystemTimeIsInRange() {
         PlayerLoginEvent event = mock(PlayerLoginEvent.class);
         doCallRealMethod().when(service).onInvalidJoin(eq(event));
+        doReturn(gameStateHandler).when(main).getGameStateHandler();
+        doAnswer((invocationOnMock) -> GameStateHandler.GameState.MAIN)
+                .when(gameStateHandler).getCurrentGameState();
 
         LocalTime now = LocalTime.of(16, 0);
         try(MockedStatic<LocalTime> mockedStatic = mockStatic(LocalTime.class, CALLS_REAL_METHODS)) {
@@ -99,6 +114,9 @@ public class GameTimeServiceTest {
     public void shouldKickPlayerOnEndTime() {
         PlayerLoginEvent event = mock(PlayerLoginEvent.class);
         doCallRealMethod().when(service).onInvalidJoin(eq(event));
+        doReturn(gameStateHandler).when(main).getGameStateHandler();
+        doAnswer((invocationOnMock) -> GameStateHandler.GameState.MAIN)
+                .when(gameStateHandler).getCurrentGameState();
 
         LocalTime now = LocalTime.of(22, 0, 1);
         try(MockedStatic<LocalTime> mockedStatic = mockStatic(LocalTime.class, CALLS_REAL_METHODS)) {

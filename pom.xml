@@ -6,7 +6,7 @@
 
     <groupId>de.rytrox</groupId>
     <artifactId>varo</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
 
     <name>Varo</name>
@@ -14,6 +14,7 @@
     <description>Ein Varo-Plugin</description>
     <properties>
         <java.version>1.8</java.version>
+        <mockito-version>4.2.0</mockito-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -149,13 +150,13 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>22.0.0</version>
+            <version>23.0.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.8.1</version>
+            <version>5.8.2</version>
             <scope>test</scope>
         </dependency>
 
@@ -169,38 +170,38 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>4.0.0</version>
+            <version>${mockito-version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-inline</artifactId>
-            <version>4.0.0</version>
+            <version>${mockito-version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>4.0.0</version>
+            <version>${mockito-version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-runner</artifactId>
-            <version>1.8.1</version>
+            <version>1.8.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.vintage</groupId>
             <artifactId>junit-vintage-engine</artifactId>
-            <version>5.8.1</version>
+            <version>5.8.2</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>io.ebean</groupId>
             <artifactId>ebean</artifactId>
-            <version>12.13.0</version>
+            <version>12.14.0</version>
         </dependency>
         <dependency>
             <groupId>io.ebean</groupId>
@@ -210,7 +211,7 @@
         <dependency>
             <groupId>io.ebean</groupId>
             <artifactId>ebean-core</artifactId>
-            <version>12.13.0</version>
+            <version>12.13.1</version>
         </dependency>
         <dependency>
             <groupId>io.ebean</groupId>
@@ -220,18 +221,18 @@
         <dependency>
             <groupId>io.ebean</groupId>
             <artifactId>ebean-ddl-generator</artifactId>
-            <version>12.13.0</version>
+            <version>12.14.0</version>
         </dependency>
         <dependency>
             <groupId>io.ebean</groupId>
             <artifactId>ebean-test</artifactId>
-            <version>12.13.0</version>
+            <version>12.14.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>1.4.200</version>
+            <version>2.0.204</version>
         </dependency>
     </dependencies>
 </project>
