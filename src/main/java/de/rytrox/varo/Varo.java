@@ -44,6 +44,9 @@ import java.util.logging.Level;
 
 public final class Varo extends JavaPlugin {
 
+    private static final String FILE_STATE_STORAGE = "states.json";
+    private static final String FILE_DB = "Varo.h2.db";
+
     private Database database;
     private JsonConfig stateStorage;
 
@@ -107,6 +110,21 @@ public final class Varo extends JavaPlugin {
         );
     }
 
+    public void resetPlugin() {
+        // delete database file
+        File dbFile = new File(getDataFolder(), FILE_DB);
+        if(dbFile.exists()) {
+            dbFile.delete();
+        }
+        // delete state storage file
+        File stateStorageFile = new File(getDataFolder(), FILE_STATE_STORAGE);
+        if(stateStorageFile.exists()) {
+            stateStorageFile.delete();
+        }
+
+        Bukkit.getPluginManager().disablePlugin(this);
+    }
+
     @Override
     protected void installDDL() {
         ClassLoader originalContextClassLoader = Thread.currentThread().getContextClassLoader();
@@ -155,8 +173,8 @@ public final class Varo extends JavaPlugin {
     @NotNull
     private DatabaseConfig getDatabaseConfig() {
         DatabaseConfig config = new DatabaseConfig();
-        config.setDdlRun(!(new File(getDataFolder(), "Varo.h2.db").exists()));
-        config.setDdlGenerate(!(new File(getDataFolder(), "Varo.h2.db").exists()));
+        config.setDdlRun(!(new File(getDataFolder(), FILE_DB).exists()));
+        config.setDdlGenerate(!(new File(getDataFolder(), FILE_DB).exists()));
         config.setDdlCreateOnly(true);
         config.setRegister(true);
         config.setDefaultServer(true);
@@ -176,11 +194,11 @@ public final class Varo extends JavaPlugin {
 
     public void saveDefaultJsonConfig() {
         try {
-            File file = new ConfigCreator(this).copyDefaultFile(Paths.get("states.json"), Paths.get("states.json"));
+            File file = new ConfigCreator(this).copyDefaultFile(Paths.get(FILE_STATE_STORAGE), Paths.get(FILE_STATE_STORAGE));
 
             this.stateStorage = new JsonConfig(file);
         } catch (IOException e) {
-            getLogger().log(Level.SEVERE, "Cannot create states.json File", e);
+            getLogger().log(Level.SEVERE, "Cannot create " + FILE_STATE_STORAGE + " File", e);
         }
     }
 
@@ -191,9 +209,9 @@ public final class Varo extends JavaPlugin {
 
     public void saveStateStorage() {
         try {
-            this.stateStorage.save(new File(getDataFolder(), "states.json"));
+            this.stateStorage.save(new File(getDataFolder(), FILE_STATE_STORAGE));
         } catch (IOException e) {
-            getLogger().log(Level.SEVERE, "Cannot save states.json", e);
+            getLogger().log(Level.SEVERE, "Cannot save " + FILE_STATE_STORAGE, e);
         }
     }
 
