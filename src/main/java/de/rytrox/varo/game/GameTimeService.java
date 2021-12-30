@@ -12,10 +12,12 @@ import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 /**
  * Service that manages the GameTime based on the internal System-Time
@@ -41,37 +43,36 @@ public class GameTimeService implements Listener {
         kickMessage = ChatColor.translateAlternateColorCodes('&',
                 "&8[&6Varo&8] &cDer aktuelle Spieltag ist zu Ende!\n" +
                         String.format("&cDas Spiel wird morgen um %s fortgesetzt", startTime.format(DateTimeFormatter.ofPattern("HH:mm"))));
-
-        registerEndScheduler();
     }
 
     /**
      * Creates and starts the End-Scheduler.
      * This scheduler kicks all players from the server that are online at the end-time
      */
-     public void registerEndScheduler() {
+    public void registerEndScheduler() {
 
-         if(LocalTime.now().isAfter(startTime)) {
-             Bukkit.getPluginManager().callEvent(new GameDayStartEvent());
-         }
+        if(LocalTime.now().isAfter(startTime)) {
+            Bukkit.getPluginManager().callEvent(new GameDayStartEvent());
+        }
 
-         Bukkit.getScheduler().runTaskLater(main, () ->
-                         Bukkit.getScheduler().runTaskTimer(main, () -> {
-                                     Bukkit.getPluginManager().callEvent(new GameDayStartEvent());
-                                 },
-                                 0, 24 * 60 * 60 * 20L)
-                 , getTimerOffsetStart());
+        Bukkit.getScheduler().runTaskLater(main, () -> Bukkit.getScheduler().runTaskTimer(main, () -> {
+                    if(main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.MAIN
+                            || main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.FINAL) {
+                        Bukkit.getPluginManager().callEvent(new GameDayStartEvent());
+
+                    }
+                },
+                0, 24 * 60 * 60 * 20L), getTimerOffsetStart());
 
         Bukkit.getScheduler().runTaskLater(main, () ->
-            Bukkit.getScheduler().runTaskTimer(main, () -> {
-                        Bukkit.getOnlinePlayers().forEach(player ->
-                                player.kickPlayer(this.kickMessage)
-                        );
-
-                        Bukkit.getPluginManager().callEvent(new GameDayEndEvent());
-                        },
-                    0, 24 * 60 * 60 * 20L)
-        , getTimerOffsetEnd());
+                        Bukkit.getScheduler().runTaskTimer(main, () -> {
+                            if(main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.MAIN
+                                    || main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.FINAL) {
+                                Bukkit.getOnlinePlayers().forEach(player -> player.kickPlayer(this.kickMessage));
+                                Bukkit.getPluginManager().callEvent(new GameDayEndEvent());
+                            }
+                        }, 0, 24 * 60 * 60 * 20L)
+                , getTimerOffsetEnd());
     }
 
     /**
@@ -112,15 +113,15 @@ public class GameTimeService implements Listener {
         if(endTime.isBefore(LocalTime.now())) {
             // First calculate the distance between 00:00 and the current time <- Offset of last day
             offset = LocalTime.MIDNIGHT.minusHours(LocalTime.now().getHour())
-                                       .minusMinutes(LocalTime.now().getMinute());
+                    .minusMinutes(LocalTime.now().getMinute());
             // Then add the offset of the last day to the current end date.
             // This is mathematically smaller than 1 day in total!
             offset = endTime.plusHours(offset.getHour())
-                            .plusMinutes(offset.getMinute());
+                    .plusMinutes(offset.getMinute());
         } else {
             // Calculate delta time simple
             offset = endTime.minusHours(LocalTime.now().getHour())
-                            .minusMinutes(LocalTime.now().getMinute());
+                    .minusMinutes(LocalTime.now().getMinute());
         }
 
         // calculate offset in ticks (minutes) * 60 * 20
@@ -136,18 +137,16 @@ public class GameTimeService implements Listener {
     public void onEnd(GameDayEndEvent event) {
         main.getMessageService().writeMessage("&cDer Spieltag ist beendet!", MessageService.DiscordColor.RED, true);
 
-        if(main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.MAIN
-          || main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.FINAL) {
-
-            main.getStateStorage().set("gameday", main.getStateStorage().getInt("day", 1) + 1);
-            main.saveStateStorage();
-        }
+        main.getStateStorage().set("gameday", main.getStateStorage().getInt("day", 1) + 1);
+        main.saveStateStorage();
     }
 
     @EventHandler
     public void onInvalidJoin(PlayerLoginEvent event) {
         // Do not allow Joins out of the allowed timespan
-        if(LocalTime.now().isBefore(startTime) || LocalTime.now().isAfter(endTime)) {
+        if((main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.MAIN ||
+                main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.FINAL) &&
+                LocalTime.now().isBefore(startTime) || LocalTime.now().isAfter(endTime)) {
             event.disallow(PlayerLoginEvent.Result.KICK_OTHER, this.kickMessage);
         }
     }
