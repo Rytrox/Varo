@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +30,16 @@ public class PlayerDeathListener implements Listener {
         this.teamRepository = new TeamRepository(main.getDB());
         this.teamMemberRepository = new TeamMemberRepository(main.getDB());
         this.messageService = main.getMessageService();
+    }
+
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent event) {
+        Optional<TeamMember> teamMemberOptional = this.teamMemberRepository.findPlayerByUUID(event.getPlayer().getUniqueId());
+
+        if(teamMemberOptional.isPresent()
+                && teamMemberOptional.get().getSpawnPoint() != null) {
+            event.setRespawnLocation(teamMemberOptional.get().getSpawnPoint().getLocation());
+        }
     }
 
     @EventHandler
