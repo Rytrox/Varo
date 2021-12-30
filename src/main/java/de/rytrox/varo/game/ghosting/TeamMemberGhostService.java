@@ -1,4 +1,4 @@
-package de.rytrox.varo.game;
+package de.rytrox.varo.game.ghosting;
 
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.database.entity.Team;
@@ -105,9 +105,14 @@ public class TeamMemberGhostService implements Listener {
     @EventHandler
     public void onDenySwitchSpectatorTarget(PlayerTeleportEvent event) {
         if(event.getCause() == PlayerTeleportEvent.TeleportCause.SPECTATE) {
-            event.setCancelled(true);
 
-            event.getPlayer().setSpectatorTarget(spectatorTarget.get(event.getPlayer()));
+            if(GhostingCommand.allowedTeleports.containsKey(event.getPlayer())) {
+                spectatorTarget.put(event.getPlayer(), GhostingCommand.allowedTeleports.remove(event.getPlayer()));
+            } else {
+                event.setCancelled(true);
+                event.getPlayer().setSpectatorTarget(spectatorTarget.get(event.getPlayer()));
+            }
+
         }
     }
 

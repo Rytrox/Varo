@@ -54,6 +54,11 @@ commands:
   chatlog:
     description: 'Liest den Chatlog eines Spielers/einer Konversation aus'
     usage: '/chatlog'
+  ghosting:
+    description: 'Beobachte ein Teammitglied'
+    usage: '/ghosting'
+    aliases:
+      - ghost
   reset:
     description: 'Setzt das Plugin zurück'
     usage: '/reset'
