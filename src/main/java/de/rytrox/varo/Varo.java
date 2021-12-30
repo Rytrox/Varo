@@ -36,6 +36,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -113,21 +114,15 @@ public final class Varo extends JavaPlugin {
         );
     }
 
-    public void resetPlugin() {
+    public void resetPlugin() throws IOException {
 
         // trigger shutdown logic
         onDisable();
 
         // delete database file
-        File dbFile = new File(getDataFolder(), FILE_DB);
-        if(dbFile.exists()) {
-            dbFile.delete();
-        }
+        Files.deleteIfExists(new File(getDataFolder(), FILE_DB).toPath());
         // delete state storage file
-        File stateStorageFile = new File(getDataFolder(), FILE_STATE_STORAGE);
-        if(stateStorageFile.exists()) {
-            stateStorageFile.delete();
-        }
+        Files.deleteIfExists(new File(getDataFolder(), FILE_STATE_STORAGE).toPath());
 
         // reload server
         Bukkit.reload();

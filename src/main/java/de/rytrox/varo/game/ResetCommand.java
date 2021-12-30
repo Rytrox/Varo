@@ -6,6 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +27,11 @@ public class ResetCommand implements CommandExecutor {
               && "confirm".equalsIgnoreCase(args[0])) {
                 commandSender.sendMessage(ChatColor.GOLD + "Das Plugin wird zurückgesetzt und anschließend der Server reloadet");
                 confirmation.remove(commandSender);
-                this.main.resetPlugin();
+                try {
+                    this.main.resetPlugin();
+                } catch (IOException e) {
+                    commandSender.sendMessage(ChatColor.RED + "Der Reset ist fehlgeschlagen");
+                }
                 return true;
             }
 
