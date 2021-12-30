@@ -51,7 +51,7 @@ public class PortalListener implements Listener {
     }
 
     @EventHandler
-    public void onChange(BlockBreakEvent event) {
+    public void onPortalBreak(BlockBreakEvent event) {
         // protect portal-frames in Overworld
         if(isOverWorld(event.getBlock().getWorld()) && isNetherPortalBlock(event.getBlock()) &&
             main.getGameStateHandler().getCurrentGameState() != GameStateHandler.GameState.MAIN) {
