@@ -54,6 +54,9 @@ commands:
   chatlog:
     description: 'Liest den Chatlog eines Spielers/einer Konversation aus'
     usage: '/chatlog'
+  reset:
+    description: 'Setzt das Plugin zurück'
+    usage: '/reset'
 
 permissions:
   varo.*:

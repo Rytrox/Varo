@@ -1,5 +1,6 @@
 package de.rytrox.varo;
 
+import de.rytrox.varo.game.ResetCommand;
 import de.rytrox.varo.message.chatlog.ChatLogCommand;
 import de.rytrox.varo.database.entity.*;
 import de.rytrox.varo.game.countdown.CountdownCommand;
@@ -35,6 +36,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -43,6 +45,9 @@ import java.util.List;
 import java.util.logging.Level;
 
 public final class Varo extends JavaPlugin {
+
+    private static final String FILE_STATE_STORAGE = "states.json";
+    private static final String FILE_DB = "Varo.h2.db";
 
     private Database database;
     private JsonConfig stateStorage;
@@ -85,6 +90,8 @@ public final class Varo extends JavaPlugin {
 
         this.chatLogRepository = new ChatLogRepository(getDB());
         this.getCommand("chatlog").setExecutor(new ChatLogCommand(this));
+
+        this.getCommand("reset").setExecutor(new ResetCommand(this));
     }
 
     @Override
@@ -105,6 +112,20 @@ public final class Varo extends JavaPlugin {
                 ChatLog.class,
                 PlayerTimeStatistic.class
         );
+    }
+
+    public void resetPlugin() throws IOException {
+
+        // trigger shutdown logic
+        onDisable();
+
+        // delete database file
+        Files.deleteIfExists(new File(getDataFolder(), FILE_DB).toPath());
+        // delete state storage file
+        Files.deleteIfExists(new File(getDataFolder(), FILE_STATE_STORAGE).toPath());
+
+        // reload server
+        Bukkit.reload();
     }
 
     @Override
@@ -155,8 +176,8 @@ public final class Varo extends JavaPlugin {
     @NotNull
     private DatabaseConfig getDatabaseConfig() {
         DatabaseConfig config = new DatabaseConfig();
-        config.setDdlRun(!(new File(getDataFolder(), "Varo.h2.db").exists()));
-        config.setDdlGenerate(!(new File(getDataFolder(), "Varo.h2.db").exists()));
+        config.setDdlRun(!(new File(getDataFolder(), FILE_DB).exists()));
+        config.setDdlGenerate(!(new File(getDataFolder(), FILE_DB).exists()));
         config.setDdlCreateOnly(true);
         config.setRegister(true);
         config.setDefaultServer(true);
@@ -176,11 +197,11 @@ public final class Varo extends JavaPlugin {
 
     public void saveDefaultJsonConfig() {
         try {
-            File file = new ConfigCreator(this).copyDefaultFile(Paths.get("states.json"), Paths.get("states.json"));
+            File file = new ConfigCreator(this).copyDefaultFile(Paths.get(FILE_STATE_STORAGE), Paths.get(FILE_STATE_STORAGE));
 
             this.stateStorage = new JsonConfig(file);
         } catch (IOException e) {
-            getLogger().log(Level.SEVERE, "Cannot create states.json File", e);
+            getLogger().log(Level.SEVERE, "Cannot create " + FILE_STATE_STORAGE + " File", e);
         }
     }
 
@@ -191,9 +212,9 @@ public final class Varo extends JavaPlugin {
 
     public void saveStateStorage() {
         try {
-            this.stateStorage.save(new File(getDataFolder(), "states.json"));
+            this.stateStorage.save(new File(getDataFolder(), FILE_STATE_STORAGE));
         } catch (IOException e) {
-            getLogger().log(Level.SEVERE, "Cannot save states.json", e);
+            getLogger().log(Level.SEVERE, "Cannot save " + FILE_STATE_STORAGE, e);
         }
     }
 
