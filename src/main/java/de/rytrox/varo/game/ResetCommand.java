@@ -24,7 +24,7 @@ public class ResetCommand implements CommandExecutor {
         if(commandSender.isOp()) {
             if(confirmation.contains(commandSender)
               && "confirm".equalsIgnoreCase(args[0])) {
-                commandSender.sendMessage(ChatColor.GOLD + "Das Plugin wird zurückgesetzt und anschließend beendet. Reloade oder Restarte den Server, um das Plugin wieder zu aktivieren");
+                commandSender.sendMessage(ChatColor.GOLD + "Das Plugin wird zurückgesetzt und anschließend der Server reloadet");
                 confirmation.remove(commandSender);
                 this.main.resetPlugin();
                 return true;

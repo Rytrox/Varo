@@ -114,6 +114,10 @@ public final class Varo extends JavaPlugin {
     }
 
     public void resetPlugin() {
+
+        // trigger shutdown logic
+        onDisable();
+
         // delete database file
         File dbFile = new File(getDataFolder(), FILE_DB);
         if(dbFile.exists()) {
@@ -125,7 +129,8 @@ public final class Varo extends JavaPlugin {
             stateStorageFile.delete();
         }
 
-        Bukkit.getPluginManager().disablePlugin(this);
+        // reload server
+        Bukkit.reload();
     }
 
     @Override
