@@ -2,6 +2,7 @@ package de.rytrox.varo.game;
 
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.database.enums.PlayerStatus;
+import de.rytrox.varo.game.portal.PortalListener;
 import de.rytrox.varo.gamestate.GameStateHandler;
 import de.rytrox.varo.gamestate.events.GamestateChangeEvent;
 import de.rytrox.varo.teams.events.TeamMemberJoinEvent;
@@ -27,6 +28,7 @@ public class GameService implements Listener {
 
         Bukkit.getPluginManager().registerEvents(new GameTimeService(main), main);
         Bukkit.getPluginManager().registerEvents(new PlayerDeathListener(main), main);
+        Bukkit.getPluginManager().registerEvents(new PortalListener(main), main);
     }
 
     @EventHandler
