@@ -32,10 +32,10 @@ public class ModeratorManager implements Listener {
         main.getCommand("spectate").setExecutor(new SpectateCommand());
         main.getCommand("invsee").setExecutor(new InvseeCommand(main));
         Bukkit.getPluginManager().registerEvents(this, main);
-        Bukkit.getPluginManager().registerEvents(new ModeratorTeleporter(main, this), main);
+        Bukkit.getPluginManager().registerEvents(new ModeratorTeleporter(main), main);
     }
 
-    public boolean isModerator(@NotNull CommandSender sender) {
+    public static boolean isModerator(@NotNull CommandSender sender) {
         return sender.hasPermission("varo.admin.moderator");
     }
 
@@ -76,7 +76,7 @@ public class ModeratorManager implements Listener {
 
         Bukkit.getScheduler().runTaskLater(main, () -> Bukkit.getOnlinePlayers()
                 .stream()
-                .filter((p) -> !this.isModerator(p))
+                .filter((p) -> !isModerator(p))
                 .forEach((p) -> {
                     p.hidePlayer(player);
 

@@ -1,6 +1,7 @@
 package de.rytrox.varo.message;
 
 import de.rytrox.varo.Varo;
+import de.rytrox.varo.game.moderation.ModeratorManager;
 import de.rytrox.varo.gamestate.GameStateHandler;
 
 import org.bukkit.event.EventHandler;
@@ -26,7 +27,7 @@ public class MessageListener implements Listener {
 
         GameStateHandler.GameState gameState = main.getGameStateHandler().getCurrentGameState();
 
-        if(!main.getModeratorManager().isModerator(event.getPlayer())
+        if(!ModeratorManager.isModerator(event.getPlayer())
             && gameState != GameStateHandler.GameState.POST) {
 
             main.getMessageService()
@@ -43,7 +44,7 @@ public class MessageListener implements Listener {
 
         GameStateHandler.GameState gameState = main.getGameStateHandler().getCurrentGameState();
 
-        if(!main.getModeratorManager().isModerator(event.getPlayer())
+        if(!ModeratorManager.isModerator(event.getPlayer())
             && gameState != GameStateHandler.GameState.POST) {
             main.getMessageService()
                     .writeMessage(

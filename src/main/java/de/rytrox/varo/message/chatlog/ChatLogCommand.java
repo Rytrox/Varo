@@ -2,6 +2,7 @@ package de.rytrox.varo.message.chatlog;
 
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.database.entity.ChatLog;
+import de.rytrox.varo.game.moderation.ModeratorManager;
 import de.rytrox.varo.utils.CommandHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -31,7 +32,7 @@ public class ChatLogCommand implements TabExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
         if(commandSender instanceof Player
-            && main.getModeratorManager().isModerator(commandSender)) {
+            && ModeratorManager.isModerator(commandSender)) {
 
             Player moderator = (Player) commandSender;
 

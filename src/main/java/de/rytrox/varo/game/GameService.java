@@ -2,6 +2,7 @@ package de.rytrox.varo.game;
 
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.database.enums.PlayerStatus;
+import de.rytrox.varo.game.moderation.ModeratorManager;
 import de.rytrox.varo.game.portal.PortalListener;
 import de.rytrox.varo.gamestate.GameStateHandler;
 import de.rytrox.varo.gamestate.events.GamestateChangeEvent;
@@ -44,7 +45,7 @@ public class GameService implements Listener {
 
             Bukkit.getOnlinePlayers()
                     .stream()
-                    .filter(player -> !main.getModeratorManager().isModerator(player)) // ignore moderators!
+                    .filter(player -> !ModeratorManager.isModerator(player)) // ignore moderators!
                     .forEach(player -> {
                         player.setGameMode(GameMode.SURVIVAL);
                         player.getInventory().clear();
@@ -54,14 +55,14 @@ public class GameService implements Listener {
         } else if(event.getNext() == GameStateHandler.GameState.POST) {
             Bukkit.getOnlinePlayers()
                     .stream()
-                    .filter(player -> !main.getModeratorManager().isModerator(player)) // ignore moderators!
+                    .filter(player -> !ModeratorManager.isModerator(player)) // ignore moderators!
                     .forEach(player -> {
                         player.setGameMode(GameMode.ADVENTURE);
                     });
         } else {
             Bukkit.getOnlinePlayers()
                     .stream()
-                    .filter((player) -> !main.getModeratorManager().isModerator(player)) // ignore moderators!
+                    .filter((player) -> !ModeratorManager.isModerator(player)) // ignore moderators!
                     .forEach(player -> player.setGameMode(GameMode.ADVENTURE));
         }
     }
@@ -80,7 +81,7 @@ public class GameService implements Listener {
         Player player = event.getPlayer();
 
         // Force Gamemode to survival when game is running and player is not in correct gamemode. Ignore Moderators and dead players!
-        if(!main.getModeratorManager().isModerator(player) && event.getMember().getStatus() == PlayerStatus.ALIVE) {
+        if(!ModeratorManager.isModerator(player) && event.getMember().getStatus() == PlayerStatus.ALIVE) {
             GameStateHandler.GameState gameState = main.getGameStateHandler().getCurrentGameState();
 
             if((gameState == GameStateHandler.GameState.MAIN

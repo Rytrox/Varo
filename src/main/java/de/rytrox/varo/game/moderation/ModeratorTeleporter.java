@@ -31,7 +31,6 @@ public class ModeratorTeleporter implements Listener {
     private static final ItemStack TELEPORTER = new ItemStack(Material.COMPASS);
 
     private final Varo main;
-    private final ModeratorManager manager;
 
     static {
         ItemMeta meta = TELEPORTER.getItemMeta();
@@ -43,14 +42,13 @@ public class ModeratorTeleporter implements Listener {
         TELEPORTER.setItemMeta(meta);
     }
 
-    public ModeratorTeleporter(@NotNull Varo main, @NotNull ModeratorManager manager) {
+    public ModeratorTeleporter(@NotNull Varo main) {
         this.main = main;
-        this.manager = manager;
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onItemGet(PlayerJoinEvent event) {
-        if(manager.isModerator(event.getPlayer())) {
+        if(ModeratorManager.isModerator(event.getPlayer())) {
             event.getPlayer().getInventory().addItem(TELEPORTER);
         }
     }
@@ -98,7 +96,7 @@ public class ModeratorTeleporter implements Listener {
         inventory.addItem(
                 Bukkit.getOnlinePlayers()
                         .stream()
-                        .filter((player) -> !manager.isModerator(player))
+                        .filter((player) -> !ModeratorManager.isModerator(player))
                         .sorted((a, b) -> main.getScoreBoardManager().getTablistName(a).compareTo(main.getScoreBoardManager().getTablistName(b)))
                         .map((player) -> {
                             ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);

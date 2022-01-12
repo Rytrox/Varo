@@ -2,6 +2,7 @@ package de.rytrox.varo.teams;
 
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.database.entity.ChatLog;
+import de.rytrox.varo.game.moderation.ModeratorManager;
 import de.rytrox.varo.utils.CommandHelper;
 import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang.ArrayUtils;
@@ -48,7 +49,7 @@ public class MessageCommand implements TabExecutor {
                     main.getChatLogRepository().addChatLog(new ChatLog(commandSender.getName(), target.getName(), message));
 
                     Bukkit.getOnlinePlayers().forEach(p -> {
-                        if(main.getModeratorManager().isModerator(p)
+                        if(ModeratorManager.isModerator(p)
                             && target != p
                             && commandSender != p) {
 
@@ -75,7 +76,7 @@ public class MessageCommand implements TabExecutor {
 
         if(args.length == 1) {
             StringUtil.copyPartialMatches(args[0], Bukkit.getOnlinePlayers().stream()
-                    .filter(p -> !main.getModeratorManager().isModerator(p))
+                    .filter(p -> !ModeratorManager.isModerator(p))
                     .map(Player::getName)
                     .collect(Collectors.toList()), list);
         }
