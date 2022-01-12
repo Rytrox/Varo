@@ -122,11 +122,12 @@ public class TeamsCommand implements TabExecutor {
     }
 
     private void sendHelp(@NotNull CommandSender sender) {
-        sender.sendMessage(CommandHelper.formatCommandHeader("/teams"));
-        sender.sendMessage(CommandHelper.formatCommandExplanation("/teams", "Ruft die Hilfe auf"));
-        sender.sendMessage(CommandHelper.formatCommandExplanation("/teams add <name>", "Erstellt ein neues &5Team &7mit internem Namen <name>"));
-        sender.sendMessage(CommandHelper.formatCommandExplanation("/teams modify <name> displayname <displayname>", "Setzt den Namen des &5Teams&7, der angezeigt wird. Farbcodes werden mit '&' geschrieben"));
-        sender.sendMessage(CommandHelper.formatCommandExplanation("/teams members <name> add <playername>", "Fügt einen Spieler zu einem &5Team &7hinzu. Der Spieler muss aber bereits auf dem Server gewesen sein"));
-        sender.sendMessage(CommandHelper.formatCommandExplanation("/teams members <name> remove <playername>", "Entfernt einen Spieler aus einem &5Team"));
+        CommandHelper.sendCommandHeader("/teams", sender);
+        CommandHelper.sendCommandExplanation("/teams", "Ruft die Hilfe auf", sender);
+        CommandHelper.sendCommandExplanation("/teams add <name>", "Erstellt ein neues &5Team &7mit internem Namen <name>", sender);
+        CommandHelper.sendCommandExplanation("/teams modify <name> displayname <displayname>", "Setzt den Namen des &5Teams&7, der angezeigt wird. Farbcodes werden mit '&' geschrieben", sender);
+        CommandHelper.sendCommandExplanation("/teams modify <name> prefix <prefix>", "Setzt den Prefix des &5Teams&7, der in der Tablist angezeigt wird. Farbcodes werden mit '&' geschrieben", sender);
+        CommandHelper.sendCommandExplanation("/teams members <name> add <playername>", "Fügt einen Spieler zu einem &5Team &7hinzu. Der Spieler muss aber bereits auf dem Server gewesen sein", sender);
+        CommandHelper.sendCommandExplanation("/teams members <name> remove <playername>", "Entfernt einen Spieler aus einem &5Team", sender);
     }
 }
