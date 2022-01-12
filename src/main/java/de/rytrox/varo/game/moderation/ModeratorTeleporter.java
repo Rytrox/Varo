@@ -99,6 +99,7 @@ public class ModeratorTeleporter implements Listener {
                 Bukkit.getOnlinePlayers()
                         .stream()
                         .filter((player) -> !manager.isModerator(player))
+                        .sorted((a, b) -> main.getScoreBoardManager().getTablistName(a).compareTo(main.getScoreBoardManager().getTablistName(b)))
                         .map((player) -> {
                             ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
 
