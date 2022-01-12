@@ -108,7 +108,7 @@ public class PlayerDeathListener implements Listener {
         if(Objects.requireNonNull(event.getMember().getTeam()).getMembers().stream().noneMatch(m -> m.getStatus() == PlayerStatus.ALIVE)) {
             // announce elimination
             messageService.writeMessage(
-                    String.format("&4Das Team %s &4ist ausgeschieden!",
+                    String.format("&8[&6Varo&8] &4Das Team %s &4ist ausgeschieden!",
                             event.getMember().getTeam().getDisplayName()),
                     MessageService.DiscordColor.RED,
                     true
@@ -123,7 +123,7 @@ public class PlayerDeathListener implements Listener {
 
                 // announce final
                 messageService.writeMessage(
-                        String.format("&6Das Finale zwischen Team %s &6und Team %s &6hat begonnen!",
+                        String.format("&8[&6Varo&8] &7Das &6Finale &7zwischen %s &7und %s &7hat &abegonnen&7!",
                                 runningTeams.get(0).getDisplayName(),
                                 runningTeams.get(1).getDisplayName()),
                         MessageService.DiscordColor.YELLOW,
@@ -136,7 +136,7 @@ public class PlayerDeathListener implements Listener {
 
                 // announce game end and winner
                 messageService.writeMessage(
-                        String.format("&aDas Finale ist vorbei!!! Das Team %s &ahat das Spiel gewonnen!",
+                        String.format("&8[&6Varo&8] &aDas Finale ist vorbei!!! %s &ahat das Spiel gewonnen!",
                                 runningTeams.get(0).getDisplayName()),
                         MessageService.DiscordColor.YELLOW,
                         true
