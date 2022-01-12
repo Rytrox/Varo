@@ -3,6 +3,7 @@ package de.rytrox.varo.teams;
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.database.repository.TeamMemberRepository;
+import de.rytrox.varo.game.moderation.ModeratorManager;
 import de.rytrox.varo.gamestate.GameStateHandler;
 import de.rytrox.varo.teams.events.TeamMemberJoinEvent;
 import de.rytrox.varo.teams.events.TeamMemberLoginEvent;
@@ -38,7 +39,7 @@ public class TeamEventManager implements Listener {
         final Player player = event.getPlayer();
 
         // Only include Players if they are not moderators
-        if(!main.getModeratorManager().isModerator(player)) {
+        if(!ModeratorManager.isModerator(player)) {
 
             if(main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.SETUP) {
                 event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, ChatColor.RED + "Der Server befindet sich in der Setup-Phase\nNur Moderatoren dürfen joinen!");

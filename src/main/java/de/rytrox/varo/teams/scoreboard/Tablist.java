@@ -2,12 +2,17 @@ package de.rytrox.varo.teams.scoreboard;
 
 import de.rytrox.varo.database.entity.Team;
 import de.rytrox.varo.database.entity.TeamMember;
+import de.rytrox.varo.game.moderation.ModeratorManager;
+
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.PacketPlayOutScoreboardTeam;
 import net.minecraft.server.v1_8_R3.Scoreboard;
 import net.minecraft.server.v1_8_R3.ScoreboardTeam;
+
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -87,7 +92,6 @@ public final class Tablist extends Scoreboard {
 
         if(team != null) {
             ScoreboardTeam scoreboardTeam = this.getTeam(team.getName());
-            PacketPlayOutScoreboardTeam packet;
             if(scoreboardTeam == null) {
                 // create team
                 list.add(this.createTeam(team, friendlyFire));
@@ -166,5 +170,37 @@ public final class Tablist extends Scoreboard {
         }
 
         return ChatColor.translateAlternateColorCodes('&', "&8[&4TERMINAL&8] &7");
+    }
+
+    /**
+     * Returns the displayname of the player's team or console
+     *
+     * @param sender the player or console
+     * @return the correct displayname of the team, cannot be null
+     */
+    @NotNull
+    public String getTeamDisplayName(CommandSender sender) {
+        if(sender instanceof Player) {
+            return ModeratorManager.isModerator(sender) ?
+                    ChatColor.translateAlternateColorCodes('&', "&9Moderator") :
+                    Optional.ofNullable(Tablist.getInstance().getPlayerTeam(sender.getName()))
+                            .map(ScoreboardTeam::getDisplayName)
+                            .orElse(ChatColor.translateAlternateColorCodes('&', "&7Kein Team"));
+        } else return ChatColor.translateAlternateColorCodes('&', "&4Console");
+    }
+
+    /**
+     * Formats the team's displayname and the sender's name and returns a string for System-Messages
+     *
+     * @param sender the player or console
+     * @return the formatted string of team's displayname and sender
+     */
+    @NotNull
+    public String getDisplayName(CommandSender sender) {
+        return ChatColor.translateAlternateColorCodes('&',
+                String.format("%s &8 ┃ &7%s",
+                        getTeamDisplayName(sender),
+                        sender instanceof ConsoleCommandSender ? "&cServer" : sender.getName())
+        );
     }
 }

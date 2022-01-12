@@ -19,10 +19,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class PlayerResurrectionListener implements Listener {
 
-    private final MessageService messageService;
+    private final Varo main;
 
-    public PlayerResurrectionListener(@NotNull MessageService messageService) {
-        this.messageService = messageService;
+    public PlayerResurrectionListener(@NotNull Varo main) {
+        this.main = main;
     }
 
     @EventHandler
@@ -57,7 +57,7 @@ public class PlayerResurrectionListener implements Listener {
             return;
 
         // wait for the apple to arrive at the destination
-        Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(Varo.class), () -> {
+        Bukkit.getScheduler().runTaskLater(main, () -> {
 
             // check if there is any player to resurrect
             TeamMember resurrectableTeamMember = PlayerResurrectionService.resurrectionIsPossibleABoolean(player);
@@ -67,7 +67,9 @@ public class PlayerResurrectionListener implements Listener {
             // get Player who should be resurrected
             Player resurrectablePlayer = resurrectableTeamMember.getPlayer();
             if(resurrectablePlayer == null) {
-                player.sendMessage("Dein Teammate muss online sein, um wiederbelebt werden zu können");
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                        "&8[&6Varo&8] &cDein Teammate muss online sein, um wiederbelebt werden zu können")
+                );
                 return;
             }
 
@@ -103,13 +105,13 @@ public class PlayerResurrectionListener implements Listener {
 
                 // send Log-Message
 
-                messageService.writeMessage(String.format("%s - %s hat seinen Teammate %s wiederbelebt",
-                        ChatColor.stripColor(resurrectableTeamMember.getTeam().getDisplayName()),
-                        player.getName(),
-                        resurrectablePlayer.getName()), MessageService.DiscordColor.RED);
+                main.getMessageService().writeMessage(ChatColor.translateAlternateColorCodes('&',
+                        String.format("&8[&6Varo&8] %s &7hat seinen Teammate &d%s &awiederbelebt",
+                                main.getScoreBoardManager().getChatName(player),
+                                resurrectablePlayer.getName())
+                ), MessageService.DiscordColor.RED);
 
                 Bukkit.getPluginManager().callEvent(new PlayerResurrectionEvent(resurrectablePlayer, event.getPlayer()));
-
             } else {
                 // if scheme has not been build correctly, tell player by creating some effects
 
@@ -128,7 +130,6 @@ public class PlayerResurrectionListener implements Listener {
 
         }, Math.round(dropDestination.getTime() * 20));
     }
-
 
 
 }

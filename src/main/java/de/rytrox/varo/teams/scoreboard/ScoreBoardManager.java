@@ -98,6 +98,11 @@ public class ScoreBoardManager implements Listener {
         return tablist.getPrefix(player) + player.getName();
     }
 
+    @NotNull
+    public String getChatName(@NotNull Player player) {
+        return tablist.getDisplayName(player);
+    }
+
     private void sendPacket(@NotNull Player player, @NotNull Packet<?> packet) {
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
     }

@@ -79,7 +79,7 @@ public final class Varo extends JavaPlugin {
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new MessageListener(this), this);
         pluginManager.registerEvents(new PlayerSkullDropService(), this);
-        pluginManager.registerEvents(new PlayerResurrectionListener(messageService), this);
+        pluginManager.registerEvents(new PlayerResurrectionListener(this), this);
         pluginManager.registerEvents(new GameService(this), this);
 
         this.moderatorManager = new ModeratorManager(this);

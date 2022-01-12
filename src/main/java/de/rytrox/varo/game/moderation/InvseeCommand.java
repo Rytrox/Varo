@@ -23,12 +23,12 @@ public class InvseeCommand implements TabExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(sender instanceof Player && main.getModeratorManager().isModerator(sender)) {
+        if(sender instanceof Player && ModeratorManager.isModerator(sender)) {
             if(args.length > 0) {
                 Player target = Bukkit.getPlayer(args[0]);
 
                 if(target != null) {
-                    if(!main.getModeratorManager().isModerator(target)) {
+                    if(!ModeratorManager.isModerator(target)) {
 
                         ((Player)sender).openInventory(target.getInventory());
 
@@ -42,10 +42,10 @@ public class InvseeCommand implements TabExecutor {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        if(main.getModeratorManager().isModerator(sender)) {
+        if(ModeratorManager.isModerator(sender)) {
             return Bukkit.getOnlinePlayers()
                     .stream()
-                    .filter(player -> !main.getModeratorManager().isModerator(player))
+                    .filter(player -> !ModeratorManager.isModerator(player))
                     .map(Player::getName)
                     .collect(Collectors.toList());
         }

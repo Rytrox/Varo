@@ -2,6 +2,7 @@ package de.rytrox.varo.teams;
 
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.game.ghosting.TeamMemberGhostService;
+import de.rytrox.varo.game.moderation.ModeratorManager;
 import de.rytrox.varo.message.chatlog.ChatLogType;
 import de.rytrox.varo.database.entity.ChatLog;
 import de.rytrox.varo.database.entity.Team;
@@ -11,6 +12,7 @@ import de.rytrox.varo.database.repository.TeamRepository;
 
 import de.rytrox.varo.teams.events.*;
 import de.rytrox.varo.teams.inventory.TeamInventoryManager;
+import de.rytrox.varo.teams.scoreboard.Tablist;
 import de.rytrox.varo.teams.spawnpoint.SpawnpointCommand;
 
 import de.rytrox.varo.utils.MojangAPI;
@@ -69,17 +71,8 @@ public class TeamManager implements Listener {
     public void onChat(AsyncPlayerChatEvent event) {
         main.getChatLogRepository().addChatLog(new ChatLog(event.getPlayer().getName(), ChatLogType.GLOBAL.getName(), event.getMessage()));
 
-        String prefix;
-        if(!main.getModeratorManager().isModerator(event.getPlayer())) {
-            TeamMember member = teamMemberRepository.getPlayer(event.getPlayer());
-
-            if(member != null && member.getTeam() != null) {
-                prefix = Optional.ofNullable(member.getTeam().getDisplayName())
-                        .orElse(ChatColor.translateAlternateColorCodes('&', "&7Kein Prefix"));
-            } else prefix = ChatColor.translateAlternateColorCodes('&', "&7Kein Team");
-        } else prefix = ChatColor.translateAlternateColorCodes('&', "&9Moderator");
-
-        event.setFormat(prefix + ChatColor.translateAlternateColorCodes('&', "&8 ┃ &7%s &8» &7%s"));
+        event.setFormat(Tablist.getInstance().getTeamDisplayName(event.getPlayer()) +
+                ChatColor.translateAlternateColorCodes('&', "&8 ┃ &7%s &8» &7%s"));
     }
 
     /**
