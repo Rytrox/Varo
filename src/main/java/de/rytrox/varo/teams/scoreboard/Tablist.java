@@ -167,4 +167,15 @@ public final class Tablist extends Scoreboard {
 
         return ChatColor.translateAlternateColorCodes('&', "&8[&4TERMINAL&8] &7");
     }
+
+    @NotNull
+    public String getDisplayName(CommandSender sender) {
+        if(sender instanceof OfflinePlayer) {
+            return Optional.ofNullable(Tablist.getInstance().getPlayerTeam(sender.getName()))
+                    .map((team) -> ChatColor.translateAlternateColorCodes('&', team.getDisplayName() + "&7 " + sender.getName()))
+                    .orElse(ChatColor.translateAlternateColorCodes('&', "&7Kein Team"));
+        }
+
+        return ChatColor.translateAlternateColorCodes('&', "&4Server");
+    }
 }

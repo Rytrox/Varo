@@ -2,9 +2,6 @@ package de.rytrox.varo.message;
 
 import de.rytrox.varo.Varo;
 import de.rytrox.varo.gamestate.GameStateHandler;
-import de.rytrox.varo.teams.scoreboard.Tablist;
-
-import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,8 +11,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class MessageListener implements Listener {
 
-    private static final String JOIN_MESSAGE = "%s%s &ahat den Server betreten";
-    private static final String QUIT_MESSAGE = "%s%s &chat den Server verlassen";
+    private static final String JOIN_MESSAGE = "%s &ahat den Server betreten";
+    private static final String QUIT_MESSAGE = "%s &chat den Server verlassen";
 
     private final Varo main;
 
@@ -34,8 +31,7 @@ public class MessageListener implements Listener {
 
             main.getMessageService()
                     .writeMessage(String.format(JOIN_MESSAGE,
-                                            Tablist.getInstance().getPrefix(event.getPlayer()),
-                                            event.getPlayer().getName()),
+                                            main.getScoreBoardManager().getTablistName(event.getPlayer())),
                             MessageService.DiscordColor.CYAN
                     );
         }
@@ -52,8 +48,7 @@ public class MessageListener implements Listener {
             main.getMessageService()
                     .writeMessage(
                         String.format(QUIT_MESSAGE,
-                                Tablist.getInstance().getPrefix(event.getPlayer()),
-                                event.getPlayer().getName()),
+                                main.getScoreBoardManager().getTablistName(event.getPlayer())),
                         MessageService.DiscordColor.RED
                     );
         }
