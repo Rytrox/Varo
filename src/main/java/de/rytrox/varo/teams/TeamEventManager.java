@@ -59,7 +59,7 @@ public class TeamEventManager implements Listener {
                 return;
             }
 
-            TeamMemberLoginEvent spawnEvent = new TeamMemberLoginEvent(player, member.get());
+            TeamMemberLoginEvent spawnEvent = new TeamMemberLoginEvent(member.get(), event.getPlayer());
             Bukkit.getPluginManager().callEvent(spawnEvent);
             if(spawnEvent.isCancelled()) {
                 event.disallow(PlayerLoginEvent.Result.KICK_BANNED, spawnEvent.getCancelMessage());

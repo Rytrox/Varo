@@ -1,25 +1,34 @@
 package de.rytrox.varo.teams.events;
 
 import de.rytrox.varo.database.entity.TeamMember;
-import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * Calls when a TeamMember disconnects from the Server
+ * Event that is triggered when a Team member dies
  *
  * @author Timeout
  */
-public class TeamMemberDisconnectEvent extends TeamMemberEvent {
+public class TeamMemberDeathEvent extends TeamMemberEvent {
 
     private static final HandlerList HANDLER_LIST = new HandlerList();
 
-    public TeamMemberDisconnectEvent(@NotNull TeamMember teamMember) {
-        super(teamMember);
+    private final TeamMember killer;
+
+    public TeamMemberDeathEvent(@NotNull TeamMember entity, @Nullable TeamMember killer) {
+        super(entity);
+
+        this.killer = killer;
     }
 
     public static HandlerList getHandlerList() {
         return HANDLER_LIST;
+    }
+
+    @Nullable
+    public TeamMember getKiller() {
+        return killer;
     }
 
     @Override

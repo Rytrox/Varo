@@ -4,6 +4,7 @@ import de.rytrox.varo.Varo;
 import de.rytrox.varo.database.entity.Team;
 import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.database.enums.PlayerStatus;
+import de.rytrox.varo.teams.events.TeamMemberDeathEvent;
 import de.rytrox.varo.teams.events.TeamMemberDisconnectEvent;
 import de.rytrox.varo.teams.events.TeamMemberJoinEvent;
 import de.rytrox.varo.teams.events.TeamMemberLoginEvent;
@@ -120,6 +121,33 @@ public class TeamMemberGhostService implements Listener {
     public void onCancelQuit(PlayerToggleSneakEvent event) {
         if(event.getPlayer().getGameMode() == GameMode.SPECTATOR && event.getPlayer().getSpectatorTarget() != null) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onTeamMemberDeath(TeamMemberDeathEvent event) {
+        if(event.getMember().getTeam() != null) {
+            List<TeamMember> alivePartner = findAliveTeamMember(event.getMember().getTeam(), false);
+
+            if(!alivePartner.isEmpty()) {
+                // get online member
+                Optional<TeamMember> onlinePartner = alivePartner.stream()
+                        .filter((other) -> other.getPlayer() != null)
+                        .findAny();
+
+                if(onlinePartner.isPresent()) {
+                    Player target = onlinePartner.get().getPlayer();
+
+                    spectatorTarget.put(event.getPlayer(), target);
+                    event.getPlayer().setGameMode(GameMode.SPECTATOR);
+                    event.getPlayer().setSpectatorTarget(target);
+                } else {
+                    event.getPlayer().kickPlayer(
+                            ChatColor.translateAlternateColorCodes('&',
+                                    "&8[&6Varo&8] &cDu bist ausgeschieden. \n \n&cDu kannst nur zuschauen, wenn dein Team online ist.")
+                    );
+                }
+            }
         }
     }
 

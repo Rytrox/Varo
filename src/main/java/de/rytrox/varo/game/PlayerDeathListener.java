@@ -8,14 +8,24 @@ import de.rytrox.varo.database.repository.TeamMemberRepository;
 import de.rytrox.varo.database.repository.TeamRepository;
 import de.rytrox.varo.gamestate.GameStateHandler;
 import de.rytrox.varo.message.MessageService;
-import org.bukkit.ChatColor;
+import de.rytrox.varo.teams.events.TeamMemberDeathEvent;
+import de.rytrox.varo.teams.scoreboard.Tablist;
+
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class PlayerDeathListener implements Listener {
@@ -43,103 +53,123 @@ public class PlayerDeathListener implements Listener {
     }
 
     @EventHandler
-    public void onDeath(PlayerDeathEvent event) {
+    public void onDeath(EntityDamageEvent event) {
+        if(event.getEntity() instanceof Player && (main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.MAIN ||
+                main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.FINAL)) {
+            Player entity = (Player) event.getEntity();
 
-        // remove default death message
-        event.setDeathMessage(null);
+            // check if player would die now
+            if(entity.getHealth() - event.getFinalDamage() <= 0) {
+                eliminatePlayer(entity, null);
+            }
+        }
+    }
 
-        GameStateHandler.GameState gameState = main.getGameStateHandler().getCurrentGameState();
+    @EventHandler
+    public void onDeath(EntityDamageByEntityEvent event) {
+        if(event.getEntity() instanceof Player && (main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.MAIN ||
+                main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.FINAL)) {
+            Player entity = (Player) event.getEntity();
 
-        if(gameState != GameStateHandler.GameState.MAIN && gameState != GameStateHandler.GameState.FINAL) {
-            return;
+            // check if player would die now
+            if(entity.getHealth() - event.getFinalDamage() <= 0) {
+                // try to get killer
+                Player killer = null;
+                if(!(event.getDamager() instanceof Player)) {
+                    if(event.getDamager() instanceof Projectile && ((Projectile) event.getDamager()).getShooter() instanceof Player) {
+                        killer = (Player) ((Projectile) event.getDamager()).getShooter();
+                    }
+                } else killer = (Player) event.getDamager();
+
+                eliminatePlayer(entity, killer != null ? teamMemberRepository.getPlayer(killer) : null);
+            }
+        }
+    }
+
+    @EventHandler
+    public void messagePlayerDeath(TeamMemberDeathEvent event) {
+        if(event.getKiller() != null) {
+            messageService.writeMessage(
+                    String.format("&8[&6Varo&8] &7%s &7wurde von %s &cgetötet!",
+                            Tablist.getInstance().getDisplayName(event.getPlayer()),
+                            Tablist.getInstance().getTeamDisplayName(event.getKiller().getPlayer())),
+                    MessageService.DiscordColor.YELLOW,
+                    true);
+        } else {
+            // announce death
+            messageService.writeMessage(
+                    String.format("&8[&6Varo&8] &7%s ist gestorben!",
+                            Tablist.getInstance().getDisplayName(event.getPlayer())),
+                    MessageService.DiscordColor.YELLOW,
+                    true);
         }
 
-        Optional<TeamMember> teamMemberOptional = this.teamMemberRepository.findPlayerByUUID(event.getEntity().getUniqueId());
+        // check if team has members left
+        if(Objects.requireNonNull(event.getMember().getTeam()).getMembers().stream().noneMatch(m -> m.getStatus() == PlayerStatus.ALIVE)) {
+            // announce elimination
+            messageService.writeMessage(
+                    String.format("&8[&6Varo&8] &4Das Team %s &4ist ausgeschieden!",
+                            event.getMember().getTeam().getDisplayName()),
+                    MessageService.DiscordColor.RED,
+                    true
+            );
 
-        if(teamMemberOptional.isPresent()) {
-            TeamMember member = teamMemberOptional.get();
+            // check if final or game over
+            List<Team> runningTeams = teamRepository.getAllTeamsWithAliveMembers();
 
-            // update player status
-            member.setStatus(PlayerStatus.DEAD);
-            main.getDB().update(member);
+            // check for final
+            if(runningTeams.size() == 2) {
+                main.getGameStateHandler().setCurrentGameState(GameStateHandler.GameState.FINAL);
 
-            // kick player
-            event.getEntity().kickPlayer(ChatColor.translateAlternateColorCodes('&',
-                    "&cDu bist ausgeschieden!"));
-
-            // check if there is a killer
-            Player killer = event.getEntity().getKiller();
-
-            boolean validKiller = false;
-            if(killer != null) {
-                Optional<TeamMember> killerMember = this.teamMemberRepository.findPlayerByUUID(event.getEntity().getKiller().getUniqueId());
-
-                if(killerMember.isPresent()) {
-
-                    messageService.writeMessage(
-                            String.format("&eDer Spieler &4%s &eaus dem Team %s &ewurde vom Spieler &c%s &eaus dem Team %s &egetötet!",
-                                event.getEntity().getName(),
-                                member.getTeam().getDisplayName(),
-                                event.getEntity().getKiller().getName(),
-                                killerMember.get().getTeam().getDisplayName()),
-                            MessageService.DiscordColor.YELLOW,
-                            true);
-
-                    validKiller = true;
-                }
-            }
-
-            if(!validKiller) {
-                // announce death
+                // announce final
                 messageService.writeMessage(
-                        String.format("&eDer Spieler &4%s &e aus dem Team %s &eist gestorben!",
-                            event.getEntity().getName(),
-                            member.getTeam().getDisplayName()),
+                        String.format("&8[&6Varo&8] &7Das &6Finale &7zwischen %s &7und %s &7hat &abegonnen&7!",
+                                runningTeams.get(0).getDisplayName(),
+                                runningTeams.get(1).getDisplayName()),
                         MessageService.DiscordColor.YELLOW,
-                        true);
-            }
-
-            // check if team has members left
-            if(member.getTeam().getMembers().stream().noneMatch(m -> m.getStatus() == PlayerStatus.ALIVE)) {
-                // announce elimination
-                messageService.writeMessage(
-                        String.format("&4Das Team %s &4ist ausgeschieden!",
-                            member.getTeam().getDisplayName()),
-                        MessageService.DiscordColor.RED,
                         true
                 );
 
-                // check if final or game over
-                List<Team> runningTeams = teamRepository.getAllTeamsWithAliveMembers();
-
-                // check for final
-                if(runningTeams.size() == 2) {
-                    main.getGameStateHandler().setCurrentGameState(GameStateHandler.GameState.FINAL);
-
-                    // announce final
-                    messageService.writeMessage(
-                            String.format("&6Das Finale zwischen Team %s &6und Team %s &6hat begonnen!",
-                                runningTeams.get(0).getDisplayName(),
-                                runningTeams.get(1).getDisplayName()),
-                            MessageService.DiscordColor.YELLOW,
-                            true
-                    );
-
                 // check for game end
-                } else if(runningTeams.size() == 1) {
-                    main.getGameStateHandler().setCurrentGameState(GameStateHandler.GameState.POST);
+            } else if(runningTeams.size() == 1) {
+                main.getGameStateHandler().setCurrentGameState(GameStateHandler.GameState.POST);
 
-                    // announce game end and winner
-                    messageService.writeMessage(
-                            String.format("&aDas Finale ist vorbei!!! Das Team %s &ahat das Spiel gewonnen!",
+                // announce game end and winner
+                messageService.writeMessage(
+                        String.format("&8[&6Varo&8] &aDas Finale ist vorbei!!! %s &ahat das Spiel gewonnen!",
                                 runningTeams.get(0).getDisplayName()),
-                            MessageService.DiscordColor.YELLOW,
-                            true
-                    );
-                }
+                        MessageService.DiscordColor.YELLOW,
+                        true
+                );
             }
         }
+    }
 
+    private void eliminatePlayer(@NotNull Player player, @Nullable TeamMember killer) {
+        this.teamMemberRepository.findPlayerByUUID(player.getUniqueId())
+                .ifPresent((member) -> {
+                    // update player status
+                    member.setStatus(PlayerStatus.DEAD);
+                    main.getDB().update(member);
+
+                    // Fake drop of stuff
+                    player.setHealth(20D);
+                    player.setFoodLevel(20);
+                    Arrays.stream(player.getInventory()
+                            .getContents())
+                            .filter(Objects::nonNull)
+                            .forEach(itemStack -> player.getWorld().dropItemNaturally(player.getLocation(), itemStack));
+                    player.getInventory().clear();
+
+                    // Call event
+                    Bukkit.getPluginManager().callEvent(new TeamMemberDeathEvent(member, killer));
+                });
+    }
+
+    @EventHandler
+    public void onDeath(PlayerDeathEvent event) {
+        // remove default death message
+        event.setDeathMessage(null);
     }
 
 }

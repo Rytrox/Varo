@@ -20,8 +20,8 @@ public class TeamMemberLoginEvent extends TeamMemberEvent implements Cancellable
     private boolean cancel;
     private String cancelMessage;
 
-    public TeamMemberLoginEvent(@NotNull Player player, @NotNull TeamMember member) {
-        super(player, member);
+    public TeamMemberLoginEvent(@NotNull TeamMember member, @NotNull Player player) {
+        super(member, player);
     }
 
     public static HandlerList getHandlerList() {

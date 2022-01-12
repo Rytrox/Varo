@@ -58,13 +58,11 @@ public class TeamManager implements Listener {
 
     @EventHandler
     public void onDisconnectCacheClear(@NotNull PlayerQuitEvent event) {
-        Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
-            TeamMember member = teamMemberRepository.getPlayer(event.getPlayer());
+        TeamMember member = teamMemberRepository.getPlayer(event.getPlayer());
 
-            if (member != null) {
-                Bukkit.getPluginManager().callEvent(new TeamMemberDisconnectEvent(event.getPlayer(), member));
-            }
-        });
+        if (member != null) {
+            Bukkit.getPluginManager().callEvent(new TeamMemberDisconnectEvent(member));
+        }
     }
 
     @EventHandler
