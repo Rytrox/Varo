@@ -14,8 +14,20 @@ public abstract class TeamMemberEvent extends PlayerEvent {
 
     protected final TeamMember member;
 
-    public TeamMemberEvent(@NotNull Player who, @NotNull TeamMember teamMember) {
-        super(who);
+    public TeamMemberEvent(@NotNull TeamMember teamMember) {
+        super(teamMember.getPlayer());
+
+        this.member = teamMember;
+    }
+
+    /**
+     * Especially for PlayerLoginEvent since Bukkit.getPlayer does not work properly while Login
+     *
+     * @param teamMember the team member
+     * @param player the player
+     */
+    protected TeamMemberEvent(@NotNull TeamMember teamMember, @NotNull Player player) {
+        super(player);
 
         this.member = teamMember;
     }
