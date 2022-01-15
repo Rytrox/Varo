@@ -38,8 +38,8 @@ public class TeamEventManager implements Listener {
     public void onPlayerLogin(@NotNull PlayerLoginEvent event) {
         final Player player = event.getPlayer();
 
-        // Only include Players if they are not moderators
-        if(!ModeratorManager.isModerator(player)) {
+        // Only include Players if they are not moderators or the phase is no post
+        if(!ModeratorManager.isModerator(player) && main.getGameStateHandler().getCurrentGameState() != GameStateHandler.GameState.POST) {
 
             if(main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.SETUP) {
                 event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, ChatColor.RED + "Der Server befindet sich in der Setup-Phase\nNur Moderatoren dürfen joinen!");
