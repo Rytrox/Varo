@@ -36,18 +36,19 @@ game:
     # If the player has reached this minimum amount of days he will be banned for the days he skipped
     allowed-skip-days: 2
 
-worldborder:
+worldsettings:
   # world you play in
   world: 'world'
-  # initial size of worldborder
-  intialSize: 4000
   # center location
   center:
     x: 0
     y: 80
     z: 0
-  suddenDeath:
-    # speed of the shrinking (in blocks per second)
-    speed: 0.5
-    # minimal size that can be reached
-    minimal: 20
+  worldborder:
+    # initial size of worldborder
+    intialSize: 4000
+    suddenDeath:
+      # speed of the shrinking (in blocks per second)
+      speed: 0.5
+      # minimal size that can be reached
+      minimal: 20

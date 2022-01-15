@@ -10,6 +10,7 @@ import de.rytrox.varo.teams.events.TeamMemberLoginEvent;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.entity.Player;
@@ -61,13 +62,10 @@ public class SpawnPointService implements Listener {
         // Only teleport if the game is running and the player is alive
         if(event.getMember().getStatus() == PlayerStatus.ALIVE &&
                 main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.PRE_GAME) {
-            Bukkit.getScheduler().runTask(main, () -> {
-                SpawnPoint spawnPoint = event.getMember().getSpawnPoint();
 
-                if(spawnPoint != null) {
-                    player.teleport(spawnPoint.getLocation());
-                }
-            });
+            Location spawnPoint = main.getWorldBorderHandler().getCenter();
+
+            Bukkit.getScheduler().runTask(main, () -> player.teleport(spawnPoint));
         }
     }
 }

@@ -3,6 +3,9 @@ package de.rytrox.varo.game.countdown;
 import com.google.gson.JsonObject;
 
 import de.rytrox.varo.Varo;
+import de.rytrox.varo.database.entity.SpawnPoint;
+import de.rytrox.varo.database.entity.TeamMember;
+import de.rytrox.varo.database.repository.TeamMemberRepository;
 import de.rytrox.varo.gamestate.GameStateHandler;
 import de.rytrox.varo.message.MessageService;
 import de.rytrox.varo.utils.CommandHelper;
@@ -25,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class CountdownCommand implements TabExecutor {
@@ -47,6 +51,7 @@ public class CountdownCommand implements TabExecutor {
             Sound.ORB_PICKUP
     );
 
+    private final TeamMemberRepository teamMemberRepository;
     private final GameStateHandler gameStateHandler;
     private final AtomicInteger counter = new AtomicInteger(60);
     private final Varo main;
@@ -56,6 +61,7 @@ public class CountdownCommand implements TabExecutor {
     public CountdownCommand(@NotNull Varo main) {
         this.main = main;
         this.gameStateHandler = main.getGameStateHandler();
+        this.teamMemberRepository = new TeamMemberRepository(main.getDB());
     }
 
     @Override
@@ -100,6 +106,18 @@ public class CountdownCommand implements TabExecutor {
     }
 
     public void start() {
+
+        Bukkit.getOnlinePlayers().forEach((player) -> {
+            Optional<TeamMember> teamMemberOptional = this.teamMemberRepository.findPlayer(player);
+            if(teamMemberOptional.isPresent()) {
+                SpawnPoint spawnPoint = teamMemberOptional.get().getSpawnPoint();
+
+                if(spawnPoint != null) {
+                    player.teleport(spawnPoint.getLocation());
+                }
+            }
+        });
+
         this.countingRunner = Bukkit.getScheduler().runTaskTimer(main, () -> {
             int current = this.counter.getAndDecrement();
 
@@ -120,6 +138,9 @@ public class CountdownCommand implements TabExecutor {
     }
 
     public void stop() {
+
+        Bukkit.getOnlinePlayers().forEach((player) -> player.teleport(main.getWorldBorderHandler().getCenter()));
+
         this.countingRunner.cancel();
 
         this.countingRunner = null;

@@ -36,22 +36,22 @@ public class WorldBorderHandler implements Listener {
         Bukkit.getPluginManager().registerEvents(this, main);
 
         this.initialSize = main.getStateStorage().getDouble("borderSize",
-                main.getConfig().getDouble("worldborder.intialSize", 4000D));
+                main.getConfig().getDouble("worldsettings.worldborder.intialSize", 4000D));
         main.getStateStorage().set("borderSize", this.initialSize);
         main.saveStateStorage();
 
-        this.minSize = main.getConfig().getDouble("worldborder.suddenDeath.minimal", 20D);
-        this.shrinkSpeed = main.getConfig().getDouble("worldborder.suddenDeath.speed", 0.5D);
+        this.minSize = main.getConfig().getDouble("worldsettings.worldborder.suddenDeath.minimal", 20D);
+        this.shrinkSpeed = main.getConfig().getDouble("worldsettings.worldborder.suddenDeath.speed", 0.5D);
 
         TeamMemberRepository teamMemberRepository = new TeamMemberRepository(main.getDB());
         this.totalPlayers = teamMemberRepository.getTotalPlayerAmount();
         this.alivePlayers = teamMemberRepository.getAlivePlayerAmount();
 
-        World world = Bukkit.getWorld(main.getConfig().getString("worldborder.world", "world"));
+        World world = Bukkit.getWorld(main.getConfig().getString("worldsettings.world", "world"));
 
-        double centerX = main.getConfig().getDouble("worldborder.center.x", 0D);
-        double centerY = main.getConfig().getDouble("worldborder.center.y", 80D);
-        double centerZ = main.getConfig().getDouble("worldborder.center.z", 0D);
+        double centerX = main.getConfig().getDouble("worldsettings.center.x", 0D);
+        double centerY = main.getConfig().getDouble("worldsettings.center.y", 80D);
+        double centerZ = main.getConfig().getDouble("worldsettings.center.z", 0D);
         this.center = new Location(world, centerX, centerY, centerZ);
 
         world.getWorldBorder().setCenter(center);
