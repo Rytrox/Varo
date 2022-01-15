@@ -35,10 +35,10 @@ public class GameService implements Listener {
 
     @EventHandler
     public void onGameStart(GamestateChangeEvent event) {
-        if(event.getNext() == GameStateHandler.GameState.MAIN || event.getNext() == GameStateHandler.GameState.FINAL) {
+        if(event.getPrevious() == GameStateHandler.GameState.PRE_GAME && event.getNext() == GameStateHandler.GameState.MAIN) {
 
             // set time and clear weather
-            World world = Bukkit.getWorld(main.getConfig().getString("worldborder.world", "world"));
+            World world = main.getWorldBorderHandler().getCenter().getWorld();
             world.setTime(1000L);
             world.setStorm(false);
             world.setThundering(false);
