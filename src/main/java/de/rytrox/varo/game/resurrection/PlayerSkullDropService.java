@@ -1,19 +1,19 @@
 package de.rytrox.varo.game.resurrection;
 
+import de.rytrox.varo.teams.events.TeamMemberDeathEvent;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
 public class PlayerSkullDropService implements Listener {
 
     @EventHandler
-    public void onDeath(PlayerDeathEvent event) {
+    public void onDeath(TeamMemberDeathEvent event) {
         // get Player
-        Player player = event.getEntity();
+        Player player = event.getPlayer();
 
         // create Skull item
         ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
