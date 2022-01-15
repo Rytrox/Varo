@@ -5,8 +5,9 @@ import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.database.enums.PlayerStatus;
 import de.rytrox.varo.message.MessageService;
 import de.rytrox.varo.utils.ParticleUtils;
-import net.minecraft.server.v1_8_R3.Block;
+
 import net.minecraft.server.v1_8_R3.EnumParticle;
+
 import org.bukkit.*;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
