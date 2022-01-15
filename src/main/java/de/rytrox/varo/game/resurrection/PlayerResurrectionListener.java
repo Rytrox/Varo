@@ -5,7 +5,9 @@ import de.rytrox.varo.database.entity.TeamMember;
 import de.rytrox.varo.database.enums.PlayerStatus;
 import de.rytrox.varo.message.MessageService;
 import de.rytrox.varo.utils.ParticleUtils;
+
 import net.minecraft.server.v1_8_R3.EnumParticle;
+
 import org.bukkit.*;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -75,6 +77,12 @@ public class PlayerResurrectionListener implements Listener {
 
             // check if scheme has been build correctly
             if(PlayerResurrectionService.checkScheme(flowerLocation)) {
+                // Find and delete Skulls and Sign
+                for(int dx = -1; dx <= 1; dx++) {
+                    for(int dz = -1; dz <= 1; dz++) {
+                        flowerLocation.getBlock().getLocation().add(dx, 0, dz).getBlock().setType(Material.AIR);
+                    }
+                }
 
                 // strike lightning effect and create explosion
                 drop.remove();
