@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class PlayerDeathListener implements Listener {
 
@@ -155,11 +156,12 @@ public class PlayerDeathListener implements Listener {
                     // Fake drop of stuff
                     player.setHealth(20D);
                     player.setFoodLevel(20);
-                    Arrays.stream(player.getInventory()
-                            .getContents())
+                    Stream.concat(Arrays.stream(player.getInventory().getContents()),
+                                    Arrays.stream(player.getInventory().getArmorContents()))
                             .filter(Objects::nonNull)
                             .forEach(itemStack -> player.getWorld().dropItemNaturally(player.getLocation(), itemStack));
                     player.getInventory().clear();
+                    player.getInventory().setArmorContents(null);
 
                     // Call event
                     Bukkit.getPluginManager().callEvent(new TeamMemberDeathEvent(member, killer));
