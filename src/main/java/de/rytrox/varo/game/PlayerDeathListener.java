@@ -55,7 +55,11 @@ public class PlayerDeathListener implements Listener {
 
     @EventHandler
     public void onDeath(EntityDamageEvent event) {
-        if(event.getEntity() instanceof Player && (main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.MAIN ||
+        if(main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.POST
+            || main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.PRE_GAME) {
+            event.setDamage(0);
+            event.setCancelled(true);
+        } else if(event.getEntity() instanceof Player && (main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.MAIN ||
                 main.getGameStateHandler().getCurrentGameState() == GameStateHandler.GameState.FINAL)) {
             Player entity = (Player) event.getEntity();
 
