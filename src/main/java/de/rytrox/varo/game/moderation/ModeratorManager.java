@@ -3,6 +3,7 @@ package de.rytrox.varo.game.moderation;
 import de.rytrox.varo.Varo;
 
 import de.rytrox.varo.gamestate.GameStateHandler;
+import de.rytrox.varo.teams.events.TeamMemberJoinEvent;
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
 
 import org.bukkit.Bukkit;
@@ -33,6 +34,12 @@ public class ModeratorManager implements Listener {
         main.getCommand("invsee").setExecutor(new InvseeCommand(main));
         Bukkit.getPluginManager().registerEvents(this, main);
         Bukkit.getPluginManager().registerEvents(new ModeratorTeleporter(main), main);
+
+        // Activate Moderator-Mode for all online Moderators after Reload
+        Bukkit.getOnlinePlayers()
+                .stream()
+                .filter(ModeratorManager::isModerator)
+                .forEach(this::enableModeratorMode);
     }
 
     public static boolean isModerator(@NotNull CommandSender sender) {
@@ -48,6 +55,24 @@ public class ModeratorManager implements Listener {
 
             enableModeratorMode(player);
         }
+    }
+
+    @EventHandler
+    public void onDisguiseModerators(TeamMemberJoinEvent event) {
+        Bukkit.getOnlinePlayers()
+                .stream()
+                .filter(ModeratorManager::isModerator)
+                .forEach((moderator) -> {
+                    PacketPlayOutPlayerInfo despawnPacket = new PacketPlayOutPlayerInfo(
+                            PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER,
+                            ((CraftPlayer) moderator).getHandle());
+
+                    Bukkit.getScheduler().runTaskLater(main, () -> {
+                        event.getPlayer().hidePlayer(moderator);
+
+                        ((CraftPlayer) event.getPlayer()).getHandle().playerConnection.sendPacket(despawnPacket);
+                    }, 2);
+                });
     }
 
     @EventHandler
